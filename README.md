@@ -19,3 +19,8 @@ Transformation eines Standard-Heimnetzwerks in eine professionelle, segmentierte
 - [x] Hypervisor-Installation (Proxmox VE 8.x)
 - [ ] pfSense Konfiguration & VLAN-Segmentierung (Woche 2)
 
+[ Magenta Box ] <---> [ TP-Link Archer ] <--- LAN ---> [ AOOSTAR (Proxmox) ]
+                            |
+                         (WLAN)
+                            |
+                     [ TP-Link RE330 ] <--- WLAN ---> [ Arbeits-PC ]
