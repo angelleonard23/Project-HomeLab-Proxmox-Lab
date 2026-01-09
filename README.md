@@ -13,7 +13,7 @@ Transformation eines Standard-Heimnetzwerks in eine professionelle, segmentierte
 
 ### 🖥️ System-Status (Woche 1)
 ![Dashboard](./Proxmox_Dashboard_CPU_RAM_Übersicht.png)
-![Netzwerk](./Netzwerk-Konfigurations-Tab)
+![Netzwerk](./Netzwerk-Konfiguration)
 
 ## 🌐 Netzwerk-Topologie
 ```text
