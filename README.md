@@ -11,9 +11,12 @@ Transformation eines Standard-Heimnetzwerks in eine professionelle, segmentierte
 - **ISP:** Magenta Fiber Box (aktuell im Double-NAT Modus / DMZ geplant)
 - **Extender:** TP-Link RE330 (OneMesh für Arbeitszimmer-Konnektivität)
 
-### 🖥️ System-Status (Woche 1)
-![Dashboard](./Proxmox_Dashboard_CPU_RAM_Übersicht.png)
-![Netzwerk](./Netzwerk-Konfiguration)
+## 📊 Status & Screenshots
+### Proxmox Dashboard
+![Dashboard](./img/Proxmox_Dashboard_CPU_RAM_Übersicht.png)
+
+### Netzwerk-Konfiguration
+![Netzwerk](./img/Netzwerk_Konfiguration.png)
 
 ## 🌐 Netzwerk-Topologie
 ```text
