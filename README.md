@@ -1,4 +1,3 @@
-```
 # Enterprise Home Lab & Security Infrastructure
 
 ## 🎯 Projektziel
