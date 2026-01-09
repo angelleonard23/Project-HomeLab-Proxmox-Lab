@@ -12,7 +12,7 @@ Transformation eines Standard-Heimnetzwerks in eine professionelle, segmentierte
 - **Extender:** TP-Link RE330 (OneMesh für Arbeitszimmer-Konnektivität)
 
 ### 🖥️ System-Status (Woche 1)
-![Dashboard](./Proxmox_Dashboard_CPU_RAM_Übersicht.png)
+![Dashboard](./img/Netzwerk-Konfigurations-Tab in Proxmox (Bridges).png)
 ![Netzwerk](./grafik.png)
 
 ## 🌐 Netzwerk-Topologie
