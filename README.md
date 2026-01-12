@@ -19,8 +19,10 @@ Transformation eines Standard-Heimnetzwerks in eine professionelle, segmentierte
 ![Netzwerk](./img/Netzwerk_Konfiguration.png)
 
 ## 🌐 Netzwerk-Topologie
+
+```mermaid
 graph TD
-    subgraph Internet
+    subgraph "Internet"
         ISP[Magenta Fiber Box]
     end
 
