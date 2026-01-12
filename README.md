@@ -19,9 +19,27 @@ Transformation eines Standard-Heimnetzwerks in eine professionelle, segmentierte
 ![Netzwerk](./img/Netzwerk_Konfiguration.png)
 
 ## 🌐 Netzwerk-Topologie
-```text
-[ Magenta Box ] <---> [ TP-Link Archer ] <--- LAN ---> [ AOOSTAR (Proxmox) ]
-                            |
-                         (WLAN)
-                            |
-                     [ TP-Link RE330 ] <--- WLAN ---> [ Arbeits-PC ]
+graph TD
+    subgraph Internet
+        ISP[Magenta Fiber Box]
+    end
+
+    subgraph "Physische Infrastruktur"
+        Archer[TP-Link Archer AX18 - 192.168.1.1]
+        Aoostar[AOOSTAR WTR PRO - Proxmox Host]
+    end
+
+    subgraph "Virtuelle Umgebung (Proxmox)"
+        WAN_Bridge((vmbr0 - WAN))
+        LAN_Bridge((vmbr1 - Isoliertes LAN))
+        
+        pfSense[pfSense Firewall]
+        Mint[Linux Mint Management VM]
+    end
+
+    ISP --- Archer
+    Archer --- WAN_Bridge
+    WAN_Bridge --- pfSense
+    pfSense --- LAN_Bridge
+    LAN_Bridge --- Mint
+
