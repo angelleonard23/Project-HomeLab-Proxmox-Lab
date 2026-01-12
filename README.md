@@ -50,7 +50,7 @@ graph TD
 ### 📊 Proof of Concept
 Hier ist die erfolgreiche Verbindung der Management-VM durch die Firewall dokumentiert:
 
-![pfSense Dashboard](./images/dein_bildname_dashboard.png)
+![pfSense Dashboard](./images/pfsense_dashboard.jpg)
 *Abbildung 1: Zentrales Management-Dashboard in pfSense.*
 
 ![Ping Test](./images/dein_bildname_ping.png)
