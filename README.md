@@ -45,3 +45,26 @@ graph TD
     pfSense --- LAN_Bridge
     LAN_Bridge --- Mint
 
+````
+### 2. Warum Linux Mint Xfce in die Doku muss
+In deinem Screenshot sieht man das saubere Desktop-Interface von Mint. Es ist wichtig zu erwähnen, **warum** du diese Version gewählt hast, um technisches Verständnis zu zeigen:
+* Die **Xfce-Edition** ist ideal für Virtualisierungs-Labs, da sie extrem ressourcenschonend ist.
+* Sie ermöglicht eine flüssige Bedienung des pfSense-Web-Interfaces, ohne den Proxmox-Host unnötig zu belasten.
+
+---
+
+### 3. Nächster Schritt: Screenshots einbinden
+Da du jetzt tolle Screenshots hast (den Ping-Test und das Dashboard), binden wir diese unter den Text ein.
+
+1.  Lade die Bilder in dein GitHub-Repository hoch (am besten in einen Ordner namens `images`).
+2.  Füge diesen Code unter dein (hoffentlich jetzt funktionierendes) Diagramm ein:
+
+```markdown
+### 📊 Proof of Concept
+Hier ist die erfolgreiche Verbindung der Management-VM durch die Firewall dokumentiert:
+
+![pfSense Dashboard](./images/dein_bildname_dashboard.png)
+*Abbildung 1: Zentrales Management-Dashboard in pfSense.*
+
+![Ping Test](./images/dein_bildname_ping.png)
+*Abbildung 2: Erfolgreicher ICMP-Ping auf 8.8.8.8 zur Verifizierung der Internet-Konnektivität.*
