@@ -53,5 +53,5 @@ Hier ist die erfolgreiche Verbindung der Management-VM durch die Firewall dokume
 ![pfSense Dashboard](./img/pfsense_dashboard.jpg)
 *Abbildung 1: Zentrales Management-Dashboard in pfSense.*
 
-![Ping Test](./images/dein_bildname_ping.png)
+![Ping Test](./img/pfsense_ping.jpg)
 *Abbildung 2: Erfolgreicher ICMP-Ping auf 8.8.8.8 zur Verifizierung der Internet-Konnektivität.*
