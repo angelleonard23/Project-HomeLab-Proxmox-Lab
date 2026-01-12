@@ -55,3 +55,11 @@ Hier ist die erfolgreiche Verbindung der Management-VM durch die Firewall dokume
 
 ![Ping Test](./img/pfsense_ping.jpg)
 *Abbildung 2: Erfolgreicher ICMP-Ping auf 8.8.8.8 zur Verifizierung der Internet-Konnektivität.*
+
+| Komponente | Interface | IP-Adresse | Subnetzmaske | Zweck |
+| :--- | :--- | :--- | :--- | :--- |
+| **Archer Router** | LAN | `192.168.1.1` | `/24` | Physisches Gateway & WAN-Quelle |
+| **pfSense** | WAN (`vmbr0`) | `192.168.1.136` | `/24` | Uplink zum Internet (via Archer) |
+| **pfSense** | LAN (`vmbr1`) | `10.0.0.1` | `/24` | Standard-Gateway für das Lab |
+| **Linux Mint** | ETH0 (`vmbr1`) | `10.0.0.10` | `/24` | Management-Client (Xfce Edition) |
+| **Lab-Bereich** | DHCP-Pool | `10.0.0.100-200` | `/24` | Bereich für zukünftige Test-VMs |
