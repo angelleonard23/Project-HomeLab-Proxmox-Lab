@@ -81,7 +81,7 @@ Um das Netzwerk proaktiv gegen Telemetrie, Tracking und bösartige Domains abzus
 
 Nach der Absicherung des Gateways wurde ein dedizierter Webserver auf Basis von **Debian 13 (Trixie)** implementiert. 
 
-![Proxmox Management Übersicht](./img/pfsense_webserver_management.jpg)
+![Proxmox Management Übersicht](./img/pfsense_webserver_management.png)
 *Abbildung 11: Zentrale Verwaltung in Proxmox. Die Übersicht zeigt die Koexistenz von Firewall, Management-VM und dem aktiven Apache-Webserver.*
 
 #### Details zur Implementierung:
