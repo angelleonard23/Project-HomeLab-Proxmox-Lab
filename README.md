@@ -104,8 +104,16 @@ Im Rahmen des Laboraufbaus wurde ein dedizierter Webserver implementiert, der al
 Der Server wurde "headless" (ohne grafische Oberfläche) aufgesetzt, um die Performance des Proxmox-Hosts (Ryzen 7) zu maximieren. Die Verwaltung erfolgt effizient über die **Linux Mint 22.2 Xfce Edition**, was den Ressourcenverbrauch des Management-Clients minimal hält.
 
 #### Verifizierung des Dienstes:
-```bash
-# Abfrage des Webserver-Status auf Debian 13
-systemctl status apache2
 
-# Ergebnis: active (running) seit Jan 2026
+Um sicherzustellen, dass der Webdienst korrekt läuft, wurde der Status des Apache-Daemons abgefragt:
+
+```bash
+# 1. Befehl zur Statusabfrage
+angel@webserver-01:~$ systemctl status apache2
+
+# 2. Relevante Systemausgabe (Auszug)
+● apache2.service - The Apache HTTP Server
+     Loaded: loaded (/usr/lib/systemd/system/apache2.service; enabled; preset: enabled)
+     Active: active (running) since Tue 2026-01-13 09:43:34 CET; 10min ago
+     ...
+     Main PID: 671 (apache2)
