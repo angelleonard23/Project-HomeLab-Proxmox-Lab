@@ -131,3 +131,36 @@ Um den internen Webdienst sicher zu veröffentlichen, wurde eine Portweiterleitu
 *Abbildung 5: Automatisch generierte Firewall-Regel nach erfolgreicher NAT-Konfiguration. Der Zugriff wird explizit nur für Port 80 auf das Zielsystem erlaubt.*
 
 > **System-Performance:** Die Konfiguration wurde über die **Linux Mint Xfce Edition** validiert. Die Wahl dieses Desktops ermöglichte eine verzögerungsfreie Bedienung der pfSense-Weboberfläche, während die Firewall-Logs in Echtzeit analysiert wurden.
+
+### Netzwerk-Konfiguration
+- **WAN IP (Labor):** 192.168.1.136
+- **LAN Subnetz:** 10.0.0.0/24
+- **Webserver-IP:** 10.0.0.12
+## 🔒 Security-Features & Implementierung
+
+### 1. SSL/TLS Verschlüsselung
+Der Apache-Webserver wurde mit `mod_ssl` gehärtet. Der Zugriff erfolgt verschlüsselt über Port 443, wobei pfSense den Traffic via Destination NAT (DNAT) direkt an den Debian-Endpunkt leitet.
+
+### 2. Management-Isolation (Port-Remapping)
+Um Sicherheitsrisiken und Port-Konflikte zu minimieren, wurde das Management-Interface der pfSense vom Standard-Port auf **Port 8443** verschoben. 
+* **Ergebnis:** Port 80 und 443 stehen exklusiv für öffentliche Dienste zur Verfügung, während die Administration über einen gesicherten, nicht-standardisierten Kanal erfolgt.
+
+### 3. Ressourcen-Optimierung
+Durch den Einsatz der **Linux Mint Xfce Edition** zur Administration wurde die Systemlast auf dem Proxmox-Host minimiert. Dies ermöglicht eine performante Überwachung der Traffic-Graphen und Firewall-Logs in Echtzeit, selbst bei hoher Verschlüsselungslast auf dem Server.
+
+## 🚦 Verifizierung der Dienste
+
+| Dienst | Zugriff | Protokoll | Status |
+| :--- | :--- | :--- | :--- |
+| Webserver (Public) | `http://192.168.1.136` | HTTP (80) | ✅ Online |
+| Webserver (Secure) | `https://192.168.1.136` | HTTPS (443) | ✅ Online |
+| pfSense Admin | `https://10.0.0.1:8443` | HTTPS (8443) | ✅ Gesichert |
+
+## 🛠️ Verwendete Technologien
+- **Proxmox VE 9.x**
+- **pfSense CE 2.7.2**
+- **Linux Mint 22.2 Xfce**
+- **Debian 13 (Bookworm)**
+- **Apache2 & OpenSSL**
+
+---
