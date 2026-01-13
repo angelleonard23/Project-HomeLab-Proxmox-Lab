@@ -127,7 +127,7 @@ Um den internen Webdienst sicher zu veröffentlichen, wurde eine Portweiterleitu
 * **Dienst:** HTTP (TCP Port 80)
 * **Zielsystem:** 10.0.0.12 (Debian 13 Webserver)
 
-![Abbildung 19: WAN Firewall Rules](./img/pfSense_WAN_Rule.jpg)
-*Abbildung 19: Automatisch generierte Firewall-Regel nach erfolgreicher NAT-Konfiguration. Der Zugriff wird explizit nur für Port 80 auf das Zielsystem erlaubt.*
+![Abbildung 5: WAN Firewall Rules](./img/pfSense_WAN_Rule.jpg)
+*Abbildung 5: Automatisch generierte Firewall-Regel nach erfolgreicher NAT-Konfiguration. Der Zugriff wird explizit nur für Port 80 auf das Zielsystem erlaubt.*
 
 > **System-Performance:** Die Konfiguration wurde über die **Linux Mint Xfce Edition** validiert. Die Wahl dieses Desktops ermöglichte eine verzögerungsfreie Bedienung der pfSense-Weboberfläche, während die Firewall-Logs in Echtzeit analysiert wurden.
