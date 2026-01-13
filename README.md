@@ -75,3 +75,16 @@ Um das Netzwerk proaktiv gegen Telemetrie, Tracking und bösartige Domains abzus
 * **DNSBL-Filterung:** Automatisierte Blockierung von Werbe- und Tracking-Servern auf DNS-Ebene.
 * **Validierung:** Der `nslookup`-Befehl bestätigt, dass der Filter aktiv in den Datenverkehr der Management-VM eingreift.
 * **Ressourcen-Effizienz:** Dank der **Linux Mint 22.2 Xfce Edition** bleibt die Last auf dem Proxmox-Host minimal, wodurch mehr Kapazität für die umfangreichen Filter-Datenbanken der pfSense zur Verfügung steht.
+
+
+### 🌐 Deployment des Web-Services (Abbildung 11)
+
+Nach der Absicherung des Gateways wurde ein dedizierter Webserver auf Basis von **Debian 13 (Trixie)** implementiert. 
+
+![Proxmox Management Übersicht](./img/pfsense_webserver_management.jpg)
+*Abbildung 11: Zentrale Verwaltung in Proxmox. Die Übersicht zeigt die Koexistenz von Firewall, Management-VM und dem aktiven Apache-Webserver.*
+
+#### Details zur Implementierung:
+* **Infrastruktur:** Betrieb von drei spezialisierten VMs auf einem Proxmox-Node.
+* **Service-Status:** Verifizierung des Apache2-Dienstes (`active/running`) direkt über die Proxmox-Konsole.
+* **Effizienz-Faktor:** Durch die Nutzung der **Linux Mint 22.2 Xfce Edition** zur Administration bleibt die grafische Last minimal, was einen reibungslosen Parallelbetrieb aller Dienste ermöglicht.
