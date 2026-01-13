@@ -132,10 +132,6 @@ Um den internen Webdienst sicher zu veröffentlichen, wurde eine Portweiterleitu
 
 > **System-Performance:** Die Konfiguration wurde über die **Linux Mint Xfce Edition** validiert. Die Wahl dieses Desktops ermöglichte eine verzögerungsfreie Bedienung der pfSense-Weboberfläche, während die Firewall-Logs in Echtzeit analysiert wurden.
 
-### Netzwerk-Konfiguration
-- **WAN IP (Labor):** 192.168.1.136
-- **LAN Subnetz:** 10.0.0.0/24
-- **Webserver-IP:** 10.0.0.12
 ## 🔒 Security-Features & Implementierung
 
 ### 1. SSL/TLS Verschlüsselung
@@ -155,35 +151,6 @@ Durch den Einsatz der **Linux Mint Xfce Edition** zur Administration wurde die S
 | Webserver (Public) | `http://192.168.1.136` | HTTP (80) | ✅ Online |
 | Webserver (Secure) | `https://192.168.1.136` | HTTPS (443) | ✅ Online |
 | pfSense Admin | `https://10.0.0.1:8443` | HTTPS (8443) | ✅ Gesichert |
-
-### 🔄 Analyse: Internes vs. Externes Routing (NAT-Loopback)
-
-Ein interessanter Aspekt dieses Setups ist das unterschiedliche Verhalten der WAN-IP (`192.168.1.136`) je nach Ursprung der Anfrage:
-
-1. **Externer Zugriff (Physischer Host):** - Die Anfrage trifft auf das WAN-Interface. 
-   - Die **DNAT-Regel** greift und leitet den Traffic auf Port 80/443 korrekt an den Debian-Webserver (`10.0.0.12`) weiter.
-   - **Ergebnis:** Die Apache-Standardseite wird angezeigt. Dies validiert die korrekte Funktion der Port-Weiterleitung für öffentliche Nutzer.
-
-2. **Interner Zugriff (Linux Mint Management-VM):**
-   - Die Anfrage erfolgt aus dem LAN heraus an die eigene WAN-IP. 
-   - Ohne explizites *NAT-Reflection* erkennt die pfSense die Anfrage als lokal und priorisiert den Zugriff auf das eigene System.
-   - **Ergebnis:** Es wird die pfSense-Loginseite (bzw. der Redirect) angezeigt.
-   - **Vorteil:** Dies ermöglicht eine intuitive Administration der Firewall aus dem internen Netz heraus, während externe Nutzer strikt auf den Webdienst isoliert bleiben.
-
-> **Dokumentations-Fazit:** Dieses Verhalten belegt eine erfolgreiche **Netzwerk-Segmentierung**. Der administrative Zugriff ist logisch vom öffentlichen Dienst getrennt, was die Angriffsfläche des Systems minimiert.
-
-## 🛠️ Verwendete Technologien
-- **Proxmox VE 9.x**
-- **pfSense CE 2.7.2**
-- **Linux Mint 22.2 Xfce**
-- **Debian 13 (Bookworm)**
-- **Apache2 & OpenSSL**
-
----
-
-# 🛡️ Enterprise Home-Lab: pfSense, Debian & Secure Web-Services
-
-Dieses Repository dokumentiert den Aufbau einer sicheren, virtualisierten Netzwerk-Infrastruktur auf Proxmox VE. Der Fokus liegt auf der Implementierung einer gehärteten Web-Umgebung mit strikter Trennung von Management- und Service-Ebenen.
 
 ## 🏗️ Architektur & Topologie
 
@@ -205,7 +172,7 @@ Um Port-Konflikte zu vermeiden und die Sicherheit zu erhöhen, wurde das pfSense
 ### 2. NAT & Firewall-Regeln
 Anfragen an das WAN-Interface werden via Destination NAT (DNAT) direkt an den Debian-Server geleitet. Die Regeln umfassen sowohl HTTP (80) als auch HTTPS (443).
 
-![Firewall Regeln](./pfsense_wan_rules.jpg)
+![Firewall Regeln](./img/pfsense_wan_rules.jpg)
 *Abbildung 1: Aktive Port-Forwarding-Regeln für den Webserver-Zugriff.*
 
 ## 🔄 Analyse: Internes vs. Externes Routing (NAT-Loopback)
@@ -215,24 +182,21 @@ Ein Kernaspekt dieses Projekts ist die korrekte Handhabung des Datenflusses je n
 * **Externer Zugriff (Physischer PC):** Die Anfrage auf `http://192.168.1.136` wird durch die NAT-Regel direkt zum Webserver geleitet.
 * **Interner Zugriff (Management-VM):** Anfragen an die WAN-IP aus dem LAN führen zum Management-Interface der pfSense.
 
-![Externer Zugriff](./external_access_debian.jpg)
+![Externer Zugriff](./img/external_access_debian.jpg)
 *Abbildung 2: Erfolgreicher Zugriff von außen auf den Debian-Webserver.*
 
-![Interner Zugriff](./internal_access_pfsense.jpg)
+![Interner Zugriff](./img/internal_access_pfsense.jpg)
 *Abbildung 3: Interner Zugriff auf das pfSense-Login über die LAN-Schnittstelle.*
+
+> **Dokumentations-Fazit:** Dieses Verhalten belegt eine erfolgreiche **Netzwerk-Segmentierung**. Der administrative Zugriff ist logisch vom öffentlichen Dienst getrennt, was die Angriffsfläche des Systems minimiert.
 
 ## 📊 Monitoring & Performance
 
 Die Verwaltung erfolgt über die ressourceneffiziente **Linux Mint Xfce Edition**, was eine verzögerungsfreie Analyse der Firewall-Logs in Echtzeit ermöglicht.
 
-![pfSense Dashboard](./pfsense_dashboard_live.jpg)
+![pfSense Dashboard](./img/pfsense_dashboard_live.jpg)
 *Abbildung 4: Zentrales Dashboard mit verifiziertem Zugriff über HTTPS auf Port 8443.*
 
-## 🛠️ Erlernte Skills
-- Konfiguration von **Enterprise-Firewalls (pfSense)**.
-- Implementierung von **Destination NAT** und Firewall-Regelwerken.
-- Absicherung von Management-Interfaces durch **Port-Remapping**.
-- Ressourcen-Optimierung in **Proxmox VE**.
 
 ---
 
