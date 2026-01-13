@@ -88,3 +88,24 @@ Nach der Absicherung des Gateways wurde ein dedizierter Webserver auf Basis von 
 * **Infrastruktur:** Betrieb von drei spezialisierten VMs auf einem Proxmox-Node.
 * **Service-Status:** Verifizierung des Apache2-Dienstes (`active/running`) direkt über die Proxmox-Konsole.
 * **Effizienz-Faktor:** Durch die Nutzung der **Linux Mint 22.2 Xfce Edition** zur Administration bleibt die grafische Last minimal, was einen reibungslosen Parallelbetrieb aller Dienste ermöglicht.
+* 
+## 🏗️ Infrastruktur-Komponente: Webserver-01
+
+Im Rahmen des Laboraufbaus wurde ein dedizierter Webserver implementiert, der als Ziel für die Firewall-Regeln und Portweiterleitungen dient.
+
+### Spezifikationen
+* **Betriebssystem:** Debian 13.3 (Trixie), Netinst-Image (Stand 2026)
+* **Ressourcen:** 1 vCPU, 512 MB RAM, 10 GB Disk
+* **Netzwerk-Anbindung:** `vmbr1` (Internes LAN hinter pfSense)
+* **IP-Konfiguration:** Statische Zuweisung (DHCP Static Mapping) auf `10.0.0.12`
+* **Dienste:** Apache2 (HTTP), OpenSSH-Server
+
+### Konfigurations-Details
+Der Server wurde "headless" (ohne grafische Oberfläche) aufgesetzt, um die Performance des Proxmox-Hosts (Ryzen 7) zu maximieren. Die Verwaltung erfolgt effizient über die **Linux Mint 22.2 Xfce Edition**, was den Ressourcenverbrauch des Management-Clients minimal hält.
+
+#### Verifizierung des Dienstes:
+```bash
+# Abfrage des Webserver-Status auf Debian 13
+systemctl status apache2
+
+# Ergebnis: active (running) seit Jan 2026
