@@ -88,7 +88,7 @@ Nach der Absicherung des Gateways wurde ein dedizierter Webserver auf Basis von 
 * **Infrastruktur:** Betrieb von drei spezialisierten VMs auf einem Proxmox-Node.
 * **Service-Status:** Verifizierung des Apache2-Dienstes (`active/running`) direkt über die Proxmox-Konsole.
 * **Effizienz-Faktor:** Durch die Nutzung der **Linux Mint 22.2 Xfce Edition** zur Administration bleibt die grafische Last minimal, was einen reibungslosen Parallelbetrieb aller Dienste ermöglicht.
-* 
+ 
 ## 🏗️ Infrastruktur-Komponente: Webserver-01
 
 Im Rahmen des Laboraufbaus wurde ein dedizierter Webserver implementiert, der als Ziel für die Firewall-Regeln und Portweiterleitungen dient.
