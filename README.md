@@ -77,12 +77,12 @@ Um das Netzwerk proaktiv gegen Telemetrie, Tracking und bösartige Domains abzus
 * **Ressourcen-Effizienz:** Dank der **Linux Mint 22.2 Xfce Edition** bleibt die Last auf dem Proxmox-Host minimal, wodurch mehr Kapazität für die umfangreichen Filter-Datenbanken der pfSense zur Verfügung steht.
 
 
-### 🌐 Deployment des Web-Services (Abbildung 11)
+### 🌐 Deployment des Web-Services (Abbildung 4)
 
 Nach der Absicherung des Gateways wurde ein dedizierter Webserver auf Basis von **Debian 13 (Trixie)** implementiert. 
 
 ![Proxmox Management Übersicht](./img/pfsense_webserver_management.png)
-*Abbildung 11: Zentrale Verwaltung in Proxmox. Die Übersicht zeigt die Koexistenz von Firewall, Management-VM und dem aktiven Apache-Webserver.*
+*Abbildung 4: Zentrale Verwaltung in Proxmox. Die Übersicht zeigt die Koexistenz von Firewall, Management-VM und dem aktiven Apache-Webserver.*
 
 #### Details zur Implementierung:
 * **Infrastruktur:** Betrieb von drei spezialisierten VMs auf einem Proxmox-Node.
