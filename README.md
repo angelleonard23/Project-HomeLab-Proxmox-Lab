@@ -156,6 +156,22 @@ Durch den Einsatz der **Linux Mint Xfce Edition** zur Administration wurde die S
 | Webserver (Secure) | `https://192.168.1.136` | HTTPS (443) | ✅ Online |
 | pfSense Admin | `https://10.0.0.1:8443` | HTTPS (8443) | ✅ Gesichert |
 
+### 🔄 Analyse: Internes vs. Externes Routing (NAT-Loopback)
+
+Ein interessanter Aspekt dieses Setups ist das unterschiedliche Verhalten der WAN-IP (`192.168.1.136`) je nach Ursprung der Anfrage:
+
+1. **Externer Zugriff (Physischer Host):** - Die Anfrage trifft auf das WAN-Interface. 
+   - Die **DNAT-Regel** greift und leitet den Traffic auf Port 80/443 korrekt an den Debian-Webserver (`10.0.0.12`) weiter.
+   - **Ergebnis:** Die Apache-Standardseite wird angezeigt. Dies validiert die korrekte Funktion der Port-Weiterleitung für öffentliche Nutzer.
+
+2. **Interner Zugriff (Linux Mint Management-VM):**
+   - Die Anfrage erfolgt aus dem LAN heraus an die eigene WAN-IP. 
+   - Ohne explizites *NAT-Reflection* erkennt die pfSense die Anfrage als lokal und priorisiert den Zugriff auf das eigene System.
+   - **Ergebnis:** Es wird die pfSense-Loginseite (bzw. der Redirect) angezeigt.
+   - **Vorteil:** Dies ermöglicht eine intuitive Administration der Firewall aus dem internen Netz heraus, während externe Nutzer strikt auf den Webdienst isoliert bleiben.
+
+> **Dokumentations-Fazit:** Dieses Verhalten belegt eine erfolgreiche **Netzwerk-Segmentierung**. Der administrative Zugriff ist logisch vom öffentlichen Dienst getrennt, was die Angriffsfläche des Systems minimiert.
+
 ## 🛠️ Verwendete Technologien
 - **Proxmox VE 9.x**
 - **pfSense CE 2.7.2**
