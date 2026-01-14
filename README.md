@@ -207,6 +207,7 @@ Um den Webserver vom Management-Netz zu isolieren, wurde ein neues VLAN (ID 20) 
 * **DHCP-Range:** 10.0.20.50 - 10.0.20.100
 
 ![DHCP_Range](./img/DHCP-Einstellungen_Range_10.0.20.50-100.jpg)
+*Abbildung 5: Definition des Adresspools für das WEBSERVER-Interface (VLAN 20) mit einer dynamischen Range von 10.0.20.50 bis 10.0.20.100.*
 
 ### 2. Firewall-Regelwerk & DMZ-Isolierung
 Das Regelwerk wurde so konfiguriert, dass eine "Einweg-Kommunikation" herrscht. Das Management-VLAN (10) hat vollen Zugriff auf den Webserver, während der Webserver keinen Zugriff auf das Management-VLAN hat.
@@ -217,6 +218,7 @@ Das Regelwerk wurde so konfiguriert, dass eine "Einweg-Kommunikation" herrscht. 
 
 
 ![Firewall_Rules](./img/Firewall_Rules_WEBSERVER_subnets_Destination_LAN_subnets.png)
+*Abbildung 6:Firewall-Regelwerk des Webserver-Interfaces mit einer priorisierten Block-Regel (Source: WEBSERVER subnets) zum Schutz des LAN-Segments (Destination: LAN subnets.*
 
 ### 3. Verifizierung der Konfiguration
 Die erfolgreiche Einrichtung wurde durch folgende Tests bestätigt:
@@ -225,6 +227,7 @@ Die erfolgreiche Einrichtung wurde durch folgende Tests bestätigt:
 * **Security:** Ping vom Webserver (10.0.20.50) zum Management (10.0.10.50) schlägt fehl (Request Timeout).
 
 ![Webserver_Isolierung_Verifikation](./img/DMZ_Isolierungstest_Fail.png)
+*Abbildung 7:Erfolgreicher Nachweis der Netzisolierung durch einen fehlgeschlagenen Ping-Versuch (100% Paketverlust) von der Webserver-VM (10.0.20.50) in das Management-Netz (10.0.10.50).*
 
 ---
 
