@@ -198,5 +198,33 @@ Die Verwaltung erfolgt über die ressourceneffiziente **Linux Mint Xfce Edition*
 *Abbildung 4: Zentrales Dashboard mit verifiziertem Zugriff über HTTPS auf Port 8443.*
 
 
+## Einrichtung VLAN 20 (Webserver) & Security Hardening
+
+### 1. Netzwerk-Segmentierung
+Um den Webserver vom Management-Netz zu isolieren, wurde ein neues VLAN (ID 20) angelegt.
+* **Interface:** WEBSERVER (VLAN 20 auf vtnet1)
+* **IP-Adressbereich:** 10.0.20.1/24
+* **DHCP-Range:** 10.0.20.50 - 10.0.20.100
+
+> **Screenshot 1 hier einfügen:** (Zeige deine DHCP-Server Einstellungen unter Services > DHCP Server > WEBSERVER)
+
+### 2. Firewall-Regelwerk & DMZ-Isolierung
+Das Regelwerk wurde so konfiguriert, dass eine "Einweg-Kommunikation" herrscht. Das Management-VLAN (10) hat vollen Zugriff auf den Webserver, während der Webserver keinen Zugriff auf das Management-VLAN hat.
+
+**Wichtigste Regeln auf dem WEBSERVER-Interface:**
+1. **BLOCK:** Source: `WEBSERVER subnets` -> Destination: `LAN subnets` (Verhindert Angriffe vom Webserver auf Management-Clients).
+2. **PASS:** Source: `WEBSERVER subnets` -> Destination: `any` (Erlaubt Internetzugriff für Updates).
+
+
+![Firewall_Rules](./img/Firewall_Rules_WEBSERVER_subnets_Destination_LAN_subnets.png)
+
+### 3. Verifizierung der Konfiguration
+Die erfolgreiche Einrichtung wurde durch folgende Tests bestätigt:
+* **Connectivity:** Management-VM (10.0.10.50) kann Webserver (10.0.20.50) pingen.
+* **Service:** Apache2 Default Page ist über den Browser im Management-Netz erreichbar.
+* **Security:** Ping vom Webserver (10.0.20.50) zum Management (10.0.10.50) schlägt fehl (Request Timeout).
+
+> **Screenshot 3 hier einfügen:** (Terminal-Screenshot mit dem fehlgeschlagenen Ping vom Webserver zum Management)
+
 ---
 
