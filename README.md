@@ -206,7 +206,7 @@ Um den Webserver vom Management-Netz zu isolieren, wurde ein neues VLAN (ID 20) 
 * **IP-Adressbereich:** 10.0.20.1/24
 * **DHCP-Range:** 10.0.20.50 - 10.0.20.100
 
-> **Screenshot 1 hier einfügen:** (Zeige deine DHCP-Server Einstellungen unter Services > DHCP Server > WEBSERVER)
+![DHCP_Range](./img/DHCP-Einstellungen_Range_10.0.20.50-100.jpg)
 
 ### 2. Firewall-Regelwerk & DMZ-Isolierung
 Das Regelwerk wurde so konfiguriert, dass eine "Einweg-Kommunikation" herrscht. Das Management-VLAN (10) hat vollen Zugriff auf den Webserver, während der Webserver keinen Zugriff auf das Management-VLAN hat.
