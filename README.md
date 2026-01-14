@@ -224,7 +224,7 @@ Die erfolgreiche Einrichtung wurde durch folgende Tests bestätigt:
 * **Service:** Apache2 Default Page ist über den Browser im Management-Netz erreichbar.
 * **Security:** Ping vom Webserver (10.0.20.50) zum Management (10.0.10.50) schlägt fehl (Request Timeout).
 
-> **Screenshot 3 hier einfügen:** (Terminal-Screenshot mit dem fehlgeschlagenen Ping vom Webserver zum Management)
+![Webserver_Isolierung_Verifikation](./img/DMZ_Isolierungstest_Fail)
 
 ---
 
