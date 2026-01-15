@@ -229,28 +229,51 @@ Die erfolgreiche Einrichtung wurde durch folgende Tests bestätigt:
 ![Webserver_Isolierung_Verifikation](./img/DMZ_Isolierungstest_Fail.png)
 *Abbildung 7:Erfolgreicher Nachweis der Netzisolierung durch einen fehlgeschlagenen Ping-Versuch (100% Paketverlust) von der Webserver-VM (10.0.20.50) in das Management-Netz (10.0.10.50).*
 
-# Projekt: Webserver-Migration in die DMZ & Netzwerk-Härtung
+# Webserver DMZ Migration & Security Hardening
 
-Dieses Projekt dokumentiert die erfolgreiche Migration eines Debian-Webservers aus dem lokalen Management-Netz (LAN) in eine isolierte Demilitarized Zone (DMZ) unter Verwendung von pfSense und Proxmox.
+Erfolgreiche Migration des Debian-Webservers in eine isolierte **DMZ** zur Absicherung des LANs.
 
-## 1. Architektur-Übersicht
-Das Netzwerk wurde in drei logische Segmente unterteilt:
-* **WAN:** Internet-Zugang (192.168.1.x)
-* **LAN:** Management-Zone für Mint-VM (10.0.10.x)
-* **DMZ:** Isolierte Zone für den Webserver (10.0.30.x)
+## 1. Webserver IP & Routing
+Statische IP-Konfiguration in `/etc/network/interfaces`:
+* **IP:** `10.0.30.50` | **Gateway:** `10.0.30.1`
+
+<img width="959" height="415" alt="Screenshot_etc_network_interfaces" src="https://github.com/user-attachments/assets/267b20bc-2373-4725-af24-eed550158dd5" />
+*Abbildung 8: Konfiguration der Netzwerkschnittstelle ens18 mit statischer IP 10.0.30.50 und DMZ-Gateway 10.0.30.1 in /etc/network/interfaces.*
+<img width="959" height="427" alt="Screenshot_ip_a" src="https://github.com/user-attachments/assets/0ae4914d-57c0-4734-9480-2525d379704d" />
+*Abbildung 9: Validierung der aktiven Netzwerkkonfiguration mittels ip a zur Bestätigung der korrekten IP-Zuweisung im DMZ-Segment.*
+
 
 ---
 
-## 2. Webserver-Konfiguration (Debian)
-Der Webserver wurde auf eine statische IP im neuen DMZ-Subnetz umgestellt.
+## 2. pfSense: NAT & Firewall
+Anpassung der WAN-Weiterleitung und Isolation der DMZ.
 
-### Statische IP-Konfiguration
-Datei: `/etc/network/interfaces`
-```bash
-auto ens18
-iface ens18 inet static
-    address 10.0.30.50
-    netmask 255.255.255.0
-    gateway 10.0.30.1
-    dns-nameservers 8.8.8.8 1.1.1.1
+* **NAT:** Ports 80/443 auf `10.0.30.50` umgeleitet.
+* **Firewall Regeln:** 1. **BLOCK** zu LAN Subnet (Isolation)
+    2. **BLOCK** zu Webserver Subnet (Management-Schutz)
+    3. **PASS** zu Any (Internet für Updates)
 
+<img width="1916" height="838" alt="Screenshot 2026-01-15 142722" src="https://github.com/user-attachments/assets/2da15d35-370f-47da-a2db-7a53ac52226b" />
+*Abbildung 10:pfSense NAT-Port-Forwarding: Umleitung von externem HTTP/HTTPS-Traffic (Port 80/443) auf die interne Webserver-IP 10.0.30.50.*
+
+<img width="1919" height="838" alt="Screenshot 2026-01-15 142858" src="https://github.com/user-attachments/assets/435e4d16-f946-4a3f-9887-abe0f286584a" />
+*Abbildung 11: DMZ-Firewall-Regelsatz zur strikten Isolation: Blockierung von Zugriffen auf LAN und Management-Netz bei gleichzeitigem Erlauben von ausgehendem Internet-Traffic.*
+
+
+---
+
+## 3. Verifizierung & Sicherheitstests
+Nachweis der korrekten Funktion und Netzwerktrennung:
+
+* **Erfolg:** Webserver via WAN erreichbar (Apache Default Page).
+* **Erfolg:** Internet-Ping (`8.8.8.8`) funktioniert.
+* **Sicherheit:** LAN-Ping (`10.0.10.1`) blockiert (**100% Packet Loss**).
+
+<img width="1919" height="1079" alt="Screenshot 2026-01-15 143205" src="https://github.com/user-attachments/assets/8aecd844-0697-412d-b0f2-b3c68c6f15e7" />
+*Abbildung 12:Erfolgreicher Funktionstest des Webservers über die WAN-Schnittstelle (192.168.1.136) nach Migration in die DMZ.*
+
+<img width="1918" height="814" alt="Screenshot 2026-01-15 143440" src="https://github.com/user-attachments/assets/9dac9763-2e37-4616-8b1b-186768685a15" />
+*Abbildung 13: Konnektivitätsprüfung: Erfolgreicher Ping ins Internet (8.8.8.8) und verifizierte Blockierung (Destination Host Unreachable) zum geschützten LAN-Segment.*
+
+---
+*Konfiguriert am 15.01.2026*
