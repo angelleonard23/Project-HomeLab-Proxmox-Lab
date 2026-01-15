@@ -229,16 +229,3 @@ Die erfolgreiche Einrichtung wurde durch folgende Tests bestätigt:
 ![Webserver_Isolierung_Verifikation](./img/DMZ_Isolierungstest_Fail.png)
 *Abbildung 7:Erfolgreicher Nachweis der Netzisolierung durch einen fehlgeschlagenen Ping-Versuch (100% Paketverlust) von der Webserver-VM (10.0.20.50) in das Management-Netz (10.0.10.50).*
 
-================================================================================
-TEST-SZENARIO            | ERWARTETES ERGEBNIS          | STATUS
-================================================================================
-HTTP-Zugriff             | Apache Seite lädt (Mint)      | [ OK ]
--------------------------|------------------------------|-----------------------
-Gateway-Erreichbarkeit   | Ping zu 10.0.10.1 erfolgreich| [ OK ]
--------------------------|------------------------------|-----------------------
-Netz-Isolierung (DMZ)    | Ping Webserver -> LAN blockt | [ OK ] (100% Verlust)
--------------------------|------------------------------|-----------------------
-Firewall-Status (pf)     | Status: "already enabled"    | [ OK ]
-================================================================================
----
-
