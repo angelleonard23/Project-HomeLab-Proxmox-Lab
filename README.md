@@ -229,3 +229,28 @@ Die erfolgreiche Einrichtung wurde durch folgende Tests bestätigt:
 ![Webserver_Isolierung_Verifikation](./img/DMZ_Isolierungstest_Fail.png)
 *Abbildung 7:Erfolgreicher Nachweis der Netzisolierung durch einen fehlgeschlagenen Ping-Versuch (100% Paketverlust) von der Webserver-VM (10.0.20.50) in das Management-Netz (10.0.10.50).*
 
+# Projekt: Webserver-Migration in die DMZ & Netzwerk-Härtung
+
+Dieses Projekt dokumentiert die erfolgreiche Migration eines Debian-Webservers aus dem lokalen Management-Netz (LAN) in eine isolierte Demilitarized Zone (DMZ) unter Verwendung von pfSense und Proxmox.
+
+## 1. Architektur-Übersicht
+Das Netzwerk wurde in drei logische Segmente unterteilt:
+* **WAN:** Internet-Zugang (192.168.1.x)
+* **LAN:** Management-Zone für Mint-VM (10.0.10.x)
+* **DMZ:** Isolierte Zone für den Webserver (10.0.30.x)
+
+---
+
+## 2. Webserver-Konfiguration (Debian)
+Der Webserver wurde auf eine statische IP im neuen DMZ-Subnetz umgestellt.
+
+### Statische IP-Konfiguration
+Datei: `/etc/network/interfaces`
+```bash
+auto ens18
+iface ens18 inet static
+    address 10.0.30.50
+    netmask 255.255.255.0
+    gateway 10.0.30.1
+    dns-nameservers 8.8.8.8 1.1.1.1
+
