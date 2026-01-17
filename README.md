@@ -277,6 +277,19 @@ Nachweis der korrekten Funktion und Netzwerktrennung:
 
 ---
 *Konfiguriert am 15.01.2026*
+## 🛡️ Server-Sicherheit: Fail2Ban Schutz
+
+Um den Webserver gegen automatisierte Brute-Force-Angriffe (z. B. auf SSH) zu schützen, wurde der Dienst **Fail2Ban** installiert und konfiguriert.
+
+### 1. Installation und Funktionsweise
+Fail2Ban überwacht die Logfiles des Systems auf verdächtige Anmeldeversuche. Nach einer definierten Anzahl an Fehlversuchen wird die IP-Adresse des Angreifers automatisch über die Firewall gesperrt.
+
+**Installation:**
+```bash
+sudo apt update && sudo apt install fail2ban -y
+```
+<img width="1919" height="847" alt="Screenshot 2026-01-17 160917" src="https://github.com/user-attachments/assets/d636beb6-583b-4d22-ac42-c27428b26d11" />
+*Abbildung 18: Status-Abfrage des Fail2Ban-Dienstes im Terminal, die den aktiven Schutz der SSH-Jail (sshd) bestätigt.*
 
 ## 🗄️ Datenbank-Setup & PHP-Anbindung
 
