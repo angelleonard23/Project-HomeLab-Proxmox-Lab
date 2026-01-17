@@ -318,8 +318,10 @@ if ($conn->connect_error) {
 echo "Erfolg! PHP hat sich erfolgreich mit der MariaDB-Datenbank verbunden.";
 $conn->close();
 ?>
+<img width="1919" height="857" alt="Screenshot_Datenbank_Webseite" src="https://github.com/user-attachments/assets/ae7b2710-7d25-4457-84f0-1b3168b18a74" />
+
 <img width="1919" height="857" alt="Screenshot_Datenbank_Webseite" src="https://github.com/user-attachments/assets/9d759b69-361f-42cd-ac77-1ac965057f06" />
-*Abbildung 16: Implementierung des PHP-Verbindungsskripts db_test.php im Texteditor Nano zur Verknüpfung von Webserver und Datenbank-Backend.*
+*Abbildung 17: Implementierung des PHP-Verbindungsskripts db_test.php im Texteditor Nano zur Verknüpfung von Webserver und Datenbank-Backend.*
 
 
 
