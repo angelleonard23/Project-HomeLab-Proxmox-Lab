@@ -277,3 +277,49 @@ Nachweis der korrekten Funktion und Netzwerktrennung:
 
 ---
 *Konfiguriert am 15.01.2026*
+
+## 🗄️ Datenbank-Setup & PHP-Anbindung
+
+In diesem Abschnitt wurde die MariaDB-Datenbank konfiguriert und eine Test-Schnittstelle mit PHP geschaffen.
+
+### 1. MariaDB Installation & Absicherung
+Die Datenbank wurde mit `mariadb-secure-installation` gehärtet.
+<img width="959" height="419" alt="Screenshot_MariaDB" src="https://github.com/user-attachments/assets/c0c0e6d4-e222-4b0a-8560-6362aa317624" />
+*Abbildung 14: Erstmalige Anmeldung und Initialisierung der MariaDB-Konsole auf dem Webserver-01.*
+
+
+
+### 2. Datenbank und Benutzer erstellen
+Folgende SQL-Befehle wurden ausgeführt, um die Projekt-Datenbank und den dedizierten Web-User anzulegen:
+
+```sql
+-- Datenbank erstellen
+CREATE DATABASE projekt_db;
+
+-- Benutzer mit eingeschränkten Rechten anlegen
+CREATE USER 'webuser'@'localhost' IDENTIFIED BY '123';
+GRANT ALL PRIVILEGES ON projekt_db.* TO 'webuser'@'localhost';
+FLUSH PRIVILEGES;
+```
+<img width="1550" height="915" alt="Screenshot_ Datenbank_User_erstellen" src="https://github.com/user-attachments/assets/46d9895c-efd9-4916-94e5-376f9db67dbf" />
+*Abbildung 15: SQL-Befehlskette zur Erstellung der Datenbank projekt_db sowie die Einrichtung des Datenbank-Benutzers webuser mit den entsprechenden Berechtigungen.*
+
+
+3. PHP-Schnittstelle (db_test.php)
+
+Um die Verbindung zwischen dem Webserver und der Datenbank zu prüfen, wurde folgendes PHP-Skript erstellt:
+
+<?php
+$conn = new mysqli("localhost", "webuser", "123", "projekt_db");
+
+if ($conn->connect_error) {
+    die("Verbindung fehlgeschlagen: " . $conn->connect_error);
+}
+echo "Erfolg! PHP hat sich erfolgreich mit der MariaDB-Datenbank verbunden.";
+$conn->close();
+?>
+<img width="1919" height="857" alt="Screenshot_Datenbank_Webseite" src="https://github.com/user-attachments/assets/9d759b69-361f-42cd-ac77-1ac965057f06" />
+*Abbildung 16: Implementierung des PHP-Verbindungsskripts db_test.php im Texteditor Nano zur Verknüpfung von Webserver und Datenbank-Backend.*
+
+
+
