@@ -342,7 +342,7 @@ FLUSH PRIVILEGES;
 
 
 
-3. PHP-Schnittstelle (db_test.php)
+### 3. PHP-Schnittstelle (db_test.php)
 
 <img width="1919" height="826" alt="Screenshot 2026-01-17 160002" src="https://github.com/user-attachments/assets/b6f5015f-c5c5-43cb-82e0-a62c56161bd7" />
 *Abbildung 16: Implementierung des PHP-Verbindungsskripts db_test.php im Texteditor Nano zur Verknüpfung von Webserver und Datenbank-Backend.*
