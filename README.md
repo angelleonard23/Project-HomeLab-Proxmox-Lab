@@ -307,20 +307,8 @@ FLUSH PRIVILEGES;
 
 3. PHP-Schnittstelle (db_test.php)
 
-Um die Verbindung zwischen dem Webserver und der Datenbank zu prüfen, wurde folgendes PHP-Skript erstellt:
-
-<?php
-$conn = new mysqli("localhost", "webuser", "123", "projekt_db");
-
-if ($conn->connect_error) {
-    die("Verbindung fehlgeschlagen: " . $conn->connect_error);
-}
-echo "Erfolg! PHP hat sich erfolgreich mit der MariaDB-Datenbank verbunden.";
-$conn->close();
-?>
-
 <img width="1919" height="826" alt="Screenshot 2026-01-17 160002" src="https://github.com/user-attachments/assets/b6f5015f-c5c5-43cb-82e0-a62c56161bd7" />
-*Abbildung 16: mplementierung des PHP-Verbindungsskripts db_test.php im Texteditor Nano zur Verknüpfung von Webserver und Datenbank-Backend.*
+*Abbildung 16: Implementierung des PHP-Verbindungsskripts db_test.php im Texteditor Nano zur Verknüpfung von Webserver und Datenbank-Backend.*
 <img width="1919" height="857" alt="Screenshot_Datenbank_Webseite" src="https://github.com/user-attachments/assets/9d759b69-361f-42cd-ac77-1ac965057f06" />
 *Abbildung 17: Erfolgreicher Validierungstest im Webbrowser der Mint-Management-VM, der die aktive Kommunikation zwischen PHP und der MariaDB-Instanz bestätigt.*
 
