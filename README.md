@@ -259,7 +259,6 @@ Anpassung der WAN-Weiterleitung und Isolation der DMZ.
 <img width="1919" height="838" alt="Screenshot 2026-01-15 142858" src="https://github.com/user-attachments/assets/435e4d16-f946-4a3f-9887-abe0f286584a" />
 *Abbildung 11: DMZ-Firewall-Regelsatz zur strikten Isolation: Blockierung von Zugriffen auf LAN und Management-Netz bei gleichzeitigem Erlauben von ausgehendem Internet-Traffic.*
 
-
 ---
 
 ## 3. Verifizierung & Sicherheitstests
@@ -335,8 +334,12 @@ CREATE USER 'webuser'@'localhost' IDENTIFIED BY '123';
 GRANT ALL PRIVILEGES ON projekt_db.* TO 'webuser'@'localhost';
 FLUSH PRIVILEGES;
 ```
+
+
+
 <img width="1550" height="915" alt="Screenshot_ Datenbank_User_erstellen" src="https://github.com/user-attachments/assets/46d9895c-efd9-4916-94e5-376f9db67dbf" />
 *Abbildung 15: SQL-Befehlskette zur Erstellung der Datenbank projekt_db sowie die Einrichtung des Datenbank-Benutzers webuser mit den entsprechenden Berechtigungen.*
+
 
 
 3. PHP-Schnittstelle (db_test.php)
