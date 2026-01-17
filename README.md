@@ -277,6 +277,27 @@ Nachweis der korrekten Funktion und Netzwerktrennung:
 
 ---
 *Konfiguriert am 15.01.2026*
+
+## 🔐 SSH-Security & Hardening
+
+Um den administrativen Zugriff auf den Webserver-01 abzusichern, wurden spezifische Sicherheitsmaßnahmen in der SSH-Konfiguration (`/etc/ssh/sshd_config`) vorgenommen.
+
+### 1. Deaktivierung des Root-Logins
+Der direkte Login als `root` wurde unterbunden, um Angreifern das höchstprivilegierte Ziel zu entziehen. Administratoren müssen sich als regulärer User (`angel`) anmelden und bei Bedarf `sudo` nutzen.
+
+### 2. Erzwingen von SSH-Keys
+Die Authentifizierung wurde so konfiguriert, dass sie idealerweise über kryptografische Schlüsselpaare (SSH-Keys) erfolgt, was weitaus sicherer ist als herkömmliche Passwörter.
+
+### 3. Protokollierung und Überwachung
+In Kombination mit Fail2Ban werden alle fehlgeschlagenen SSH-Login-Versuche protokolliert und führen nach mehrmaligem Scheitern zur automatischen Sperrung der IP-Adresse.
+
+<img width="1919" height="847" alt="Screenshot 2026-01-17 160917" src="https://github.com/user-attachments/assets/a1931520-70d2-4022-8670-8f087c7f176d" />
+*Abbildung 23: Auszug der SSH-Konfigurationsdatei mit der aktiven Richtlinie PermitRootLogin no zur Erhöhung der Systemsicherheit.*
+
+---
+
+**Abbildung 23:** Auszug aus der SSH-Konfigurationsdatei, der die Sicherheitsanpassungen wie `PermitRootLogin no` verdeutlicht.
+
 ## 🛡️ Server-Sicherheit: Fail2Ban Schutz
 
 Um den Webserver gegen automatisierte Brute-Force-Angriffe (z. B. auf SSH) zu schützen, wurde der Dienst **Fail2Ban** installiert und konfiguriert.
