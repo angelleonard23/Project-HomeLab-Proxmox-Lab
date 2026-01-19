@@ -13,7 +13,7 @@ Transformation eines Standard-Heimnetzwerks in eine professionelle, segmentierte
 
 ## 📊 Status & Screenshots
 ### Proxmox Dashboard
-![Dashboard](./img/Proxmox_Dashboard_CPU_RAM_Übersicht.png)
+![Dashboard](img src="[https://github.com](https://github.com/angelleonard23/Project-HomeLab-Proxmox-Lab/tree/main/img/Proxmox_Dashboard_CPU_RAM_Übersicht.png)
 
 ### Netzwerk-Konfiguration
 ![Netzwerk](./img/Netzwerk_Konfiguration.png)
