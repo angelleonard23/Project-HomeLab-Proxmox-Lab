@@ -237,9 +237,9 @@ Erfolgreiche Migration des Debian-Webservers in eine isolierte **DMZ** zur Absic
 Statische IP-Konfiguration in `/etc/network/interfaces`:
 * **IP:** `10.0.30.50` | **Gateway:** `10.0.30.1`
 
-<img width="959" height="415" alt="Screenshot_etc_network_interfaces" src="https://github.com/user-attachments/assets/267b20bc-2373-4725-af24-eed550158dd5" />
+![Screenshot_etc_network_interfaces](./img/schreenshot_etc_network_interfaces.png)
 *Abbildung 8: Konfiguration der Netzwerkschnittstelle ens18 mit statischer IP 10.0.30.50 und DMZ-Gateway 10.0.30.1 in /etc/network/interfaces.*
-<img width="959" height="427" alt="Screenshot_ip_a" src="https://github.com/user-attachments/assets/0ae4914d-57c0-4734-9480-2525d379704d" />
+![Screenshot_ip_a](./img/sscreenshot_ip_a.png)
 *Abbildung 9: Validierung der aktiven Netzwerkkonfiguration mittels ip a zur Bestätigung der korrekten IP-Zuweisung im DMZ-Segment.*
 
 
@@ -253,10 +253,10 @@ Anpassung der WAN-Weiterleitung und Isolation der DMZ.
     2. **BLOCK** zu Webserver Subnet (Management-Schutz)
     3. **PASS** zu Any (Internet für Updates)
 
-<img width="1916" height="838" alt="Screenshot 2026-01-15 142722" src="https://github.com/user-attachments/assets/2da15d35-370f-47da-a2db-7a53ac52226b" />
+![screenshot_port_forwarding](./img/screenshot_port_forwarding.png)
 *Abbildung 10:pfSense NAT-Port-Forwarding: Umleitung von externem HTTP/HTTPS-Traffic (Port 80/443) auf die interne Webserver-IP 10.0.30.50.*
 
-<img width="1919" height="838" alt="Screenshot 2026-01-15 142858" src="https://github.com/user-attachments/assets/435e4d16-f946-4a3f-9887-abe0f286584a" />
+![screenshot_dmz_firewall_rules](./img/ss11_dmz_firewall_rules.png)
 *Abbildung 11: DMZ-Firewall-Regelsatz zur strikten Isolation: Blockierung von Zugriffen auf LAN und Management-Netz bei gleichzeitigem Erlauben von ausgehendem Internet-Traffic.*
 
 ---
@@ -268,7 +268,7 @@ Nachweis der korrekten Funktion und Netzwerktrennung:
 * **Erfolg:** Internet-Ping (`8.8.8.8`) funktioniert.
 * **Sicherheit:** LAN-Ping (`10.0.10.1`) blockiert (**100% Packet Loss**).
 
-<img width="1919" height="1079" alt="Screenshot 2026-01-15 143205" src="https://github.com/user-attachments/assets/8aecd844-0697-412d-b0f2-b3c68c6f15e7" />
+![Screenshot_apache_WAN_migration](./img/ss12_apache_WAN_migration.png)
 *Abbildung 12:Erfolgreicher Funktionstest des Webservers über die WAN-Schnittstelle (192.168.1.136) nach Migration in die DMZ.*
 
 <img width="1918" height="814" alt="Screenshot 2026-01-15 143440" src="https://github.com/user-attachments/assets/9dac9763-2e37-4616-8b1b-186768685a15" />
