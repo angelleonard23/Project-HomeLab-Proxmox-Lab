@@ -254,7 +254,7 @@ Anpassung der WAN-Weiterleitung und Isolation der DMZ.
     3. **PASS** zu Any (Internet für Updates)
 
 ![screenshot_port_forwarding](./img/screenshot_port_forwarding.png)
-*Abbildung 10:pfSense NAT-Port-Forwarding: Umleitung von externem HTTP/HTTPS-Traffic (Port 80/443) auf die interne Webserver-IP 10.0.30.50.*
+*Abbildung 10: pfSense NAT-Port-Forwarding: Umleitung von externem HTTP/HTTPS-Traffic (Port 80/443) auf die interne Webserver-IP 10.0.30.50.*
 
 ![screenshot_dmz_firewall_rules](./img/ss11_dmz_firewall_rules.png)
 *Abbildung 11: DMZ-Firewall-Regelsatz zur strikten Isolation: Blockierung von Zugriffen auf LAN und Management-Netz bei gleichzeitigem Erlauben von ausgehendem Internet-Traffic.*
@@ -274,8 +274,6 @@ Nachweis der korrekten Funktion und Netzwerktrennung:
 *Abbildung 13: Konnektivitätsprüfung: Erfolgreicher Ping ins Internet (8.8.8.8) und verifizierte Blockierung (Destination Host Unreachable) zum geschützten LAN-Segment.*
 
 ---
-*Konfiguriert am 15.01.2026*
-
 ## 🔐 SSH-Security & Hardening
 
 Um den administrativen Zugriff auf den Webserver-01 abzusichern, wurden spezifische Sicherheitsmaßnahmen in der SSH-Konfiguration (`/etc/ssh/sshd_config`) vorgenommen.
@@ -306,7 +304,6 @@ Fail2Ban überwacht die Logfiles des Systems auf verdächtige Anmeldeversuche. N
 sudo apt update && sudo apt install fail2ban -y
 ```
 
-*Abbildung 18: Status-Abfrage des Fail2Ban-Dienstes im Terminal, die den aktiven Schutz der SSH-Jail (sshd) bestätigt.*
 
 ## 🗄️ Datenbank-Setup & PHP-Anbindung
 
