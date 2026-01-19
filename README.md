@@ -389,4 +389,66 @@ Es wurde eine Datenbank `projekt_db` mit der Tabelle `logbuch` erstellt.
 ---
 
 
+# IT-Dokumentation: Phase 3 - Monitoring & Automatisierung
+
+Dieses Dokument beschreibt die Planung und Implementierung eines automatisierten Sicherungsverfahrens für das Projekt "Foto-Logbuch". Als Systemadministrator ist es mein Ziel, die Datenintegrität durch regelmäßige Backups sicherzustellen.
+
+---
+
+## 1. Vorbereitung der Backup-Infrastruktur
+Um die Datensicherheit zu gewährleisten, wurde ein dediziertes Verzeichnis erstellt. Dieses liegt außerhalb des Web-Wurzelverzeichnisses, um einen unbefugten Zugriff über den Browser zu verhindern.
+
+* **Befehle:** - `mkdir -p /home/angel/backups` (Erstellen des Ordners)
+  - `chmod 700 /home/angel/backups` (Rechtevergabe: Nur Besitzer darf lesen/schreiben)
+* **Ziel:** Schutz der SQL-Dumps vor anderen Systemnutzern.
+
+> **Beleg: Verzeichnisstruktur und Berechtigungen**
+> ![Backup Verzeichnis Setup](./img/Screenshot_Verzeichnis.png)
+> *Abbildung 22: Das Verzeichnis *
+
+
+---
+
+## 2. Implementierung der Backup-Logik (Bash-Skript)
+Es wurde ein Bash-Skript (`/home/angel/backup_logbuch.sh`) entwickelt, das den Export der Datenbank und die Komprimierung der Mediendateien übernimmt.
+
+### Kernfunktionen des Skripts:
+1. **Variablen:** Nutzung von `$DATUM` für eindeutige Dateinamen.
+2. **Datenbank-Sicherung:** Export mittels `mysqldump` in eine `.sql` Datei.
+3. **Datei-Archivierung:** Packen des `/var/www/html/uploads` Ordners mit `tar -czf`.
+4. **Log-Rotation:** Automatisches Löschen von Dateien, die älter als 7 Tage sind (`find -mtime +7 -delete`).
+
+> **Beleg: Vollständiger Quellcode des Skripts**
+> ![Bash Skript Code](./img/Screenshot_Backup_Code.png)
+
+---
+
+## 3. Validierung und Funktionstest
+Nach der Erstellung wurde das Skript manuell ausgeführt, um die korrekte Arbeitsweise zu verifizieren.
+
+* **Test-Befehl:** `bash /home/angel/backup_logbuch.sh`
+* **Ergebnis:** Das System erzeugt korrekte Dateigrößen (SQL-Dump im KB-Bereich, Bilder-Archiv im MB-Bereich).
+
+> **Beleg: Erfolgreicher manueller Testlauf**
+> ![Backup Validierung](./img/Screenshot_backup_validierung.png)
+
+---
+
+## 4. System-Automatisierung (Cronjob)
+
+Um den Administrator zu entlasten, wurde der Prozess über den System-Scheduler `cron` automatisiert.
+
+* **Zeitplan:** Täglich um 03:00 Uhr nachts.
+* **Konfiguration:** `0 3 * * * /bin/bash /home/angel/backup_logbuch.sh`
+
+> **Beleg: Eintrag in der Crontab**
+> ![Crontab Konfiguration](./imgScreenshot_crontab_l.png)
+
+---
+
+## 5. Recovery-Szenario (Wiederherstellung)
+Ein Backup ist nur nützlich, wenn die Wiederherstellung funktioniert. Ein simulierter Datenverlust wurde erfolgreich durch den Re-Import der SQL-Datei behoben.
+
+* **Wiederherstellungs-Befehl:** `sudo mariadb -u root projekt_db < /home/angel/backups/db_backup_X.sql`
+
 
