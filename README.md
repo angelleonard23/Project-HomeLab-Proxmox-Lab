@@ -350,4 +350,49 @@ FLUSH PRIVILEGES;
 *Abbildung 17: Erfolgreicher Validierungstest im Webbrowser der Mint-Management-VM, der die aktive Kommunikation zwischen PHP und der MariaDB-Instanz bestätigt.*
 
 
+# Dokumentation Phase 2: Aufbau des interaktiven Web-Services
+
+## 1. System-Übersicht (LAMP-Stack)
+Im Zeitraum von Tag 16 bis 22 wurde ein statischer Webserver in einen vollwertigen Application-Stack umgewandelt:
+* **Linux:** Ubuntu Server (Webserver-01) in der DMZ (10.0.30.50).
+* **Apache:** Webserver-Dienst mit SSL/TLS.
+* **MariaDB:** Relationales Datenbanksystem.
+* **PHP:** Backend-Logik.
+
+> **Screenshot-Beleg: Die fertige Web-Oberfläche mit Einträgen**
+> ![Web-Oberfläche](/img/website_Einträge.png)
+> *Abbildung 18: Die Web-Oberfläche mit Einträge.*
+
+---
+
+## 2. Datenbank-Design & Sicherheit
+Es wurde eine Datenbank `projekt_db` mit der Tabelle `logbuch` erstellt.
+* **Schema:** `id`, `eintrag`, `zeitpunkt`, `bild`.
+* **Security:** Verwendung von **Prepared Statements** gegen SQL-Injection.
+
+> ![Datenbank-Struktur](/img/screenshot_mariadb2.png)
+> *Abbildung 19: Tabellenstruktur in MariaDB (DESCRIBE logbuch;)*
+
+---
+
+## 3. Implementierte Kern-Funktionen (CRUD)
+* **Create/Read:** Formular für Text und Datei-Uploads (Bilder).
+* **Delete:** Löschen von Einträgen über IDs.
+* **Auth:** Passwortschutz mittels PHP-Sessions.
+
+> ![PHP-Code](/img/schreenshot_code_log_php.png)
+> *Abbildung 20: PHP-Code der Login- oder Upload-Logik*
+
+---
+
+## 4. Netzwerk- & Infrastruktur-Konfiguration
+* **Verschlüsselung:** Einbindung eines selbstsignierten SSL-Zertifikats.
+* **Troubleshooting:** Korrektur der `000-default.conf` (AllowOverride) und DNS-Fix.
+
+> ![HTTPS-Check](/img/meme_leonardo.png)
+> *Abbildung 21: Erfolgreicher Apache-Neustart und HTTPS-Schloss im Browser*
+
+---
+
+
 
