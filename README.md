@@ -442,7 +442,7 @@ Um den Administrator zu entlasten, wurde der Prozess über den System-Scheduler 
 * **Konfiguration:** `0 3 * * * /bin/bash /home/angel/backup_logbuch.sh`
 
 > **Beleg: Eintrag in der Crontab**
-> ![Crontab Konfiguration](./imgScreenshot_crontab_l.png)
+> ![Crontab Konfiguration](./img/Screenshot_crontab_l.png)
 
 ---
 
