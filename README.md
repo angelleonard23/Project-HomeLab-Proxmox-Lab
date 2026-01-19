@@ -360,7 +360,7 @@ Im Zeitraum von Tag 16 bis 22 wurde ein statischer Webserver in einen vollwertig
 * **PHP:** Backend-Logik.
 
 > **Screenshot-Beleg: Die fertige Web-Oberfläche mit Einträgen**
-> ![Web-Oberfläche](/img/website_Einträge.png)
+> ![Web-Oberfläche](/img/webseite_Einträge.png)
 > *Abbildung 18: Die Web-Oberfläche mit Einträge.*
 
 ---
