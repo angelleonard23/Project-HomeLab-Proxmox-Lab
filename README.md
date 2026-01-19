@@ -270,8 +270,7 @@ Nachweis der korrekten Funktion und Netzwerktrennung:
 
 ![Screenshot_apache_WAN_migration](./img/ss12_apache_WAN_migration.png)
 *Abbildung 12:Erfolgreicher Funktionstest des Webservers über die WAN-Schnittstelle (192.168.1.136) nach Migration in die DMZ.*
-
-<img width="1918" height="814" alt="Screenshot 2026-01-15 143440" src="https://github.com/user-attachments/assets/9dac9763-2e37-4616-8b1b-186768685a15" />
+![Screenshot_connection_test](./img/ss13_connection_test.png)
 *Abbildung 13: Konnektivitätsprüfung: Erfolgreicher Ping ins Internet (8.8.8.8) und verifizierte Blockierung (Destination Host Unreachable) zum geschützten LAN-Segment.*
 
 ---
@@ -290,12 +289,10 @@ Die Authentifizierung wurde so konfiguriert, dass sie idealerweise über kryptog
 ### 3. Protokollierung und Überwachung
 In Kombination mit Fail2Ban werden alle fehlgeschlagenen SSH-Login-Versuche protokolliert und führen nach mehrmaligem Scheitern zur automatischen Sperrung der IP-Adresse.
 
-<img width="1919" height="847" alt="Screenshot 2026-01-17 160917" src="https://github.com/user-attachments/assets/a1931520-70d2-4022-8670-8f087c7f176d" />
-*Abbildung 23: Auszug der SSH-Konfigurationsdatei mit der aktiven Richtlinie PermitRootLogin no zur Erhöhung der Systemsicherheit.*
+![Screenshot_ss23_permitrootlogin_no](./img/ss23_permitrootlogin_no.png)
+*Abbildung 14: Auszug der SSH-Konfigurationsdatei mit der aktiven Richtlinie PermitRootLogin no zur Erhöhung der Systemsicherheit.*
 
 ---
-
-**Abbildung 23:** Auszug aus der SSH-Konfigurationsdatei, der die Sicherheitsanpassungen wie `PermitRootLogin no` verdeutlicht.
 
 ## 🛡️ Server-Sicherheit: Fail2Ban Schutz
 
@@ -308,7 +305,7 @@ Fail2Ban überwacht die Logfiles des Systems auf verdächtige Anmeldeversuche. N
 ```bash
 sudo apt update && sudo apt install fail2ban -y
 ```
-<img width="1919" height="847" alt="Screenshot 2026-01-17 160917" src="https://github.com/user-attachments/assets/d636beb6-583b-4d22-ac42-c27428b26d11" />
+
 *Abbildung 18: Status-Abfrage des Fail2Ban-Dienstes im Terminal, die den aktiven Schutz der SSH-Jail (sshd) bestätigt.*
 
 ## 🗄️ Datenbank-Setup & PHP-Anbindung
@@ -317,8 +314,8 @@ In diesem Abschnitt wurde die MariaDB-Datenbank konfiguriert und eine Test-Schni
 
 ### 1. MariaDB Installation & Absicherung
 Die Datenbank wurde mit `mariadb-secure-installation` gehärtet.
-<img width="959" height="419" alt="Screenshot_MariaDB" src="https://github.com/user-attachments/assets/c0c0e6d4-e222-4b0a-8560-6362aa317624" />
-*Abbildung 14: Erstmalige Anmeldung und Initialisierung der MariaDB-Konsole auf dem Webserver-01.*
+![Screenshot_mariadb_secure_installation](./img/ss14_mariadb_secure_installation.png)
+*Abbildung 14.5: Erstmalige Anmeldung und Initialisierung der MariaDB-Konsole auf dem Webserver-01.*
 
 
 
@@ -337,16 +334,16 @@ FLUSH PRIVILEGES;
 
 
 
-<img width="1550" height="915" alt="Screenshot_ Datenbank_User_erstellen" src="https://github.com/user-attachments/assets/46d9895c-efd9-4916-94e5-376f9db67dbf" />
+![Screenshot_datenbank_user_erstellen](./img/ss15_datenbank_user_erstellen.png)
 *Abbildung 15: SQL-Befehlskette zur Erstellung der Datenbank projekt_db sowie die Einrichtung des Datenbank-Benutzers webuser mit den entsprechenden Berechtigungen.*
 
 
 
 ### 3. PHP-Schnittstelle (db_test.php)
 
-<img width="1919" height="826" alt="Screenshot 2026-01-17 160002" src="https://github.com/user-attachments/assets/b6f5015f-c5c5-43cb-82e0-a62c56161bd7" />
+![Screenshot_db_test_nano](./img/ss16_db_test_nano.png)
 *Abbildung 16: Implementierung des PHP-Verbindungsskripts db_test.php im Texteditor Nano zur Verknüpfung von Webserver und Datenbank-Backend.*
-<img width="1919" height="857" alt="Screenshot_Datenbank_Webseite" src="https://github.com/user-attachments/assets/9d759b69-361f-42cd-ac77-1ac965057f06" />
+![Screenshot_datenbank_webseite](./img/ss17_datenbank_webseite.png)
 *Abbildung 17: Erfolgreicher Validierungstest im Webbrowser der Mint-Management-VM, der die aktive Kommunikation zwischen PHP und der MariaDB-Instanz bestätigt.*
 
 
