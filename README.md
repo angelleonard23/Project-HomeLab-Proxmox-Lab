@@ -452,3 +452,54 @@ Ein Backup ist nur nützlich, wenn die Wiederherstellung funktioniert. Ein simul
 * **Wiederherstellungs-Befehl:** `sudo mariadb -u root projekt_db < /home/angel/backups/db_backup_X.sql`
 
 
+##### Containerisierung und Migration
+
+In dieser Phase wurde die Anwendung von einer klassischen Host-Installation in eine moderne Microservice-Architektur mittels Docker überführt.
+
+---
+
+## 4.1 Infrastruktur-Setup (Docker Compose)
+Die Umgebung wurde mit `docker-compose` definiert, um eine strikte Trennung zwischen Webserver (PHP) und Datenbank (MariaDB) zu gewährleisten.
+
+> ![Screenshot der docker-compose.yml einfügen](./img/docker-compose-yml.png)
+> *Abbildung 1: Konfiguration der Container-Infrastruktur inkl. Port-Mapping (8080:80) und Bind-Mounts für die Datenpersistenz.*
+
+---
+
+## 4.2 Custom Image Build (Dockerfile)
+Da das Standard-PHP-Image keine MySQL-Treiber enthält, wurde ein eigenes Image erstellt.
+
+* **Troubleshooting:** Ein anfänglicher Build-Fehler (Tippfehler `myysqli`) wurde erfolgreich identifiziert und korrigiert.
+* **Lösung:** Anpassung des Dockerfiles und anschließender Re-Build des Images.
+
+> ![Screenshot vom Terminal mit dem korrigierten Build einfügen](./img/Costum_image_build.png)
+> *Abbildung 2: Erfolgreicher Build des Custom-PHP-Images nach Korrektur der mysqli-Erweiterungsinstallation.*
+
+---
+
+## 4.3 Datenbank-Migration und Troubleshooting
+Der schwierigste Teil war der Umzug der Daten aus Phase 3 in den neuen Docker-Container.
+
+### Problemstellung: Persistenz der Initialwerte
+Nachträgliche Änderungen des `MYSQL_ROOT_PASSWORD` in der Compose-Datei wurden vom Container ignoriert, da das Daten-Volume bereits mit dem Initial-Passwort erstellt worden war.
+
+### Lösungsweg:
+1. Löschen des persistenten Ordners `./db_data`.
+2. Neuinitialisierung des Containers mit dem Passwort `123`.
+3. Import des SQL-Dumps über die Standard-Eingabe in den Container.
+
+> ![Screenshot vom Terminal mit dem erfolgreichen Import-Befehl einfügen](./img/Docker_Datenbank_Migration.png)
+> *Abbildung 3: Erfolgreicher Datenimport des Backups in den laufenden MariaDB-Container unter Verwendung des Passworts '123'.*
+
+---
+
+## 4.4 Finaler Funktions-Test
+Nach dem Abgleich der Anmeldedaten in der `db_test.php` (Passwort: `123`, Host: `db`) konnte die erfolgreiche Verbindung bestätigt werden.
+
+> ![Screenshot vom Browser mit der grünen Erfolgsmeldung einfügen](./img/MariaDB_Container_Browser.png)
+> *Abbildung 4: Web-Frontend bestätigt die erfolgreiche Kommunikation zwischen PHP-Container und MariaDB-Container im Docker-Netzwerk.*
+
+---
+
+## 4.5 Fazit Phase 4
+Durch die Containerisierung ist die Applikation nun plattformunabhängig, leicht skalierbar und durch die Trennung von Code und Daten wesentlich sicherer. Die Fehlerbehebung während der Migration hat das Verständnis für Docker-Volumes und Netzwerk-Kommunikation vertieft.
