@@ -543,7 +543,7 @@ Um die Kommunikation mit dem Domain Controller (**DC-01**) sicherzustellen, wurd
 
 Nach erfolgreichem Ping-Test auf `projekt.local` wurde der Client über die Systemeigenschaften der Domäne hinzugefügt. Die Authentifizierung erfolgte über den administrativen Account `a.admin`.
 
-> **[Screenshot Windows Systemeigenschaften]**(./img/CL-01-WIN11_AD.png)
+> **[Screenshot Windows Systemeigenschaften]**(./img/Systemeigenschaften.png)
 > *(Zeigt die Meldung "Willkommen in der Domäne projekt.local" oder den vollständigen Computernamen CL-01-WIN11.projekt.local)*
 
 ---
