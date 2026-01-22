@@ -503,3 +503,66 @@ Nach dem Abgleich der Anmeldedaten in der `db_test.php` (Passwort: `123`, Host: 
 
 ## 4.5 Fazit Phase 4
 Durch die Containerisierung ist die Applikation nun plattformunabhängig, leicht skalierbar und durch die Trennung von Code und Daten wesentlich sicherer. Die Fehlerbehebung während der Migration hat das Verständnis für Docker-Volumes und Netzwerk-Kommunikation vertieft.
+
+
+# Dokumentation Phase 5: Client-Provisionierung & Domänenintegration
+
+## 1. Zielsetzung
+Ziel dieser Phase war die Bereitstellung eines Windows 11 Pro Clients (**CL-01-WIN11**), die Installation notwendiger Treiber für die virtualisierte Umgebung (Proxmox) sowie die vollständige Integration in die Active Directory Domäne `projekt.local`.
+
+---
+
+## 2. VM-Konfiguration (Proxmox)
+Für eine optimale Performance und Kompatibilität mit Windows 11 wurden folgende Hardware-Parameter gewählt:
+
+* **CPU:** 2 Cores (Host-Typ für maximale Befehlssatz-Unterstützung).
+* **RAM:** 4 GiB DDR4.
+* **BIOS:** OVMF (UEFI) mit dediziertem EFI-Disk.
+* **Sicherheit:** Virtueller TPM-Chip (v2.0) zur Erfüllung der Windows 11 Anforderungen.
+* **Disk:** 64 GB über **VirtIO SCSI single** Controller (mit *Discard*-Option für SSD-Optimierung).
+* **Netzwerk:** Virtuelle Bridge `vmbr1` mit **VLAN-Tag 30** zur Trennung des Client-Netzwerks.
+
+---
+
+## 3. Betriebssystem-Installation & Treiber
+Die Installation von Windows 11 Pro erforderte aufgrund der gewählten VirtIO-Hardware spezifische Schritte:
+
+1.  **Treiber-Einbindung:** Da Windows standardmäßig keine VirtIO-SCSI-Treiber besitzt, wurde das `virtio-win.iso` eingebunden. Während des Setups wurde der Treiber aus dem Pfad `vioscsi\w11\amd64` geladen, um die Festplatte zu erkennen.
+2.  **Umgehung des Online-Zwangs:** Mittels des Befehls `OOBE\BYPASSNRO` in der CMD (Shift+F10) wurde die Installation eines lokalen Kontos ohne Microsoft-Account ermöglicht.
+3.  **Post-Installation:** Nach dem ersten Login wurden die `Guest Tools` installiert, um Netzwerk- (VirtIO-Net) und Grafikkartentreiber zu aktualisieren.
+
+---
+
+## 4. Netzwerk-Konfiguration & Domänenbeitritt
+Um die Kommunikation mit dem Domain Controller (**DC-01**) sicherzustellen, wurde eine statische IP-Konfiguration vorgenommen:
+
+* **IP-Adresse:** `10.0.30.20`
+* **Subnetzmaske:** `255.255.255.0`
+* **Standardgateway:** `10.0.30.1`
+* **Bevorzugter DNS:** `10.0.30.100` (DC-01)
+
+Nach erfolgreichem Ping-Test auf `projekt.local` wurde der Client über die Systemeigenschaften der Domäne hinzugefügt. Die Authentifizierung erfolgte über den administrativen Account `a.admin`.
+
+> **[Screenshot Windows Systemeigenschaften]**(./img/CL-01-WIN11_AD.png)
+> *(Zeigt die Meldung "Willkommen in der Domäne projekt.local" oder den vollständigen Computernamen CL-01-WIN11.projekt.local)*
+
+---
+
+## 5. Active Directory Verwaltung & Gruppenrichtlinien (GPO)
+Nach dem Beitritt wurde das Computer-Objekt im AD-Manager vom Standard-Container `Computers` in die organisationsspezifische OU `Angel_Projekt -> Computer` verschoben.
+
+Zur Überprüfung der zentralen Steuerung wurde die Richtlinie **GPO_Sicherheit_Login** erstellt und mit der OU verknüpft. Diese konfiguriert eine interaktive Anmeldung mit einem rechtlichen Hinweis (Banner).
+
+* **Einstellung:** *Interaktive Anmeldung: Nachrichtentext & Titel*
+* **Überprüfung:** Mittels `gpupdate /force` am Client wurde die Übernahme erzwungen.
+
+> **[Screenshot Active Directory Benutzer und Computer]**(./img/CL-01-WIN11_AD.png)
+> *(Zeigt CL-01-WIN11 innerhalb der Unter-OU "Computer")*
+
+> **[Screenshot Der "HINWEIS"-Banner beim Client-Start]**](./img/Willkommen_Hinweis.png)
+> *(Der finale Beweis: Die Nachricht "Willkommen im gesicherten Bereich..." erscheint auf dem Client)*
+
+---
+
+## 6. Fazit Phase 5
+Der Client ist nun vollständig im Management-Bereich des Servers. Die Namensauflösung (DNS) und die Sicherheitsrichtlinien (GPO) funktionieren einwandfrei. Das System ist bereit für die Bereitstellung von Netzwerkressourcen.
