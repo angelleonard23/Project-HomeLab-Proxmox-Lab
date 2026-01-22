@@ -543,7 +543,7 @@ Um die Kommunikation mit dem Domain Controller (**DC-01**) sicherzustellen, wurd
 
 Nach erfolgreichem Ping-Test auf `projekt.local` wurde der Client über die Systemeigenschaften der Domäne hinzugefügt. Die Authentifizierung erfolgte über den administrativen Account `a.admin`.
 
-> **[Screenshot Windows Systemeigenschaften]**(./img/Systemeigenschaften.png)
+> **[Screenshot Windows Systemeigenschaften](./img/Systemeigenschaften.png)
 > *(Zeigt die Meldung "Willkommen in der Domäne projekt.local" oder den vollständigen Computernamen CL-01-WIN11.projekt.local)*
 
 ---
@@ -556,10 +556,10 @@ Zur Überprüfung der zentralen Steuerung wurde die Richtlinie **GPO_Sicherheit_
 * **Einstellung:** *Interaktive Anmeldung: Nachrichtentext & Titel*
 * **Überprüfung:** Mittels `gpupdate /force` am Client wurde die Übernahme erzwungen.
 
-> **[Screenshot Active Directory Benutzer und Computer]**(./img/CL-01-WIN11_AD.png)
+> **[Screenshot Active Directory Benutzer und Computer](./img/CL-01-WIN11_AD.png)
 > *(Zeigt CL-01-WIN11 innerhalb der Unter-OU "Computer")*
 
-> **[Screenshot Der "HINWEIS"-Banner beim Client-Start]**](./img/Willkommen_Hinweis.png)
+> **[Screenshot Der "HINWEIS"-Banner beim Client-Start](./img/Willkommen_Hinweis.png)
 > *(Der finale Beweis: Die Nachricht "Willkommen im gesicherten Bereich..." erscheint auf dem Client)*
 
 ---
