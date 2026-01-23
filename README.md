@@ -663,7 +663,7 @@ Zum Schutz der beruflichen Nutzung des Netzlaufwerks wurde ein Dateiscreening im
 * **Regel:** Blockieren der Dateigruppen "Bilddateien" (z. B. .jpg, .png) und "Audiodateien".
 * **Wirkung:** Der Server verweigert das Schreiben dieser Dateitypen unabhängig von den NTFS-Benutzerrechten.
 
-> ![Screenshot 'Dateiprüfungseigenschaften' - zeigt die aktiven Haken bei Bilddateien](./imgDateiprüfungs-Eigenschaften.png)
+> ![Screenshot 'Dateiprüfungseigenschaften' - zeigt die aktiven Haken bei Bilddateien](./img/Dateiprüfungs-Eigenschaften.png)
 
 ---
 
