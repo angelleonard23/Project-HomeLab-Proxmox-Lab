@@ -566,3 +566,62 @@ Zur Überprüfung der zentralen Steuerung wurde die Richtlinie **GPO_Sicherheit_
 
 ## 6. Fazit Phase 5
 Der Client ist nun vollständig im Management-Bereich des Servers. Die Namensauflösung (DNS) und die Sicherheitsrichtlinien (GPO) funktionieren einwandfrei. Das System ist bereit für die Bereitstellung von Netzwerkressourcen.
+
+### Phase 6 & 7: Zentraler Fileserver & Datensicherheit
+
+## 1. Zielsetzung
+Aufbau einer zentralen Dateiablage auf dem Domain Controller (**DC-01**), um Projektdaten strukturiert bereitzustellen. Ziel ist der automatisierte Zugriff für Domänen-Benutzer sowie die Absicherung gegen versehentliches Löschen.
+
+---
+
+## 2. Einrichtung der Freigabe & Berechtigungen
+Die Berechtigungen wurden nach dem **AGDLP-Prinzip** (Account, Global Group, Domain Local Group, Permission) konfiguriert. 
+
+* **Physischer Pfad:** `C:\Shares\Projektdaten` auf dem Server DC-01.
+* **Sicherheitsgruppe:** Erstellung der AD-Gruppe `G_Projekt_Vollzugriff`.
+* **NTFS-Rechte:** Die Gruppe erhielt die Berechtigungen "Ändern", "Lesen" und "Schreiben".
+* **Freigabe-Rechte:** "Authentifizierte Benutzer" erhielten Vollzugriff auf Ebene der Freigabe, während die tatsächliche Steuerung über die NTFS-Sicherheit erfolgt.
+
+> ![Screenshot Ordner-Eigenschaften von 'Projektdaten' -> Reiter Sicherheit (NTFS)](./img/NTFS-Berechtigungen.png)
+> *(Zeigt die Gruppe G_Projekt_Vollzugriff mit den gesetzten Haken)*
+
+---
+
+## 3. Automatisierung per Gruppenrichtlinie (GPO)
+Um den Benutzerkomfort zu erhöhen, wurde die Richtlinie `GPO_DriveMapping_P` erstellt. Diese sorgt dafür, dass das Netzlaufwerk bei der Anmeldung automatisch verbunden wird.
+
+* **Konfigurationspfad:** `Benutzerkonfiguration` > `Einstellungen` > `Windows-Einstellungen` > `Laufwerkszuordnungen`.
+* **Parameter:** * Aktion: Aktualisieren
+    * Pfad: `\\DC-01\Projektdaten`
+    * Laufwerkbuchstabe: **P:**
+
+>![Screenshot GPO-Editor mit der Konfiguration der Laufwerkszuordnung](./img/GPO_Laufwerkszuordnung.png)
+> *(Zeigt das Fenster, in dem der Pfad \\DC-01\Projektdaten und der Buchstabe P konfiguriert sind)*
+
+---
+
+## 4. Validierung am Client (Windows 11)
+Der Erfolg der Konfiguration wurde am Client **CL-01-WIN11** mit dem Benutzer `a.admin` verifiziert. 
+
+1. Erzwungenes Update der Richtlinien via `gpupdate /force`.
+2. Automatische Einbindung des Laufwerks **P:** im Datei-Explorer.
+3. Erfolgreicher Schreib- und Lesetest (Erstellung einer Testdatei).
+
+>![Screenshot Der kombinierte Screenshot von CL-01-WIN11](./img/Client-Validierung.png)
+> *(Zeigt die CMD mit gpupdate /force und den Explorer mit dem Laufwerk Projektdaten (P:))*
+
+---
+
+## 5. Datensicherheit: Schattenkopien (VSS)
+Als zusätzliche Sicherheitsmaßnahme wurden **Schattenkopien (Volume Shadow Copies)** auf dem Server-Volume aktiviert.
+
+* **Funktion:** Regelmäßige Snapshots des Dateisystems.
+* **Nutzen:** Benutzer können über den Reiter "Vorgängerversionen" gelöschte oder überschriebene Dateien ohne Admin-Eingriff selbstständig wiederherstellen.
+
+> ![Screenshot Schattenkopien-Einstellungen auf DC-01](./img/Schattenkopien.png)
+> *(Zeigt das Fenster "Schattenkopien" mit dem Status "Aktiviert" für Laufwerk C:)*
+
+---
+
+## 6. Fazit
+Mit Abschluss dieser Phase verfügt die Domäne über einen voll funktionsfähigen Fileserver. Die Kombination aus GPO-basierter Laufwerkszuordnung und Schattenkopien bietet eine benutzerfreundliche und zugleich sichere Arbeitsumgebung.
