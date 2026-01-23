@@ -625,3 +625,65 @@ Als zusätzliche Sicherheitsmaßnahme wurden **Schattenkopien (Volume Shadow Cop
 
 ## 6. Fazit
 Mit Abschluss dieser Phase verfügt die Domäne über einen voll funktionsfähigen Fileserver. Die Kombination aus GPO-basierter Laufwerkszuordnung und Schattenkopien bietet eine benutzerfreundliche und zugleich sichere Arbeitsumgebung.
+
+# Dokumentation Phase 8: Fortgeschrittene Administration & Monitoring
+
+## 1. Zielsetzung
+In dieser Phase wurde der Fileserver (DC-01) gegen unkontrolliertes Datenwachstum abgesichert und ein proaktives Monitoring-System für Systemereignisse etabliert. Ziel ist es, die Systemstabilität zu gewährleisten und die Einhaltung von Unternehmensrichtlinien (z. B. Verbot privater Daten auf Projektlaufwerken) technisch zu erzwingen.
+
+---
+
+## 2. Speicherplatz-Management (Quotas)
+Um zu verhindern, dass ein einzelner Benutzer die gesamte Festplattenkapazität des Servers beansprucht, wurde ein Kontingentmanagement eingeführt.
+
+* **Werkzeug:** Ressourcenmanager für Dateiserver (FSRM).
+* **Konfiguration:** * **Pfad:** `C:\Shares\Projektdaten`
+    * **Limit:** 5 GB (Hartes Kontingent - verhindert weiteres Speichern bei Erreichen des Limits).
+    * **Vorlage:** Eigens erstellte Vorlage `Limit_5GB_Projektdaten`.
+
+> ![Screenshot 'Kontingent erstellen' - zeigt den Pfad und die 5GB Auswahl](./img/Kontingent-Konfiguration.png)
+
+---
+
+## 3. Schwellenwerte & Benachrichtigung
+Damit Engpässe frühzeitig erkannt werden, wurde ein Warnsystem konfiguriert.
+
+* **Schwellenwert:** Bei einer Belegung von **85 %** (ca. 4,25 GB) wird eine Aktion ausgelöst.
+* **Protokollierung:** Da in der isolierten Testumgebung kein SMTP-Server für E-Mails existiert, wurde die Warnung auf das Windows-Ereignisprotokoll umgeleitet.
+* **Meldungstext:** *"Warnung: Das Projektlaufwerk P ist zu 85% voll."*
+
+> ![Screenshot 'Schwellenwert hinzufügen' - zeigt die 85% und die SMTP-Warnmeldung von Windows](./img/Schwellenwert_SMTP-Hinweis.png)
+
+---
+
+## 4. Dateiscreening (Inhaltsschutz)
+Zum Schutz der beruflichen Nutzung des Netzlaufwerks wurde ein Dateiscreening implementiert, das das Speichern privater Medienformate unterbindet.
+
+* **Konfiguration:** Aktives Screening für den Ordner `Projektdaten`.
+* **Regel:** Blockieren der Dateigruppen "Bilddateien" (z. B. .jpg, .png) und "Audiodateien".
+* **Wirkung:** Der Server verweigert das Schreiben dieser Dateitypen unabhängig von den NTFS-Benutzerrechten.
+
+> ![Screenshot 'Dateiprüfungseigenschaften' - zeigt die aktiven Haken bei Bilddateien](./imgDateiprüfungs-Eigenschaften.png)
+
+---
+
+## 5. Validierung am Client und Monitoring-Erfolg
+Die Wirksamkeit der Maßnahmen wurde erfolgreich am Client **CL-01-WIN11** sowie im Server-Log nachgewiesen.
+
+### A. Client-Test (Dateiprüfung)
+Beim Versuch, eine Bilddatei in das Laufwerk **P:** zu kopieren, gibt Windows eine Fehlermeldung aus ("Zugriff verweigert"). Dies bestätigt die korrekte Funktion des FSRM-Dienstes.
+
+> ![Screenshot Fehlermeldung am Client 'Zugriff auf den Zielordner wurde verweigert'](./img/Client-Test.png)
+
+### B. Server-Überwachung (Ereignisanzeige)
+Auf dem **DC-01** dokumentiert die Ereignisanzeige unter dem Protokoll "Anwendung" (Quelle: `SRMSVC`) alle Kontingentereignisse. Dies ermöglicht dem Administrator eine nachträgliche Auswertung der Speicherauslastung.
+
+> ![Screenshot Ereignisanzeige auf DC-01 mit den SRMSVC-Einträgen](./img/Ereignisanzeige_Monitoring.png)
+
+---
+
+## 6. Projektsicherung
+Nach Abschluss der Konfiguration und erfolgreicher Validierung wurden Snapshots beider virtueller Maschinen in Proxmox erstellt.
+
+* **Snapshot-Name:** `Phase_8_Final_Admin_Monitoring`
+* **Status:** System voll funktionsfähig und dokumentiert.
