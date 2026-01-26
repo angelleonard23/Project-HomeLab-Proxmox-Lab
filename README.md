@@ -687,3 +687,51 @@ Nach Abschluss der Konfiguration und erfolgreicher Validierung wurden Snapshots 
 
 * **Snapshot-Name:** `Phase_8_Final_Admin_Monitoring`
 * **Status:** System voll funktionsfähig und dokumentiert.
+
+
+
+# Dokumentation Phase 9: Web-Infrastruktur & Netzwerk-Segmentierung
+
+## 1. Zielsetzung
+Das Ziel dieser Phase war die Migration des Webservers in ein isoliertes Server-VLAN (VLAN 20) und die Absicherung des Zugriffs nach dem **Least-Privilege-Prinzip**. Es sollte sichergestellt werden, dass Clients nur auf notwendige Dienste (HTTP) zugreifen können, während administrative Zugriffe (SSH) auf das Management-Netz beschränkt bleiben.
+
+---
+
+## 2. Netzwerk-Konfiguration & Migration
+Der Webserver wurde von VLAN 30 in das neue **VLAN 20 (WEBSERVER)** verschoben.
+
+* **IP-Adresse:** `10.0.20.50` (Statisch konfiguriert)
+* **Subnetzmaske:** `255.255.255.0`
+* **Standard-Gateway:** `10.0.20.1` (pfSense Interface)
+
+> ![Screenshot Datei /etc/network/interfaces oder Befehl 'ip a' vom Webserver](./img/pfsense_DMZ_Rules.png)
+
+---
+
+## 3. Firewall-Härtung (pfSense)
+Die Sicherheitsstrategie wurde von einer offenen "Allow-All"-Konfiguration auf eine restriktive "Whitelist"-Strategie umgestellt. 
+
+### 3.1 Regeln im LAN-Interface (Management)
+* **SSH (Port 22):** Erlaubt den administrativen Zugriff von der Linux Mint Management-Station auf den Webserver.
+* **HTTP (Port 80):** Erlaubt den Zugriff auf den Webdienst zu Testzwecken.
+
+### 3.2 Regeln im DMZ-Interface (Windows-Client)
+* **HTTP-Only:** Dem Windows-Client wurde oberhalb der Block-Regeln explizit nur der Zugriff auf `10.0.20.50` über Port 80 erlaubt.
+* **Isolation:** Die "Default Allow"-Regel wurde deaktiviert. Alle anderen Zugriffe (z.B. Ping oder Zugriff auf das Management-VLAN) werden nun durch die Firewall verworfen.
+
+> ![Screenshot Datei Deine pfSense Rules im DMZ-Tab (mit der aktiven Port 80 Regel)](./img/Webseite_test_Win_Client.png)
+
+---
+
+## 4. Bereitstellung des Webdienstes
+Auf dem System (Debian) wurde ein LAMP-Stack (hier: Apache2) installiert und konfiguriert.
+
+* **Dienst-Status:** Apache2 wurde erfolgreich gestartet und als "active (running)" verifiziert.
+* **Personalisierung:** Die `index.html` wurde angepasst, um die erfolgreiche Migration und den Status des Projekts (LAMP-Stack online) anzuzeigen.
+
+> ![Screenshot Datei Terminal mit dem Befehl 'systemctl status apache2'](./img/Cmd_win_client_ping_webserver.png)
+
+---
+
+## 5. Validierung & Tests
+Zur Bestätigung der korrek
