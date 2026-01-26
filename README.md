@@ -743,3 +743,24 @@ Zur Bestätigung der korrekten Firewall-Konfiguration wurden folgende Tests durc
 | Ping von Win-11 zu Webserver | Zeitüberschreitung (Blockiert) | **Erfolgreich** |
 
 > ![Screenshot Die personalisierte Webseite im Browser des Windows-Clients](./img/Cmd_win_client_ping_webserver.png)
+
+
+# Dokumentation Phase 10: DNS & Namensauflösung
+
+## 1. Zielsetzung
+Implementierung einer benutzerfreundlichen Namensauflösung für den isolierten Webserver.
+
+## 2. DNS-Konfiguration (pfSense)
+In den Services des DNS-Resolvers wurde ein **Host Override** für den FQDN `webserver.home.arpa` auf die Ziel-IP `10.0.20.50` angelegt.
+
+## 3. Firewall-Anpassung
+Um die Kommunikation mit dem DNS-Dienst zu ermöglichen, wurde im DMZ-Interface eine Regel für **UDP Port 53** erstellt. Dies ist notwendig, da nach dem "Least Privilege"-Prinzip zuvor alle nicht explizit erlaubten Dienste blockiert wurden.
+
+## 4. Client-Konfiguration
+Der Windows-Client wurde so konfiguriert, dass er die pfSense (`10.0.30.1`) als primären DNS-Server nutzt.
+> ![Screenshot Netzwerkeinstellungen geänderte IP-Adresse](./img/win_client_netzwerkeinstellungen_ipadresse.png)
+## 5. Validierung
+Die erfolgreiche Auflösung wurde mittels `nslookup` und durch den Aufruf der URL im Browser bestätigt.
+
+> ![Screenshot Browser mit URL webserver.home.arpa](./img/browser_webserver_client_test.png)
+
