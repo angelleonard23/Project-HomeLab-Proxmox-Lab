@@ -804,7 +804,7 @@ Zusätzlich zur pfSense-Netzwerk-Firewall wurde eine lokale Firewall auf dem Web
     * `ufw allow 80/tcp` (Web-Zugriff)
     * `ufw default deny incoming` (Alles andere blockieren)
 
->   ![Screenshot Ausgabe des Befehls 'sudo ufw status verbose'](./img/ufw_status_verbose)
+>   ![Screenshot Ausgabe des Befehls 'sudo ufw status verbose'](./img/ufw_status_verbose.png)
 
 ---
 
@@ -815,4 +815,4 @@ Die Wirksamkeit der Maßnahmen wurde durch folgende Tests verifiziert:
 2. **Firewall-Check:** Die lokale Firewall lässt nur Port 80 und 22 durch.
 3. **SSH-Check:** Ein Login-Versuch als 'root' wird sofort abgewiesen.
 
->  ![Screenshot Browser-Ansicht einer 404-Meldung oder UFW-Status](./img/Browser_Sicherheitstest)
+>  ![Screenshot Browser-Ansicht einer 404-Meldung oder UFW-Status](./img/Browser_Sicherheitstest.png)
