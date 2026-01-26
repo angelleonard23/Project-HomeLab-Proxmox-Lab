@@ -704,7 +704,7 @@ Der Webserver wurde von VLAN 30 in das neue **VLAN 20 (WEBSERVER)** verschoben.
 * **Subnetzmaske:** `255.255.255.0`
 * **Standard-Gateway:** `10.0.20.1` (pfSense Interface)
 
-> ![Screenshot Datei /etc/network/interfaces oder Befehl 'ip a' vom Webserver](./img/pfsense_DMZ_Rules.png)
+> ![Screenshot Datei /etc/network/interfaces oder Befehl 'ip a' vom Webserver](./img/webserver_neue_ip_adresse.png)
 
 ---
 
@@ -719,7 +719,7 @@ Die Sicherheitsstrategie wurde von einer offenen "Allow-All"-Konfiguration auf e
 * **HTTP-Only:** Dem Windows-Client wurde oberhalb der Block-Regeln explizit nur der Zugriff auf `10.0.20.50` über Port 80 erlaubt.
 * **Isolation:** Die "Default Allow"-Regel wurde deaktiviert. Alle anderen Zugriffe (z.B. Ping oder Zugriff auf das Management-VLAN) werden nun durch die Firewall verworfen.
 
-> ![Screenshot Datei Deine pfSense Rules im DMZ-Tab (mit der aktiven Port 80 Regel)](./img/Webseite_test_Win_Client.png)
+> ![Screenshot Datei Deine pfSense Rules im DMZ-Tab (mit der aktiven Port 80 Regel)](./img/pfsense_DMZ_Rules.png)
 
 ---
 
@@ -729,9 +729,17 @@ Auf dem System (Debian) wurde ein LAMP-Stack (hier: Apache2) installiert und kon
 * **Dienst-Status:** Apache2 wurde erfolgreich gestartet und als "active (running)" verifiziert.
 * **Personalisierung:** Die `index.html` wurde angepasst, um die erfolgreiche Migration und den Status des Projekts (LAMP-Stack online) anzuzeigen.
 
-> ![Screenshot Datei Terminal mit dem Befehl 'systemctl status apache2'](./img/Cmd_win_client_ping_webserver.png)
+> ![Screenshot Datei Terminal mit dem Befehl 'systemctl status apache2'](./img/Webseite_test_Win_Client.png)
+
 
 ---
-
 ## 5. Validierung & Tests
-Zur Bestätigung der korrek
+Zur Bestätigung der korrekten Firewall-Konfiguration wurden folgende Tests durchgeführt:
+
+| Testfall | Erwartetes Ergebnis | Status |
+| :--- | :--- | :--- |
+| HTTP-Zugriff von Win-11 (VLAN 30) | Webseite wird geladen | **Erfolgreich** |
+| SSH-Zugriff von Mint (VLAN 10) | Login möglich | **Erfolgreich** |
+| Ping von Win-11 zu Webserver | Zeitüberschreitung (Blockiert) | **Erfolgreich** |
+
+> ![Screenshot Die personalisierte Webseite im Browser des Windows-Clients](./img/Cmd_win_client_ping_webserver.png)
