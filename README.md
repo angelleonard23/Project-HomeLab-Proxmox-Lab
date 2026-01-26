@@ -764,3 +764,55 @@ Die erfolgreiche Auflösung wurde mittels `nslookup` und durch den Aufruf der UR
 
 > ![Screenshot Browser mit URL webserver.home.arpa](./img/browser_webserver_client_test.png)
 
+
+# Dokumentation Phase 11: System-Härtung & Webserver-Absicherung
+
+## 1. Zielsetzung
+Nachdem die Netzwerk-Infrastruktur gesichert wurde, lag der Fokus in Phase 11 auf der Absicherung des Webservers selbst (**Host-Hardening**). Ziel war es, Informationslecks zu schließen, unnötige Dienste zu entfernen und den administrativen Zugriff (SSH) zusätzlich abzusichern.
+
+---
+
+## 2. Apache Webserver Härtung
+Standardmäßig geben Webserver viele Informationen über ihre Version und das Betriebssystem preis. Dies wurde unterbunden.
+
+### 2.1 Server-Banner deaktivieren
+In der Konfigurationsdatei `/etc/apache2/conf-enabled/security.conf` wurden folgende Anpassungen vorgenommen:
+* **ServerTokens Prod:** Minimiert die Header-Informationen auf "Apache".
+* **ServerSignature Off:** Entfernt die Versionsnummer aus automatisch generierten Fehlerseiten.
+
+>  ![Screenshot der Datei security.conf](./img/servertokens_security_conf.png)
+
+### 2.2 Directory Listing deaktivieren
+Um das Ausspähen der Dateistruktur zu verhindern, wurde die Option `Indexes` in der `apache2.conf` entfernt. Damit wird verhindert, dass Verzeichnisinhalte im Browser aufgelistet werden, falls keine `index.html` vorhanden ist.
+
+---
+
+## 3. SSH-Absicherung
+Der administrative Zugang wurde nach Best-Practice-Vorgaben gehärtet:
+* **Root-Login:** `PermitRootLogin no` verhindert direkte Angriffe auf den Administrator-Account.
+* **Authentifizierungs-Limits:** `MaxAuthTries 3` begrenzt Brute-Force-Versuche.
+
+>   ![Screenshot Auszug aus der /etc/ssh/sshd_config](./img/sshd_config_datei.png)
+
+---
+
+## 4. Host-basierte Firewall (UFW)
+Zusätzlich zur pfSense-Netzwerk-Firewall wurde eine lokale Firewall auf dem Webserver aktiviert (**Defense in Depth**).
+
+* **Konfiguration:**
+    * `ufw allow 22/tcp` (Management-Zugriff)
+    * `ufw allow 80/tcp` (Web-Zugriff)
+    * `ufw default deny incoming` (Alles andere blockieren)
+
+>   ![Screenshot Ausgabe des Befehls 'sudo ufw status verbose'](./img/ufw_status_verbose)
+
+---
+
+## 5. Validierung der Sicherheitsmaßnahmen
+Die Wirksamkeit der Maßnahmen wurde durch folgende Tests verifiziert:
+
+1. **Informations-Check:** Ein Aufruf einer nicht existierenden Seite zeigt keine Versionsdetails mehr an.
+2. **Firewall-Check:** Die lokale Firewall lässt nur Port 80 und 22 durch.
+3. **SSH-Check:** Ein Login-Versuch als 'root' wird sofort abgewiesen.
+
+>  ![Screenshot Browser-Ansicht einer 404-Meldung oder UFW-Status](./img/Browser_Sicherheitstest)
