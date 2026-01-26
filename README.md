@@ -832,7 +832,7 @@ Der Webserver wurde auf unnötige offene Ports untersucht, um den "Attack Surfac
 * **Maßnahme:** Verifizierung der lauschenden Dienste mit `ss -tulpn`. 
 * **Ergebnis:** Die MariaDB-Datenbank ist sicher konfiguriert und nimmt nur lokale Verbindungen (localhost) entgegen. Administrative Dienste wie SSH sind aktiv, aber durch die Firewall auf das Management-VLAN beschränkt.
 
->  ![Schreenshot Verifizierung der Dienste](./imgss_tulpn.png)
+>  ![Schreenshot Verifizierung der Dienste](./img/ss_tulpn.png)
 
 ## 3. Projektabschluss & Fazit
 Das Projekt wurde erfolgreich abgeschlossen. Der Webserver ist nun:
