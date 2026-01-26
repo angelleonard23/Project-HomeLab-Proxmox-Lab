@@ -816,3 +816,30 @@ Die Wirksamkeit der Maßnahmen wurde durch folgende Tests verifiziert:
 3. **SSH-Check:** Ein Login-Versuch als 'root' wird sofort abgewiesen.
 
 >  ![Screenshot Browser-Ansicht einer 404-Meldung oder UFW-Status](./img/Browser_Sicherheitstest.png)
+
+# Dokumentation Phase 12: System-Hardening & Monitoring
+
+## 1. Überwachung der Netzwerkaktivität
+Um die Wirksamkeit der Firewall-Regeln zu verifizieren, wurde das Echtzeit-Logging der pfSense analysiert. 
+
+* **Ergebnis:** Es konnte nachgewiesen werden, dass alle nicht explizit erlaubten Pakete (z.B. HTTPS-Anfragen an externe Telemetrie-Server) durch die "Default Deny Rule" im DMZ-Interface verworfen werden. Dies minimiert das Risiko von unerwünschter Datenexfiltration.
+
+> ![Schreenshot SystemLogs pfSense](./img/systemlogs_pfsense.png)
+
+## 2. Minimierung der Angriffsfläche (Service Hardening)
+Der Webserver wurde auf unnötige offene Ports untersucht, um den "Attack Surface" so klein wie möglich zu halten.
+
+* **Maßnahme:** Verifizierung der lauschenden Dienste mit `ss -tulpn`. 
+* **Ergebnis:** Die MariaDB-Datenbank ist sicher konfiguriert und nimmt nur lokale Verbindungen (localhost) entgegen. Administrative Dienste wie SSH sind aktiv, aber durch die Firewall auf das Management-VLAN beschränkt.
+
+>  ![Schreenshot Verifizierung der Dienste](./imgss_tulpn.png)
+
+## 3. Projektabschluss & Fazit
+Das Projekt wurde erfolgreich abgeschlossen. Der Webserver ist nun:
+1. In einem eigenen VLAN (20) isoliert.
+2. Über einen lokalen FQDN (`webserver.home.arpa`) erreichbar.
+3. Durch ein restriktives Firewall-Regelwerk nach dem Least-Privilege-Prinzip abgesichert.
+4. Überwacht durch zentrales Firewall-Logging.
+
+> **[Beweis: Finaler Screenshot der Webseite image_e79ff6.png einfügen]**
+
