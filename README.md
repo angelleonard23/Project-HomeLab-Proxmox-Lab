@@ -884,3 +884,12 @@ Das Projekt beweist die erfolgreiche Bereitstellung einer sicheren, containerisi
 * **Optimierungspotenzial:** In einem produktiven Szenario sollte die Integration von *Let’s Encrypt* zur automatisierten Zertifikatsverwaltung erfolgen, um SSL-Warnungen zu vermeiden.
 * **Zentrales Monitoring:** Ein erweitertes Log-Management (z. B. ELK-Stack) würde die Analyse der Container-Events professionalisieren.
 * **Gesamturteil:** Die Kombination aus pfSense zur Netzwerksegmentierung und Docker zur Applikations-Isolation stellt eine robuste und skalierbare
+
+
+# DokumentationPhase 14: Modernisierung mit Docker Compose
+In dieser Phase wurde das manuelle Container-Management durch eine deklarative `docker-compose.yml` ersetzt.
+
+* **Zentralisierung:** Alle Parameter für den Web- und Datenbank-Container sind nun in einer Datei definiert.
+* **Persistenz:** Durch das Mapping von `./html` auf den Host-Ordner sind die Web-Inhalte (PHP/HTML) nun unabhängig vom Container-Lebenszyklus gespeichert.
+* **Sicherheit:** Die MariaDB bleibt weiterhin ohne externes Port-Mapping isoliert und kommuniziert nur intern mit dem Web-Container.
+* **Status:** Der gesamte Stack kann nun mit einem einzigen Befehl (`docker compose up -d`) gestartet werden.
