@@ -1,14 +1,5 @@
 # Enterprise Home Lab & Security Infrastructure
-## 📖 Table of Contents
 
-1. [Projektziel & Überblick](#enterprise-home-lab--security-infrastructure)
-2. [Project-HomeLab: Proxmox Infrastructure](#project-homelab-proxmox-infrastructure)
-3. [Dokumentation Phase 1: pfSense Firewalling & VLAN Webserver](#dokumentation-phase-1-pfsense-firewalling--vlan-webserver)
-4. [Dokumentation Phase 2: Webserver DMZ Migration](#dokumentation-phase-2-webserver-dmz-migration)
-5. [Dokumentation Phase 3: Monitoring & Performance](#dokumentation-phase-3-monitoring-performance)
-6. [Dokumentation Phase 5: Docker Containerisierung](#dokumentation-phase-5-docker-containerisierung)
-7. [Dokumentation Phase 6: Client-Provisionierung & AD Integration](#dokumentation-phase-6-client-provisionierung--ad-integration)
-8. [Dokumentation Phase 7: Zentraler Fileserver & Datensicherheit](#dokumentation-phase-7-zentraler-fileserver--datensicherheit)
 ## 🎯 Projektziel
 Transformation eines Standard-Heimnetzwerks in eine professionelle, segmentierte Lab-Umgebung. Ziel ist die Vertiefung von Kenntnissen in Virtualisierung, Firewalling (pfSense) und Containerisierung (Docker/Kubernetes).
 
@@ -515,7 +506,7 @@ Nach dem Abgleich der Anmeldedaten in der `db_test.php` (Passwort: `123`, Host: 
 Durch die Containerisierung ist die Applikation nun plattformunabhängig, leicht skalierbar und durch die Trennung von Code und Daten wesentlich sicherer. Die Fehlerbehebung während der Migration hat das Verständnis für Docker-Volumes und Netzwerk-Kommunikation vertieft.
 
 
-# Dokumentation Phase 6: Client-Provisionierung & Domänenintegration
+# Dokumentation Phase 6: Client-Provisionierung & Domänenintegration 
 
 ## 1. Zielsetzung
 Ziel dieser Phase war die Bereitstellung eines Windows 11 Pro Clients (**CL-01-WIN11**), die Installation notwendiger Treiber für die virtualisierte Umgebung (Proxmox) sowie die vollständige Integration in die Active Directory Domäne `projekt.local`.
@@ -577,7 +568,7 @@ Zur Überprüfung der zentralen Steuerung wurde die Richtlinie **GPO_Sicherheit_
 ## 6. Fazit Phase 6
 Der Client ist nun vollständig im Management-Bereich des Servers. Die Namensauflösung (DNS) und die Sicherheitsrichtlinien (GPO) funktionieren einwandfrei. Das System ist bereit für die Bereitstellung von Netzwerkressourcen.
 
-# Dokumentation Phase 7: Zentraler Fileserver & Datensicherheit
+# Dokumentation Phase 7: Zentraler Fileserver & Datensicherheit 
 
 ## 1. Zielsetzung
 Aufbau einer zentralen Dateiablage auf dem Domain Controller (**DC-01**), um Projektdaten strukturiert bereitzustellen. Ziel ist der automatisierte Zugriff für Domänen-Benutzer sowie die Absicherung gegen versehentliches Löschen.
