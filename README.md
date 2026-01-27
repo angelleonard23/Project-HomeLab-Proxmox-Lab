@@ -851,3 +851,35 @@ Das Projekt wurde erfolgreich abgeschlossen. Der Webserver ist nun:
 
 >  ![Schreenshot der Webseite erreichbar](./img/Webseite_FInal_Phase_!2.png)
 
+Phase 13: Projektabschluss und Reflexion
+
+In der Abschlussphase wird das Projekt kritisch bewertet und die Zielerreichung dokumentiert.
+13.1 Soll-Ist-Vergleich
+
+Die Gegenüberstellung der geplanten Ziele mit den realisierten Ergebnissen zeigt eine vollständige Umsetzung:
+
+    Netzwerktrennung: Die VLAN-Struktur (DMZ, Webserver) wurde erfolgreich implementiert und über die pfSense zentral abgesichert.
+
+    Dienst-Isolation: Datenbankdienste sind sicher auf das lokale Interface gebunden und nicht direkt aus fremden Netzen erreichbar.
+
+    Containerisierung: Der LAMP-Stack wurde erfolgreich in eine Docker-Umgebung migriert und ist über ein definiertes Port-Mapping (8080 auf 80) erreichbar.
+
+    HTTPS-Verschlüsselung: Der Zugriff erfolgt verschlüsselt über Port 443 unter Verwendung des FQDN webserver.home.arpa.
+
+13.2 Kritische Reflexion und Fehleranalyse
+
+Während der Implementierung traten zwei wesentliche Herausforderungen auf, die erfolgreich gelöst wurden:
+
+    Host-Firewall Konflikt: Trotz korrekter pfSense-Regeln blockierte die lokale ufw auf dem Linux-Webserver anfangs den Datenverkehr. Die Deaktivierung der redundanten ufw ermöglichte schließlich den Zugriff, da die pfSense bereits den notwendigen Schutz auf Netzwerkebene bietet.
+
+    SSL-Validierung im Browser: Die Nutzung selbstsignierter Zertifikate führte zu Sicherheitswarnungen im Client-Browser. Dies erforderte ein manuelles Überspringen der Warnung, um die Funktionalität zu bestätigen.
+
+13.3 Ausblick und Fazit
+
+Das Projekt beweist die Machbarkeit einer sicheren, containerisierten Web-Infrastruktur im Lab-Umfeld.
+
+    Zukünftige Optimierung: In einem produktiven Umfeld sollte die Integration von Let’s Encrypt zur automatisierten Zertifikatsverwaltung erfolgen, um SSL-Warnungen zu vermeiden.
+
+    Monitoring: Ein erweitertes Log-Management (z. B. ELK-Stack) könnte die Analyse der Docker-Logs weiter professionalisieren.
+
+    Gesamturteil: Die gewählte Architektur aus pfSense und Docker bietet eine robuste Grundlage für skalierbare Web-Dienste.
