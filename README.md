@@ -834,7 +834,15 @@ Der Webserver wurde auf unnötige offene Ports untersucht, um den "Attack Surfac
 
 >  ![Schreenshot Analyse der aktiven Netzwerk-Sockets](./img/ss_tulpn.png)
 
-## 3. Projektabschluss & Fazit
+## 4. Containerisierung & Docker-Sicherheit (Review Phase 4)
+Die Integration von Docker wurde als zentrales Element für die Skalierbarkeit und Sicherheit beibehalten.
+
+* **Architektur:** Die Applikation nutzt einen Docker-Proxy (Port 8080) und eine containerisierte Umgebung.
+* **Datenbank-Isolation:** Die MariaDB ist so konfiguriert, dass sie nur auf localhost (127.0.0.1) lauscht, wodurch sie vor externen Zugriffen aus anderen VLANs vollständig geschützt ist.
+* **Lerneffekt:** Die Migration hat das Verständnis für persistente Datenspeicherung (Docker Volumes) und die Netzwerk-Kommunikation zwischen Host und Container vertieft.
+
+
+## 5. Projektabschluss & Fazit
 Das Projekt wurde erfolgreich abgeschlossen. Der Webserver ist nun:
 1. In einem eigenen VLAN (20) isoliert.
 2. Über einen lokalen FQDN (`webserver.home.arpa`) erreichbar.
