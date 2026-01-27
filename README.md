@@ -46,7 +46,7 @@ graph TD
     LAN_Bridge --- Mint
 
 `````
-# Dokumentation Phase 1: pfSense Firewalling 
+# Dokumentation Phase 1: pfSense Firewalling & VLAN Webserver
 
 ### 📊 Proof of Concept
 Hier ist die erfolgreiche Verbindung der Management-VM durch die Firewall dokumentiert:
@@ -230,7 +230,7 @@ Die erfolgreiche Einrichtung wurde durch folgende Tests bestätigt:
 ![Webserver_Isolierung_Verifikation](./img/DMZ_Isolierungstest_Fail.png)
 *Abbildung 7:Erfolgreicher Nachweis der Netzisolierung durch einen fehlgeschlagenen Ping-Versuch (100% Paketverlust) von der Webserver-VM (10.0.20.50) in das Management-Netz (10.0.10.50).*
 
-# Webserver DMZ Migration & Security Hardening
+# Dokumentation Phase 2: Webserver DMZ Migration & Security Hardening
 
 Erfolgreiche Migration des Debian-Webservers in eine isolierte **DMZ** zur Absicherung des LANs.
 
