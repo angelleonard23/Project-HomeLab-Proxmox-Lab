@@ -851,35 +851,35 @@ Das Projekt wurde erfolgreich abgeschlossen. Der Webserver ist nun:
 
 >  ![Schreenshot der Webseite erreichbar](./img/Webseite_FInal_Phase_!2.png)
 
-Phase 13: Projektabschluss und Reflexion
+# Phase 13: Projektabschluss und Reflexion
 
-In der Abschlussphase wird das Projekt kritisch bewertet und die Zielerreichung dokumentiert.
-13.1 Soll-Ist-Vergleich
+In der finalen Phase wird das Projekt offiziell beendet, die Zielerreichung bewertet und der gesamte Prozess kritisch reflektiert.
 
-Die Gegenüberstellung der geplanten Ziele mit den realisierten Ergebnissen zeigt eine vollständige Umsetzung:
+---
 
-    Netzwerktrennung: Die VLAN-Struktur (DMZ, Webserver) wurde erfolgreich implementiert und über die pfSense zentral abgesichert.
+## 13.1 Soll-Ist-Vergleich
+Ein Abgleich der im Projektantrag definierten Ziele mit dem realisierten System zeigt eine vollständige Umsetzung der Anforderungen:
 
-    Dienst-Isolation: Datenbankdienste sind sicher auf das lokale Interface gebunden und nicht direkt aus fremden Netzen erreichbar.
+* **Netzwerktrennung:** Die VLAN-Struktur wurde erfolgreich implementiert; DMZ und Webserver-VLAN sind durch die pfSense-Firewall strikt voneinander getrennt.
+* **Dienst-Isolation:** Kritische Dienste wie die MariaDB sind sicher an das lokale Interface (127.0.0.1) gebunden und somit vor direkten Zugriffen aus fremden Netzen geschützt.
+* **Containerisierung:** Der LAMP-Stack wurde erfolgreich in Docker-Container migriert, wobei die Applikation stabil über ein definiertes Port-Mapping (Host: 8080 auf Container: 80) erreichbar ist.
+* **Verschlüsselung:** Der Zugriff erfolgt gesichert über HTTPS (Port 443) unter Verwendung des vollqualifizierten Domänennamens (FQDN) `webserver.home.arpa`.
 
-    Containerisierung: Der LAMP-Stack wurde erfolgreich in eine Docker-Umgebung migriert und ist über ein definiertes Port-Mapping (8080 auf 80) erreichbar.
+---
 
-    HTTPS-Verschlüsselung: Der Zugriff erfolgt verschlüsselt über Port 443 unter Verwendung des FQDN webserver.home.arpa.
+## 13.2 Kritische Reflexion und Fehleranalyse
+Während der Implementierung traten technische Hürden auf, die wertvolle Erkenntnisse für den Betrieb komplexer Netze lieferten:
 
-13.2 Kritische Reflexion und Fehleranalyse
+* **Problem der Inter-VLAN-Kommunikation:** Trotz korrekter Firewall-Regeln in der pfSense schlug der Zugriff anfangs fehl (Timeout). Ursache war die aktive Host-Firewall (`ufw`) auf dem Linux-Server. 
+* **Lösung:** Durch die Deaktivierung der `ufw` konnte der Zugriff ermöglicht werden, da die pfSense bereits die zentrale Filterung übernimmt.
+* **SSL-Herausforderung:** Die Verwendung selbstsignierter Zertifikate führte zu Browser-Sperren ohne direkten "Erweitert"-Button.
+* **Lösung:** Die Funktionalität konnte durch manuelle Sicherheits-Overrides im Browser (z. B. "thisisunsafe"-Eingabe) und Validierung per CLI-Tools wie `curl` nachgewiesen werden.
 
-Während der Implementierung traten zwei wesentliche Herausforderungen auf, die erfolgreich gelöst wurden:
+---
 
-    Host-Firewall Konflikt: Trotz korrekter pfSense-Regeln blockierte die lokale ufw auf dem Linux-Webserver anfangs den Datenverkehr. Die Deaktivierung der redundanten ufw ermöglichte schließlich den Zugriff, da die pfSense bereits den notwendigen Schutz auf Netzwerkebene bietet.
+## 13.3 Ausblick und Fazit
+Das Projekt beweist die erfolgreiche Bereitstellung einer sicheren, containerisierten Web-Infrastruktur.
 
-    SSL-Validierung im Browser: Die Nutzung selbstsignierter Zertifikate führte zu Sicherheitswarnungen im Client-Browser. Dies erforderte ein manuelles Überspringen der Warnung, um die Funktionalität zu bestätigen.
-
-13.3 Ausblick und Fazit
-
-Das Projekt beweist die Machbarkeit einer sicheren, containerisierten Web-Infrastruktur im Lab-Umfeld.
-
-    Zukünftige Optimierung: In einem produktiven Umfeld sollte die Integration von Let’s Encrypt zur automatisierten Zertifikatsverwaltung erfolgen, um SSL-Warnungen zu vermeiden.
-
-    Monitoring: Ein erweitertes Log-Management (z. B. ELK-Stack) könnte die Analyse der Docker-Logs weiter professionalisieren.
-
-    Gesamturteil: Die gewählte Architektur aus pfSense und Docker bietet eine robuste Grundlage für skalierbare Web-Dienste.
+* **Optimierungspotenzial:** In einem produktiven Szenario sollte die Integration von *Let’s Encrypt* zur automatisierten Zertifikatsverwaltung erfolgen, um SSL-Warnungen zu vermeiden.
+* **Zentrales Monitoring:** Ein erweitertes Log-Management (z. B. ELK-Stack) würde die Analyse der Container-Events professionalisieren.
+* **Gesamturteil:** Die Kombination aus pfSense zur Netzwerksegmentierung und Docker zur Applikations-Isolation stellt eine robuste und skalierbare
