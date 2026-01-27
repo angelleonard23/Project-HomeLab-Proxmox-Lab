@@ -65,7 +65,7 @@ Hier ist die erfolgreiche Verbindung der Management-VM durch die Firewall dokume
 | **Linux Mint** | ETH0 (`vmbr1`) | `10.0.0.10` | `/24` | Management-Client (Xfce Edition) |
 | **Lab-Bereich** | DHCP-Pool | `10.0.0.100-200` | `/24` | Bereich für zukünftige Test-VMs |
 
-### 🛡️ Security-Hardening: pfBlockerNG Integration (Abbildung 3)
+### 🛡️ Security-Hardening: pfBlockerNG Integration
 
 Um das Netzwerk proaktiv gegen Telemetrie, Tracking und bösartige Domains abzusichern, wurde **pfBlockerNG-devel** implementiert. 
 
@@ -78,7 +78,7 @@ Um das Netzwerk proaktiv gegen Telemetrie, Tracking und bösartige Domains abzus
 * **Ressourcen-Effizienz:** Dank der **Linux Mint 22.2 Xfce Edition** bleibt die Last auf dem Proxmox-Host minimal, wodurch mehr Kapazität für die umfangreichen Filter-Datenbanken der pfSense zur Verfügung steht.
 
 
-### 🌐 Deployment des Web-Services (Abbildung 4)
+### 🌐 Deployment des Web-Services
 
 Nach der Absicherung des Gateways wurde ein dedizierter Webserver auf Basis von **Debian 13 (Trixie)** implementiert. 
 
