@@ -1,0 +1,20 @@
+services:
+  db:
+    image: mariadb:latest
+    container_name: logbuch-db-new
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: dein_sicheres_passwort
+      MYSQL_DATABASE: logbuch_db
+    # Kein Port-Mapping nach aussen fuer  maximale Sicherheit
+
+  web:
+    image: php:8.4-apache
+    container_name: logbuch-web-new
+    restart: always
+    ports:
+      - "8080:80" # Dein bewährtes Mapping
+    volumes:
+      - ./html:/var/www/html
+    depends_on:
+      - db
