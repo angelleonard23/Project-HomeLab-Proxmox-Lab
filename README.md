@@ -389,7 +389,7 @@ Es wurde eine Datenbank `projekt_db` mit der Tabelle `logbuch` erstellt.
 ---
 
 
-# IT-Dokumentation: Phase 3 - Monitoring & Automatisierung
+# Phase 3 Monitoring & Automatisierung
 
 Dieses Dokument beschreibt die Planung und Implementierung eines automatisierten Sicherungsverfahrens für das Projekt "Foto-Logbuch". Als Systemadministrator ist es mein Ziel, die Datenintegrität durch regelmäßige Backups sicherzustellen.
 
@@ -452,7 +452,7 @@ Ein Backup ist nur nützlich, wenn die Wiederherstellung funktioniert. Ein simul
 * **Wiederherstellungs-Befehl:** `sudo mariadb -u root projekt_db < /home/angel/backups/db_backup_X.sql`
 
 
-##### Containerisierung und Migration
+# Phase 4 Docker Containerisierung und Migration
 
 In dieser Phase wurde die Anwendung von einer klassischen Host-Installation in eine moderne Microservice-Architektur mittels Docker überführt.
 
@@ -567,7 +567,7 @@ Zur Überprüfung der zentralen Steuerung wurde die Richtlinie **GPO_Sicherheit_
 ## 6. Fazit Phase 5
 Der Client ist nun vollständig im Management-Bereich des Servers. Die Namensauflösung (DNS) und die Sicherheitsrichtlinien (GPO) funktionieren einwandfrei. Das System ist bereit für die Bereitstellung von Netzwerkressourcen.
 
-### Phase 6 & 7: Zentraler Fileserver & Datensicherheit
+# Dokumentation Phase 6 & 7: Zentraler Fileserver & Datensicherheit
 
 ## 1. Zielsetzung
 Aufbau einer zentralen Dateiablage auf dem Domain Controller (**DC-01**), um Projektdaten strukturiert bereitzustellen. Ziel ist der automatisierte Zugriff für Domänen-Benutzer sowie die Absicherung gegen versehentliches Löschen.
