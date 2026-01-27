@@ -841,5 +841,5 @@ Das Projekt wurde erfolgreich abgeschlossen. Der Webserver ist nun:
 3. Durch ein restriktives Firewall-Regelwerk nach dem Least-Privilege-Prinzip abgesichert.
 4. Überwacht durch zentrales Firewall-Logging.
 
->  ![Schreenshot der Webseite erreichbar](./img/Webseite_FInal_Phase_!2)
+>  ![Schreenshot der Webseite erreichbar](./img/Webseite_FInal_Phase_!2.png)
 
