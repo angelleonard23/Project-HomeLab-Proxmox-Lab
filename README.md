@@ -184,7 +184,7 @@ Ein Kernaspekt dieses Projekts ist die korrekte Handhabung des Datenflusses je n
 * **Interner Zugriff (Management-VM):** Anfragen an die WAN-IP aus dem LAN führen zum Management-Interface der pfSense.
 
 ![Externer Zugriff](./img/external_access_debian.jpg)
-* Erfolgreicher Zugriff von außen auf den Debian-Webserver.*
+*Erfolgreicher Zugriff von außen auf den Debian-Webserver.*
 
 ![Interner Zugriff](./img/internal_access_pfsense.jpg)
 *Interner Zugriff auf das pfSense-Login über die LAN-Schnittstelle.*
@@ -354,7 +354,7 @@ Im Zeitraum von Tag 16 bis 22 wurde ein statischer Webserver in einen vollwertig
 * **MariaDB:** Relationales Datenbanksystem.
 * **PHP:** Backend-Logik.
 
-> **Screenshot-Beleg: Die fertige Web-Oberfläche mit Einträgen**
+> **Screenshot: Die fertige Web-Oberfläche mit Einträgen**
 > ![Web-Oberfläche](/img/webseite_Einträge.png)
 > *Abbildung 18: Die Web-Oberfläche mit Einträge.*
 
