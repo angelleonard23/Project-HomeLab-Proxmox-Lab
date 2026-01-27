@@ -345,7 +345,7 @@ FLUSH PRIVILEGES;
 *Abbildung 17: Erfolgreicher Validierungstest im Webbrowser der Mint-Management-VM, der die aktive Kommunikation zwischen PHP und der MariaDB-Instanz bestätigt.*
 
 
-# Dokumentation Phase 2: Aufbau des interaktiven Web-Services
+# Dokumentation Phase 3: Aufbau des interaktiven Web-Services
 
 ## 1. System-Übersicht (LAMP-Stack)
 Im Zeitraum von Tag 16 bis 22 wurde ein statischer Webserver in einen vollwertigen Application-Stack umgewandelt:
@@ -390,7 +390,7 @@ Es wurde eine Datenbank `projekt_db` mit der Tabelle `logbuch` erstellt.
 ---
 
 
-# Phase 3 Monitoring & Automatisierung
+# Dokumentation Phase 4: Monitoring & Automatisierung
 
 Dieses Dokument beschreibt die Planung und Implementierung eines automatisierten Sicherungsverfahrens für das Projekt "Foto-Logbuch". Als Systemadministrator ist es mein Ziel, die Datenintegrität durch regelmäßige Backups sicherzustellen.
 
@@ -453,7 +453,7 @@ Ein Backup ist nur nützlich, wenn die Wiederherstellung funktioniert. Ein simul
 * **Wiederherstellungs-Befehl:** `sudo mariadb -u root projekt_db < /home/angel/backups/db_backup_X.sql`
 
 
-# Phase 4 Docker Containerisierung und Migration
+# Dokumentation Phase 5: Docker Containerisierung und Migration
 
 In dieser Phase wurde die Anwendung von einer klassischen Host-Installation in eine moderne Microservice-Architektur mittels Docker überführt.
 
@@ -502,11 +502,11 @@ Nach dem Abgleich der Anmeldedaten in der `db_test.php` (Passwort: `123`, Host: 
 
 ---
 
-## 4.5 Fazit Phase 4
+## 4.5 Fazit Phase 5
 Durch die Containerisierung ist die Applikation nun plattformunabhängig, leicht skalierbar und durch die Trennung von Code und Daten wesentlich sicherer. Die Fehlerbehebung während der Migration hat das Verständnis für Docker-Volumes und Netzwerk-Kommunikation vertieft.
 
 
-# Dokumentation Phase 5: Client-Provisionierung & Domänenintegration
+# Dokumentation Phase 6: Client-Provisionierung & Domänenintegration
 
 ## 1. Zielsetzung
 Ziel dieser Phase war die Bereitstellung eines Windows 11 Pro Clients (**CL-01-WIN11**), die Installation notwendiger Treiber für die virtualisierte Umgebung (Proxmox) sowie die vollständige Integration in die Active Directory Domäne `projekt.local`.
@@ -565,10 +565,10 @@ Zur Überprüfung der zentralen Steuerung wurde die Richtlinie **GPO_Sicherheit_
 
 ---
 
-## 6. Fazit Phase 5
+## 6. Fazit Phase 6
 Der Client ist nun vollständig im Management-Bereich des Servers. Die Namensauflösung (DNS) und die Sicherheitsrichtlinien (GPO) funktionieren einwandfrei. Das System ist bereit für die Bereitstellung von Netzwerkressourcen.
 
-# Dokumentation Phase 6 & 7: Zentraler Fileserver & Datensicherheit
+# Dokumentation Phase 7: Zentraler Fileserver & Datensicherheit
 
 ## 1. Zielsetzung
 Aufbau einer zentralen Dateiablage auf dem Domain Controller (**DC-01**), um Projektdaten strukturiert bereitzustellen. Ziel ist der automatisierte Zugriff für Domänen-Benutzer sowie die Absicherung gegen versehentliches Löschen.
