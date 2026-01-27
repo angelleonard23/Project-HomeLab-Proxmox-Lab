@@ -4,11 +4,11 @@
 1. [Projektziel & Überblick](#enterprise-home-lab--security-infrastructure)
 2. [Project-HomeLab: Proxmox Infrastructure](#project-homelab-proxmox-infrastructure)
 3. [Dokumentation Phase 1: pfSense Firewalling & VLAN Webserver](#dokumentation-phase-1-pfsense-firewalling--vlan-webserver)
-14. [Dokumentation Phase 2: Webserver DMZ Migration](#dokumentation-phase-2-webserver-dmz-migration)
-15. [Dokumentation Phase 3: Monitoring & Performance](#dokumentation-phase-3-monitoring-performance)
-17. [Dokumentation Phase 5: Docker Containerisierung](#dokumentation-phase-5-docker-containerisierung)
-18. [Dokumentation Phase 6: Client-Provisionierung & AD Integration](#dokumentation-phase-6-client-provisionierung--ad-integration)
-19. [Dokumentation Phase 7: Zentraler Fileserver & Datensicherheit](#dokumentation-phase-7-zentraler-fileserver--datensicherheit)
+4. [Dokumentation Phase 2: Webserver DMZ Migration](#dokumentation-phase-2-webserver-dmz-migration)
+5. [Dokumentation Phase 3: Monitoring & Performance](#dokumentation-phase-3-monitoring-performance)
+6. [Dokumentation Phase 5: Docker Containerisierung](#dokumentation-phase-5-docker-containerisierung)
+7. [Dokumentation Phase 6: Client-Provisionierung & AD Integration](#dokumentation-phase-6-client-provisionierung--ad-integration)
+8. [Dokumentation Phase 7: Zentraler Fileserver & Datensicherheit](#dokumentation-phase-7-zentraler-fileserver--datensicherheit)
 ## 🎯 Projektziel
 Transformation eines Standard-Heimnetzwerks in eine professionelle, segmentierte Lab-Umgebung. Ziel ist die Vertiefung von Kenntnissen in Virtualisierung, Firewalling (pfSense) und Containerisierung (Docker/Kubernetes).
 
