@@ -174,7 +174,7 @@ Um Port-Konflikte zu vermeiden und die Sicherheit zu erhöhen, wurde das pfSense
 Anfragen an das WAN-Interface werden via Destination NAT (DNAT) direkt an den Debian-Server geleitet. Die Regeln umfassen sowohl HTTP (80) als auch HTTPS (443).
 
 ![Firewall Regeln](./img/pfsense_wan_rules.jpg)
-*Abbildung 1: Aktive Port-Forwarding-Regeln für den Webserver-Zugriff.*
+* Aktive Port-Forwarding-Regeln für den Webserver-Zugriff.*
 
 ## 🔄 Analyse: Internes vs. Externes Routing (NAT-Loopback)
 
@@ -184,10 +184,10 @@ Ein Kernaspekt dieses Projekts ist die korrekte Handhabung des Datenflusses je n
 * **Interner Zugriff (Management-VM):** Anfragen an die WAN-IP aus dem LAN führen zum Management-Interface der pfSense.
 
 ![Externer Zugriff](./img/external_access_debian.jpg)
-*Abbildung 2: Erfolgreicher Zugriff von außen auf den Debian-Webserver.*
+* Erfolgreicher Zugriff von außen auf den Debian-Webserver.*
 
 ![Interner Zugriff](./img/internal_access_pfsense.jpg)
-*Abbildung 3: Interner Zugriff auf das pfSense-Login über die LAN-Schnittstelle.*
+*Interner Zugriff auf das pfSense-Login über die LAN-Schnittstelle.*
 
 > **Dokumentations-Fazit:** Dieses Verhalten belegt eine erfolgreiche **Netzwerk-Segmentierung**. Der administrative Zugriff ist logisch vom öffentlichen Dienst getrennt, was die Angriffsfläche des Systems minimiert.
 
@@ -196,7 +196,7 @@ Ein Kernaspekt dieses Projekts ist die korrekte Handhabung des Datenflusses je n
 Die Verwaltung erfolgt über die ressourceneffiziente **Linux Mint Xfce Edition**, was eine verzögerungsfreie Analyse der Firewall-Logs in Echtzeit ermöglicht.
 
 ![pfSense Dashboard](./img/pfsense_dashboard_live.jpg)
-*Abbildung 4: Zentrales Dashboard mit verifiziertem Zugriff über HTTPS auf Port 8443.*
+*Zentrales Dashboard mit verifiziertem Zugriff über HTTPS auf Port 8443.*
 
 
 ## Einrichtung VLAN 20 (Webserver) & Security Hardening
@@ -208,7 +208,7 @@ Um den Webserver vom Management-Netz zu isolieren, wurde ein neues VLAN (ID 20) 
 * **DHCP-Range:** 10.0.20.50 - 10.0.20.100
 
 ![DHCP_Range](./img/DHCP-Einstellungen_Range_10.0.20.50-100.jpg)
-*Abbildung 5: Definition des Adresspools für das WEBSERVER-Interface (VLAN 20) mit einer dynamischen Range von 10.0.20.50 bis 10.0.20.100.*
+* Definition des Adresspools für das WEBSERVER-Interface (VLAN 20) mit einer dynamischen Range von 10.0.20.50 bis 10.0.20.100.*
 
 ### 2. Firewall-Regelwerk & DMZ-Isolierung
 Das Regelwerk wurde so konfiguriert, dass eine "Einweg-Kommunikation" herrscht. Das Management-VLAN (10) hat vollen Zugriff auf den Webserver, während der Webserver keinen Zugriff auf das Management-VLAN hat.
