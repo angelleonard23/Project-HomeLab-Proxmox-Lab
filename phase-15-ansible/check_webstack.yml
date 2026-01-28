@@ -1,0 +1,13 @@
+---
+- name: Überprüfung des HomeLab Web-Stacks
+  hosts: webservers
+  become: true
+  tasks:
+    - name: Docker-Status abfragen
+      # Wir nutzen einfache Anführungszeichen, um Konflikte zu vermeiden
+      shell: "docker ps --format 'table {{ '{{' }}.Names{{ '}}' }}\t{{ '{{' }}.Status{{ '}}' }}\t{{ '{{' }}.Ports{{ '}}' }}'"
+      register: docker_output
+
+    - name: Statusbericht anzeigen
+      debug:
+        msg: "{{ docker_output.stdout_lines }}"
