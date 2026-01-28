@@ -893,3 +893,50 @@ In dieser Phase wurde das manuelle Container-Management durch eine deklarative `
 * **Persistenz:** Durch das Mapping von `./html` auf den Host-Ordner sind die Web-Inhalte (PHP/HTML) nun unabhängig vom Container-Lebenszyklus gespeichert.
 * **Sicherheit:** Die MariaDB bleibt weiterhin ohne externes Port-Mapping isoliert und kommuniziert nur intern mit dem Web-Container.
 * **Status:** Der gesamte Stack kann nun mit einem einzigen Befehl (`docker compose up -d`) gestartet werden.
+* 
+
+# 📂 Dokumentation Phase 15: Automatisierung, Vault-Integration & Datenbank-Sicherung
+
+## 🎯 1. Zielsetzung
+Aufbau einer automatisierten Backup-Pipeline mit Ansible, um MariaDB-Datenbanken aus Docker-Containern zu sichern und verschlüsselt auf den Management-PC (Mint) zu übertragen.
+
+## 🛠️ 2. Herausforderungen und Lösungen
+
+### 🔑 A. Das Passwort-Paradoxon (Docker Volumes)
+* **Problem:** MariaDB ignorierte Änderungen am Passwort in der `docker-compose.yml`, da die Datenbank bereits mit einem alten Passwort im Volume `./db_data` initialisiert wurde.
+* **Fehlermeldung:** `Error 1045: Access denied for user 'root'@'localhost'`.
+* **Lösung:** Manueller Passwort-Reset über einen temporären Container im Safe-Mode (`--skip-grant-tables`). Durch das Laden der Privilegien (`FLUSH PRIVILEGES`) wurde das Passwort auf `123` synchronisiert.
+
+### 🚫 B. Port-Konflikt (Bind Failure)
+* **Problem:** Der Web-Container konnte nach Wartungsarbeiten nicht starten, da Port `8080` bereits belegt war.
+* **Ursache:** Verwaiste Container-Instanzen blockierten das Netzwerk-Interface.
+* **Lösung:** Bereinigung der Docker-Umgebung mittels `docker compose down` und manuelles Stoppen hängender Prozesse.
+
+### 🔐 C. Vault-Struktur & Konfiguration
+* **Problem:** Inkonsistente Variablenquellen zwischen YAML-Dateien.
+* **Lösung:** Standardisierung auf `vault_passwords.yml` zur Speicherung sensibler Daten wie `db_password`.
+
+## ⌨️ 3. Die wichtigsten Befehle (Cheat Sheet)
+
+### 📦 Ansible & Vault
+* **Playbook starten:** `ansible-playbook -i hosts.ini backup_mariadb.yml --ask-vault-pass --ask-become-pass`
+* **Vault bearbeiten:** `ansible-vault edit vault_passwords.yml`
+* **Backup-Inhalt prüfen:** `grep -i "CREATE TABLE" ~/backups/mariadb_backup_*.sql`
+
+### 🐋 Docker-Fehlerbehebung
+* **Status prüfen:** `docker ps`
+* **Stack aufräumen:** `docker compose down`
+* **Port gewaltsam befreien:** `sudo fuser -k 8080/tcp`
+
+### 🆘 Der "Safe Mode" Reset (Notfall)
+1. **Safe-Mode Start:** `docker run -d --name temp-fix -v $(pwd)/db_data:/var/lib/mysql mariadb --skip-grant-tables`
+2. **Passwort ändern:** `docker exec temp-fix mariadb -e "FLUSH PRIVILEGES; ALTER USER 'root'@'localhost' IDENTIFIED BY '123';"`
+3. **Cleanup:** `docker stop temp-fix && docker rm temp-fix`
+
+## 🚀 4. Validierung der Ergebnisse
+Der Erfolg wurde durch zwei Prüfungen bestätigt:
+1.  ✅ **Ansible Play Recap:** `changed=2` signalisierte den erfolgreichen Dump und Transfer.
+2.  ✅ **Inhaltsprüfung:** Ein manueller Scan bestätigte die Existenz der Tabelle `logbuch` im SQL-Dump.
+
+---
+*Dokumentiert am: 28.01.2026*
