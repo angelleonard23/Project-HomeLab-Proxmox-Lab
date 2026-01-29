@@ -941,6 +941,37 @@ Der Erfolg wurde durch zwei Prüfungen bestätigt:
 ---
 # Phase 16: Security Auditing & Automated Hardening
 
+graph TD
+    subgraph Internet
+        User((Externer User))
+    end
+
+    subgraph "Netzwerk-Perimeter (pfSense Firewall)"
+        FW[pfSense / Firewall-Regeln]
+        NAT[Port-Forwarding 80/443]
+    end
+
+    subgraph "VLAN 20: Management Zone"
+        Mint[Mint-PC / Ansible Node]
+        Mint -- "SSH-Härtung (Port 22)" --> Web
+    end
+
+    subgraph "VLAN 10: Server Zone (Webserver-01)"
+        Web[Ubuntu Server / Hardening Index: 70]
+        subgraph "Sicherheits-Layer"
+            Log[Audit Logs / Lynis]
+            SSH[SSH Config: No Forwarding]
+        end
+        subgraph "Docker-Umgebung"
+            Cont[Containerisierte Services]
+        end
+    end
+
+    User --> FW
+    FW --> NAT
+    NAT --> Cont
+    Log -.-> Web
+    SSH -.-> Web
 In dieser Phase wurde der Fokus auf die messbare Sicherheit (Compliance) der Infrastruktur gelegt. Durch den Einsatz von professionellen Audit-Tools und Ansible-Automatisierung wurde der Sicherheitsstatus des Webservers analysiert und verbessert.
 
 ## 🛠️ Verwendete Werkzeuge & Methoden
