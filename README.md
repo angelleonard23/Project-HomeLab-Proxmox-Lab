@@ -958,11 +958,6 @@ Der Erfolg der Härtung wird durch den Hardening Index objektiviert. Durch gezie
 | **Hardening Index** | 68 | **70** | 🟢 Erhöht |
 | **Docker Security** | 0 Warnings | 0 Warnings | 🟢 Optimal |
 
-<div style="display: flex; justify-content: space-around;">
-  <img src="./img/hartening_index_68.png" alt="Baseline Index 68" width="45%"/>
-  <img src="./img/hartening_index_70.png" alt="Ziel Index 70" width="45%"/>
-</div>
-*Abbildung 2 & 3: Vergleich des Hardening Index vor (68) und nach (70) den Optimierungen.*
 
 ## 🛡️ Umgesetzte Härtungs-Maßnahmen (via Ansible)
 Basierend auf den detaillierten Lynis-Suggestions () wurden folgende Konfigurationen automatisiert angepasst:
