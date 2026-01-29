@@ -939,14 +939,16 @@ Der Erfolg wurde durch zwei Prüfungen bestätigt:
 2.  ✅ **Inhaltsprüfung:** Ein manueller Scan bestätigte die Existenz der Tabelle `logbuch` im SQL-Dump.
 
 ---
-# Dokumentation Phase 16: Security Auditing & Automated Hardening
+# Phase 16: Security Auditing & Automated Hardening
 
 In dieser Phase wurde der Fokus auf die messbare Sicherheit (Compliance) der Infrastruktur gelegt. Durch den Einsatz von professionellen Audit-Tools und Ansible-Automatisierung wurde der Sicherheitsstatus des Webservers analysiert und verbessert.
 
 ## 🛠️ Verwendete Werkzeuge & Methoden
 * **Lynis 3.x**: Durchführung tiefgreifender Sicherheits-Scans auf dem Zielsystem.
 * **Ansible**: Automatisierung der Installation, des Audits und der anschließenden Härtungsmaßnahmen.
-* **Incident Handling**: Behebung von lokalen Netzwerk-Problemen und Paketmanager-Locks während des Deployment-Prozesses.
+
+![Erfolgreiche Installation und Audit-Durchlauf von Lynis via Ansible](./img/Lynis_installed.png)
+*Abbildung 1: Bestätigung der Lynis-Installation und des Audit-Tasks.*
 
 ## 📊 Performance-Metriken & Fortschritt
 Der Erfolg der Härtung wird durch den Hardening Index objektiviert. Durch gezielte Maßnahmen konnten wir den Score steigern.
@@ -955,15 +957,20 @@ Der Erfolg der Härtung wird durch den Hardening Index objektiviert. Durch gezie
 | :--- | :--- | :--- | :--- |
 | **Hardening Index** | 68 | **70** | 🟢 Erhöht |
 | **Docker Security** | 0 Warnings | 0 Warnings | 🟢 Optimal |
-| **Lynis Status** | Neu installiert | Audit durchgeführt | 🟢 Aktiv |
+
+<div style="display: flex; justify-content: space-around;">
+  <img src="./img/hartening_index_68.png" alt="Baseline Index 68" width="45%"/>
+  <img src="./img/hartening_index_70.png" alt="Ziel Index 70" width="45%"/>
+</div>
+*Abbildung 2 & 3: Vergleich des Hardening Index vor (68) und nach (70) den Optimierungen.*
 
 ## 🛡️ Umgesetzte Härtungs-Maßnahmen (via Ansible)
 Basierend auf den detaillierten Lynis-Suggestions () wurden folgende Konfigurationen automatisiert angepasst:
 
-1. **SSH-Integrität (Suggestion SSH-7408)**:
+1. **SSH-Integrität**:
    * Anhebung des Log-Levels auf `VERBOSE` für detaillierte Forensik.
    * Deaktivierung von `AllowTcpForwarding`, um unautorisierte Tunnel zu unterbinden.
-2. **System-Compliance (Suggestion BANN-7126)**:
+2. **System-Compliance**:
    * Implementierung eines rechtlichen Warnbanners (`/etc/issue`), um unbefugten Zugriff explizit zu untersagen.
 3. **Betriebssicherheit**:
    * Auflösung von Paketmanager-Konflikten und automatisierter Neustart kritischer Dienste nach Security-Patches.
