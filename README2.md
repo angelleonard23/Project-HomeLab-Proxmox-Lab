@@ -1,0 +1,250 @@
+# 🧪 Enterprise HomeLab – Proxmox Security Infrastructure
+
+> Enterprise-nahes HomeLab zur Vertiefung von Systemadministration, Netzwerk- & IT-Security  
+> Fokus auf Netzwerksegmentierung, Firewalling, Server-Hardening, Active Directory, Containerisierung & Automatisierung
+
+---
+
+## 👤 Über mich
+
+- 💼 IT Support (2 Jahre Erfahrung)
+- 🎯 Ziel: Systemadministrator / SOC / Junior Security Engineer
+- 📍 Wien, Österreich
+- 📚 Aktuelle Vorbereitung auf CompTIA Security+
+- 🧠 Hands-on Learning mit TryHackMe Premium
+- 🧪 Lernen durch reale Infrastruktur statt reiner Theorie
+
+---
+
+## 🎯 Projektziel
+
+Aufbau eines realistischen Enterprise-HomeLabs zur praktischen Umsetzung von:
+
+- Virtualisierung mit Proxmox
+- Netzwerksegmentierung (VLANs, DMZ)
+- Firewall- & Perimeter-Security
+- Server- & Service-Hardening
+- Windows Active Directory
+- Docker & Automatisierung
+- Monitoring & Logging
+
+---
+
+## 🏗️ Architektur – Überblick
+
+Das HomeLab bildet eine klassische Unternehmensarchitektur ab:
+
+- Trennung von Management, Server, Client und DMZ
+- Zentrale Firewall mit pfSense
+- VLAN-basierte Segmentierung
+- Defense-in-Depth-Ansatz
+
+Screenshot:
+- screenshots/network_architecture.png
+
+---
+
+## 🧱 Hardware & Plattform
+
+### Virtualisierungshost
+- AOOSTAR WTR PRO
+- AMD Ryzen 7 5825U
+- 64 GB RAM
+- Proxmox VE (Bare Metal)
+
+### Clients
+- ASUS ROG Zephyrus G14 (Linux / Windows)
+- MacBook Air (macOS)
+
+---
+
+## 🔀 Virtualisierung & Netzwerk (Proxmox)
+
+- Proxmox VE mit Linux Bridges
+- VLAN-aware Networking
+- Isolierte Netzwerke pro Sicherheitszone
+- Snapshot- & Backup-Strategie
+
+Screenshots:
+- screenshots/proxmox_dashboard.png
+- screenshots/proxmox_network.png
+
+---
+
+## 🔥 Firewall & Perimeter Security (pfSense)
+
+- Stateful Firewall (Default-Deny)
+- Zonenbasierte Firewall-Regeln
+- NAT & Port Forwarding
+- DNS Resolver
+- pfBlockerNG (DNS & IP Blocking)
+- Zentrales Logging
+
+Screenshots:
+- screenshots/pfsense_dashboard.png
+- screenshots/pfsense_rules.png
+- screenshots/pfsense_logs.png
+
+---
+
+## 🌐 Netzwerksegmentierung (VLANs)
+
+| VLAN | Zweck        | Subnetz        |
+|------|-------------|----------------|
+| 10   | Management  | 10.0.10.0/24  |
+| 20   | Server      | 10.0.20.0/24  |
+| 30   | Client / DMZ| 10.0.30.0/24  |
+
+Security-Prinzip:
+- Management darf alle Netze erreichen
+- Server & Clients dürfen nicht ins Management-Netz
+
+Screenshot:
+- screenshots/firewall_vlan_rules.png
+
+---
+
+## 🖥️ Server & Services
+
+### Linux Server
+- Ubuntu / Debian Server
+- SSH-Hardening
+- UFW Firewall
+- Fail2Ban
+- systemd Services
+- Log-Analyse (/var/log/auth.log)
+
+Screenshots:
+- screenshots/ufw_status.png
+- screenshots/sshd_config.png
+
+---
+
+## 🔐 Webserver-Hardening
+
+- Apache ServerTokens & ServerSignature deaktiviert
+- Directory Listing deaktiviert
+- Root-Login via SSH verboten
+- Begrenzte Auth-Versuche
+- Minimal installierte Services
+
+Screenshot:
+- screenshots/apache_security_config.png
+
+---
+
+## 📦 Containerisierung (Docker)
+
+- Docker & Docker Compose
+- Trennung von Web- & Datenbank-Containern
+- Isolierte Container-Netzwerke
+- Persistente Volumes
+- Keine Datenbank-Ports nach außen
+
+Screenshots:
+- screenshots/docker_ps.png
+- screenshots/docker_compose.png
+
+---
+
+## 🪟 Windows Active Directory
+
+- Active Directory Domain Controller
+- DNS & DHCP
+- OU-Struktur
+- Benutzer- & Gruppenverwaltung
+- Gruppenrichtlinien (GPOs)
+- Login-Banner & Drive-Mapping
+
+Screenshots:
+- screenshots/ad_users.png
+- screenshots/gpo_banner.png
+
+---
+
+## 🗄️ File Server & Berechtigungen
+
+- NTFS- & Share-Permissions
+- AGDLP-Prinzip
+- GPO-basiertes Drive-Mapping
+- Shadow Copies (VSS)
+- File Server Resource Manager
+  - Quotas
+  - File Screening
+
+Screenshots:
+- screenshots/ntfs_permissions.png
+- screenshots/shadow_copies.png
+
+---
+
+## ⚙️ Automatisierung & Backups
+
+- Bash-Backup-Skripte
+- Cronjobs
+- SQL-Dumps
+- Datei-Backups
+- Regelmäßige Restore-Tests
+
+Screenshot:
+- screenshots/backup_script.png
+
+---
+
+## 📊 Monitoring & Logging
+
+- pfSense Firewall Logs
+- Linux Auth Logs
+- Windows Event Logs
+- Fail2Ban Logs
+- Analyse von blockiertem Traffic
+
+Screenshot:
+- screenshots/log_analysis.png
+
+---
+
+## 🧠 Bezug zur CompTIA Security+
+
+Abgedeckte Themen:
+- Network Security
+- Secure Architecture
+- Identity & Access Management
+- Logging & Monitoring
+- Defense in Depth
+- Incident Detection
+- Least Privilege
+
+---
+
+## 🚀 Geplante Erweiterungen
+
+- SIEM (Wazuh / ELK)
+- Active Directory Security (LAPS, Kerberoasting)
+- Vulnerability Scanning (OpenVAS)
+- MITRE ATT&CK Mapping
+- Incident-Response-Szenarien
+
+---
+
+## 📂 Repository-Struktur
+
+Project-HomeLab-Proxmox-Lab/
+├── screenshots/
+├── diagrams/
+├── scripts/
+├── docs/
+└── README.md
+
+---
+
+## 🏁 Fazit
+
+Dieses HomeLab bildet eine realistische Enterprise-IT-Umgebung ab und demonstriert:
+
+- strukturiertes Arbeiten
+- Security-Mindset
+- saubere Dokumentation
+- praxisnahe System- & Netzwerksicherheit
+
+Geeignet als GitHub-Portfolio, Interview-Referenz und Vorbereitung auf Security-nahe Rollen.
