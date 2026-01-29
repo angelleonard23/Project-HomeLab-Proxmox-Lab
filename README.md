@@ -939,4 +939,34 @@ Der Erfolg wurde durch zwei Prüfungen bestätigt:
 2.  ✅ **Inhaltsprüfung:** Ein manueller Scan bestätigte die Existenz der Tabelle `logbuch` im SQL-Dump.
 
 ---
-*Dokumentiert am: 28.01.2026*
+# Dokumentation Phase 16: Security Auditing & Automated Hardening
+
+In dieser Phase wurde der Fokus auf die messbare Sicherheit (Compliance) der Infrastruktur gelegt. Durch den Einsatz von professionellen Audit-Tools und Ansible-Automatisierung wurde der Sicherheitsstatus des Webservers analysiert und verbessert.
+
+## 🛠️ Verwendete Werkzeuge & Methoden
+* **Lynis 3.x**: Durchführung tiefgreifender Sicherheits-Scans auf dem Zielsystem.
+* **Ansible**: Automatisierung der Installation, des Audits und der anschließenden Härtungsmaßnahmen.
+* **Incident Handling**: Behebung von lokalen Netzwerk-Problemen und Paketmanager-Locks während des Deployment-Prozesses.
+
+## 📊 Performance-Metriken & Fortschritt
+Der Erfolg der Härtung wird durch den Hardening Index objektiviert. Durch gezielte Maßnahmen konnten wir den Score steigern.
+
+| Metrik | Baseline | Nach Härtung | Status |
+| :--- | :--- | :--- | :--- |
+| **Hardening Index** | 68 | **70** | 🟢 Erhöht |
+| **Docker Security** | 0 Warnings | 0 Warnings | 🟢 Optimal |
+| **Lynis Status** | Neu installiert | Audit durchgeführt | 🟢 Aktiv |
+
+## 🛡️ Umgesetzte Härtungs-Maßnahmen (via Ansible)
+Basierend auf den detaillierten Lynis-Suggestions () wurden folgende Konfigurationen automatisiert angepasst:
+
+1. **SSH-Integrität (Suggestion SSH-7408)**:
+   * Anhebung des Log-Levels auf `VERBOSE` für detaillierte Forensik.
+   * Deaktivierung von `AllowTcpForwarding`, um unautorisierte Tunnel zu unterbinden.
+2. **System-Compliance (Suggestion BANN-7126)**:
+   * Implementierung eines rechtlichen Warnbanners (`/etc/issue`), um unbefugten Zugriff explizit zu untersagen.
+3. **Betriebssicherheit**:
+   * Auflösung von Paketmanager-Konflikten und automatisierter Neustart kritischer Dienste nach Security-Patches.
+
+## 🏁 Fazit
+Die Infrastruktur erfüllt nun höhere Sicherheitsstandards. Der Anstieg des Hardening Index von 68 auf 70 beweist die Wirksamkeit der "Defense in Depth"-Strategie: Von der pfSense-Firewall über VLAN-Isolation bis hin zur gehärteten Applikations-Ebene.
