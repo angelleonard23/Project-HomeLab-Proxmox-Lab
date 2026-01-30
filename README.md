@@ -46,7 +46,7 @@ graph TD
     LAN_Bridge --- Mint
 
 `````
-# Dokumentation Phase 1: pfSense Firewalling & VLAN Webserver
+# 📂 Phase 1: pfSense Firewalling & VLAN Webserver
 
 ### 📊 Proof of Concept
 Hier ist die erfolgreiche Verbindung der Management-VM durch die Firewall dokumentiert:
@@ -230,7 +230,7 @@ Die erfolgreiche Einrichtung wurde durch folgende Tests bestätigt:
 ![Webserver_Isolierung_Verifikation](./img/DMZ_Isolierungstest_Fail.png)
 *Abbildung 7:Erfolgreicher Nachweis der Netzisolierung durch einen fehlgeschlagenen Ping-Versuch (100% Paketverlust) von der Webserver-VM (10.0.20.50) in das Management-Netz (10.0.10.50).*
 
-# Dokumentation Phase 2: Webserver DMZ Migration & Security Hardening
+# 📂 Phase 2: Webserver DMZ Migration & Security Hardening
 
 Erfolgreiche Migration des Debian-Webservers in eine isolierte **DMZ** zur Absicherung des LANs.
 
@@ -345,7 +345,7 @@ FLUSH PRIVILEGES;
 *Abbildung 17: Erfolgreicher Validierungstest im Webbrowser der Mint-Management-VM, der die aktive Kommunikation zwischen PHP und der MariaDB-Instanz bestätigt.*
 
 
-# Dokumentation Phase 3: Aufbau des interaktiven Web-Services
+# 📂 Phase 3: Aufbau des interaktiven Web-Services
 
 ## 1. System-Übersicht (LAMP-Stack)
 Im Zeitraum von Tag 16 bis 22 wurde ein statischer Webserver in einen vollwertigen Application-Stack umgewandelt:
@@ -390,7 +390,7 @@ Es wurde eine Datenbank `projekt_db` mit der Tabelle `logbuch` erstellt.
 ---
 
 
-# Dokumentation Phase 4: Monitoring & Automatisierung
+# 📂 Phase 4: Monitoring & Automatisierung
 
 Dieses Dokument beschreibt die Planung und Implementierung eines automatisierten Sicherungsverfahrens für das Projekt "Foto-Logbuch". Als Systemadministrator ist es mein Ziel, die Datenintegrität durch regelmäßige Backups sicherzustellen.
 
@@ -453,7 +453,7 @@ Ein Backup ist nur nützlich, wenn die Wiederherstellung funktioniert. Ein simul
 * **Wiederherstellungs-Befehl:** `sudo mariadb -u root projekt_db < /home/angel/backups/db_backup_X.sql`
 
 
-# Dokumentation Phase 5: Docker Containerisierung und Migration
+# 📂 Phase 5: Docker Containerisierung und Migration
 
 In dieser Phase wurde die Anwendung von einer klassischen Host-Installation in eine moderne Microservice-Architektur mittels Docker überführt.
 
@@ -506,7 +506,7 @@ Nach dem Abgleich der Anmeldedaten in der `db_test.php` (Passwort: `123`, Host: 
 Durch die Containerisierung ist die Applikation nun plattformunabhängig, leicht skalierbar und durch die Trennung von Code und Daten wesentlich sicherer. Die Fehlerbehebung während der Migration hat das Verständnis für Docker-Volumes und Netzwerk-Kommunikation vertieft.
 
 
-# Dokumentation Phase 6: Client-Provisionierung & Domänenintegration 
+# 📂 Phase 6: Client-Provisionierung & Domänenintegration 
 
 ## 1. Zielsetzung
 Ziel dieser Phase war die Bereitstellung eines Windows 11 Pro Clients (**CL-01-WIN11**), die Installation notwendiger Treiber für die virtualisierte Umgebung (Proxmox) sowie die vollständige Integration in die Active Directory Domäne `projekt.local`.
@@ -568,7 +568,7 @@ Zur Überprüfung der zentralen Steuerung wurde die Richtlinie **GPO_Sicherheit_
 ## 6. Fazit Phase 6
 Der Client ist nun vollständig im Management-Bereich des Servers. Die Namensauflösung (DNS) und die Sicherheitsrichtlinien (GPO) funktionieren einwandfrei. Das System ist bereit für die Bereitstellung von Netzwerkressourcen.
 
-# Dokumentation Phase 7: Zentraler Fileserver & Datensicherheit 
+# 📂 Phase 7: Zentraler Fileserver & Datensicherheit 
 
 ## 1. Zielsetzung
 Aufbau einer zentralen Dateiablage auf dem Domain Controller (**DC-01**), um Projektdaten strukturiert bereitzustellen. Ziel ist der automatisierte Zugriff für Domänen-Benutzer sowie die Absicherung gegen versehentliches Löschen.
@@ -627,7 +627,7 @@ Als zusätzliche Sicherheitsmaßnahme wurden **Schattenkopien (Volume Shadow Cop
 ## 6. Fazit
 Mit Abschluss dieser Phase verfügt die Domäne über einen voll funktionsfähigen Fileserver. Die Kombination aus GPO-basierter Laufwerkszuordnung und Schattenkopien bietet eine benutzerfreundliche und zugleich sichere Arbeitsumgebung.
 
-# Dokumentation Phase 8: Fortgeschrittene Administration & Monitoring
+# 📂 Phase 8: Fortgeschrittene Administration & Monitoring
 
 ## 1. Zielsetzung
 In dieser Phase wurde der Fileserver (DC-01) gegen unkontrolliertes Datenwachstum abgesichert und ein proaktives Monitoring-System für Systemereignisse etabliert. Ziel ist es, die Systemstabilität zu gewährleisten und die Einhaltung von Unternehmensrichtlinien (z. B. Verbot privater Daten auf Projektlaufwerken) technisch zu erzwingen.
@@ -691,7 +691,7 @@ Nach Abschluss der Konfiguration und erfolgreicher Validierung wurden Snapshots 
 
 
 
-# Dokumentation Phase 9: Web-Infrastruktur & Netzwerk-Segmentierung
+# 📂 Phase 9: Web-Infrastruktur & Netzwerk-Segmentierung
 
 ## 1. Zielsetzung
 Das Ziel dieser Phase war die Migration des Webservers in ein isoliertes Server-VLAN (VLAN 20) und die Absicherung des Zugriffs nach dem **Least-Privilege-Prinzip**. Es sollte sichergestellt werden, dass Clients nur auf notwendige Dienste (HTTP) zugreifen können, während administrative Zugriffe (SSH) auf das Management-Netz beschränkt bleiben.
@@ -746,7 +746,7 @@ Zur Bestätigung der korrekten Firewall-Konfiguration wurden folgende Tests durc
 > ![Screenshot Die personalisierte Webseite im Browser des Windows-Clients](./img/Cmd_win_client_ping_webserver.png)
 
 
-# Dokumentation Phase 10: DNS & Namensauflösung
+# 📂 Phase 10: DNS & Namensauflösung
 
 ## 1. Zielsetzung
 Implementierung einer benutzerfreundlichen Namensauflösung für den isolierten Webserver.
@@ -766,7 +766,7 @@ Die erfolgreiche Auflösung wurde mittels `nslookup` und durch den Aufruf der UR
 > ![Screenshot Browser mit URL webserver.home.arpa](./img/browser_webserver_client_test.png)
 
 
-# Dokumentation Phase 11: System-Härtung & Webserver-Absicherung
+# 📂 Phase 11: System-Härtung & Webserver-Absicherung
 
 ## 1. Zielsetzung
 Nachdem die Netzwerk-Infrastruktur gesichert wurde, lag der Fokus in Phase 11 auf der Absicherung des Webservers selbst (**Host-Hardening**). Ziel war es, Informationslecks zu schließen, unnötige Dienste zu entfernen und den administrativen Zugriff (SSH) zusätzlich abzusichern.
@@ -818,7 +818,7 @@ Die Wirksamkeit der Maßnahmen wurde durch folgende Tests verifiziert:
 
 >  ![Screenshot Browser-Ansicht einer 404-Meldung oder UFW-Status](./img/Browser_Sicherheitstest.png)
 
-# Dokumentation Phase 12: System-Hardening & Monitoring
+# 📂 Phase 12: System-Hardening & Monitoring
 
 ## 1. Überwachung der Netzwerkaktivität
 Um die Wirksamkeit der Firewall-Regeln zu verifizieren, wurde das Echtzeit-Logging der pfSense analysiert. 
@@ -852,7 +852,7 @@ Das Projekt wurde erfolgreich abgeschlossen. Der Webserver ist nun:
 
 >  ![Schreenshot der Webseite erreichbar](./img/Webseite_FInal_Phase_!2.png)
 
-# Phase 13: Projektabschluss und Reflexion
+# 📂 Phase 13: Projektabschluss und Reflexion
 
 In der finalen Phase wird das Projekt offiziell beendet, die Zielerreichung bewertet und der gesamte Prozess kritisch reflektiert.
 
@@ -886,7 +886,7 @@ Das Projekt beweist die erfolgreiche Bereitstellung einer sicheren, containerisi
 * **Gesamturteil:** Die Kombination aus pfSense zur Netzwerksegmentierung und Docker zur Applikations-Isolation stellt eine robuste und skalierbare
 
 
-# DokumentationPhase 14: Modernisierung mit Docker Compose
+# 📂 Phase 14: Modernisierung mit Docker Compose
 In dieser Phase wurde das manuelle Container-Management durch eine deklarative `docker-compose.yml` ersetzt.
 
 * **Zentralisierung:** Alle Parameter für den Web- und Datenbank-Container sind nun in einer Datei definiert.
@@ -895,7 +895,7 @@ In dieser Phase wurde das manuelle Container-Management durch eine deklarative `
 * **Status:** Der gesamte Stack kann nun mit einem einzigen Befehl (`docker compose up -d`) gestartet werden.
 * 
 
-# 📂 Dokumentation Phase 15: Automatisierung, Vault-Integration & Datenbank-Sicherung
+# 📂 Phase 15: Automatisierung, Vault-Integration & Datenbank-Sicherung
 
 ## 🎯 1. Zielsetzung
 Aufbau einer automatisierten Backup-Pipeline mit Ansible, um MariaDB-Datenbanken aus Docker-Containern zu sichern und verschlüsselt auf den Management-PC (Mint) zu übertragen.
@@ -939,7 +939,7 @@ Der Erfolg wurde durch zwei Prüfungen bestätigt:
 2.  ✅ **Inhaltsprüfung:** Ein manueller Scan bestätigte die Existenz der Tabelle `logbuch` im SQL-Dump.
 
 ---
-# Phase 16: Security Auditing & Automated Hardening
+# 📂 Phase 16: Security Auditing & Automated Hardening
 
 In dieser Phase wurde der Fokus auf die messbare Sicherheit (Compliance) der Infrastruktur gelegt. Durch den Einsatz von professionellen Audit-Tools und Ansible-Automatisierung wurde der Sicherheitsstatus des Webservers analysiert und verbessert.
 
@@ -973,7 +973,7 @@ Basierend auf den detaillierten Lynis-Suggestions () wurden folgende Konfigurati
 ## 🏁 Fazit
 Die Infrastruktur erfüllt nun höhere Sicherheitsstandards. Der Anstieg des Hardening Index von 68 auf 70 beweist die Wirksamkeit der "Defense in Depth"-Strategie: Von der pfSense-Firewall über VLAN-Isolation bis hin zur gehärteten Applikations-Ebene.
 
-# Phase 17: Advanced Hardening, Detection & Incident Response
+# 📂 Phase 17: Advanced Hardening, Detection & Incident Response
 
 In dieser Phase wurde die Sicherheit des Webservers von der Peripherie in den Kern des Betriebssystems verlagert. Der Fokus lag auf der Implementierung von Intrusion Detection Systemen (IDS) und der Härtung von Kernel-Parametern.
 
