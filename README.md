@@ -1006,7 +1006,7 @@ Durch die Kombination aus Kernel-Härtung und Monitoring-Tools konnte die Resili
 
 
 ![Rkhunter Audit Summary](./img/Rootkit-Scan.png)
-* Zusammenfassung des Rootkit-Scans ohne kritische Funde.*
+*Zusammenfassung des Rootkit-Scans ohne kritische Funde.*
 
 ## 🏁 Fazit
 Das System verfügt nun über aktive Abwehrmechanismen. Während Phase 16 die Compliance sicherstellte, hat Phase 17 die technische Tiefe für Detection & Response geschaffen.
