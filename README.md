@@ -972,3 +972,41 @@ Basierend auf den detaillierten Lynis-Suggestions () wurden folgende Konfigurati
 
 ## 🏁 Fazit
 Die Infrastruktur erfüllt nun höhere Sicherheitsstandards. Der Anstieg des Hardening Index von 68 auf 70 beweist die Wirksamkeit der "Defense in Depth"-Strategie: Von der pfSense-Firewall über VLAN-Isolation bis hin zur gehärteten Applikations-Ebene.
+
+# Phase 17: Advanced Hardening, Detection & Incident Response
+
+In dieser Phase wurde die Sicherheit des Webservers von der Peripherie in den Kern des Betriebssystems verlagert. Der Fokus lag auf der Implementierung von Intrusion Detection Systemen (IDS) und der Härtung von Kernel-Parametern.
+
+## 🛠️ Implementierte Sicherheits-Komponenten
+
+### 1. Kernel-Härtung (Network Stack)
+Mittels Ansible wurden kritische `sysctl`-Parameter optimiert, um den Server gegen Netzwerk-Angriffe zu immunisieren.
+* **IP-Spoofing Schutz**: Aktivierung von `rp_filter`.
+* **ICMP-Sicherheit**: Ignorieren von Redirects und Broadcast-Pings zur Vermeidung von Man-in-the-Middle-Angriffen.
+* **Hardware-Sicherheit**: Deaktivierung von USB-Storage-Treibern auf Software-Ebene.
+
+### 2. Detection & Vulnerability Management
+Um verdächtige Aktivitäten frühzeitig zu erkennen, wurden folgende Tools ausgerollt:
+* **AIDE (File Integrity Monitoring)**: Erstellung einer Baseline der Systemdateien zur Erkennung von Manipulationen.
+* **Rkhunter (Rootkit Scanner)**: Durchführung von automatisierten Scans auf bekannte Backdoors und verdächtige Dateitypen.
+* **Process Accounting (acct)**: Lückenlose Protokollierung von Benutzerbefehlen zur forensischen Analyse.
+
+### 3. Incident Response mit Fail2Ban
+Implementierung eines Schwellenwert-basierten Sperrsystems. IPs, die mehrfach an der SSH-Authentifizierung scheitern, werden automatisch auf Firewall-Ebene für 60 Minuten gesperrt.
+
+## 📊 Ergebnisse & Audit-Verifizierung
+
+Durch die Kombination aus Kernel-Härtung und Monitoring-Tools konnte die Resilienz des Systems signifikant gesteigert werden.
+
+| Metrik | Wert | Status |
+| :--- | :--- | :--- |
+| **Hardening Index (Neu)** | **72** | 🟢 Steigerung gegenüber Baseline |
+| **Rootkit Check** | 0 Possible Rootkits | ✅ Bestanden |
+| **Kernel Security** | Sysctl Optimized | ✅ Abgeschlossen |
+
+
+![Rkhunter Audit Summary](./img/Rootkit-Scan.png)
+* Zusammenfassung des Rootkit-Scans ohne kritische Funde.*
+
+## 🏁 Fazit
+Das System verfügt nun über aktive Abwehrmechanismen. Während Phase 16 die Compliance sicherstellte, hat Phase 17 die technische Tiefe für Detection & Response geschaffen.
