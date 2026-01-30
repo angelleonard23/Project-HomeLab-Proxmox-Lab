@@ -1045,7 +1045,8 @@ Die Wirksamkeit der Regeln wurde mit einem simulierten Angriff geprüft.
 * **Erkennung:** Suricata meldete sofort `GPL ATTACK_RESPONSE id check returned root`.
 * **Reaktion:** Die Angreifer-IP `217.160.0.187` wurde unmittelbar in die **Block-Liste** verschoben.
 * **Erfolg:** Der Management-PC blieb dank der Pass List online und handlungsfähig.
-
+* 
+  ![Erfolgreicher Block-Nachweis](./img/Suricata_block_list.png)
 ---
 
 ## 🧹 4. Log- & System-Hygiene
