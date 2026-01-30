@@ -1010,3 +1010,47 @@ Durch die Kombination aus Kernel-Härtung und Monitoring-Tools konnte die Resili
 
 ## 🏁 Fazit
 Das System verfügt nun über aktive Abwehrmechanismen. Während Phase 16 die Compliance sicherstellte, hat Phase 17 die technische Tiefe für Detection & Response geschaffen.
+
+# 📂 Phase 18: IPS-Scharfschaltung & Management-Härtung
+
+## 🎯 Zielsetzung
+Versetzen von Suricata in den **Blocking-Mode** (IPS) und Absicherung des Admin-Zugangs, um ein versehentliches Aussperren ("Lockout") zu verhindern.
+
+---
+
+## 🖥️ 1. DHCP & IP-Management
+Um eine verlässliche Whitelist zu führen, wurde der Management-PC fest an eine Identität gebunden.
+
+* **Host-Identität:** `mint-management`
+* **MAC-Adresse:** `bc:24:11:02:83:6d`
+* **Feste IP:** `10.0.10.52`
+* **Netzwerk-Hygiene:** Der dynamische DHCP-Pool wurde auf `.60` bis `.100` verschoben, um Platz für statische Mappings zu schaffen und IP-Konflikte zu vermeiden.
+
+---
+
+## 🧱 2. Suricata IPS-Konfiguration
+Der Status wurde von "nur Beobachten" auf "aktives Blockieren" umgestellt.
+
+* **Modus:** `Legacy Mode` (für maximale Kompatibilität mit der Pass List).
+* **Aktion:** `Block Offenders` aktiviert.
+* **Sicherheitsnetz:** Zuweisung der `HomeLab_Whitelist` als **IP Pass List**, damit der Management-PC (`10.0.10.52`) niemals blockiert wird.
+* **State-Kill:** `Kill States` aktiviert, um bösartige Verbindungen sofort hart zu trennen.
+
+---
+
+## 🧪 3. Validierung (Der "Feuertest")
+Die Wirksamkeit der Regeln wurde mit einem simulierten Angriff geprüft.
+
+* **Test-Vektor:** `curl -A "eicar" http://testmyids.com`
+* **Erkennung:** Suricata meldete sofort `GPL ATTACK_RESPONSE id check returned root`.
+* **Reaktion:** Die Angreifer-IP `217.160.0.187` wurde unmittelbar in die **Block-Liste** verschoben.
+* **Erfolg:** Der Management-PC blieb dank der Pass List online und handlungsfähig.
+
+---
+
+## 🧹 4. Log- & System-Hygiene
+* **Auto-Cleanup:** Log-Management aktiviert, um das Volllaufen der Festplatte zu verhindern.
+* **Dashboard:** Integration der **Suricata Alerts** in das pfSense-Hauptmenü zur Echtzeit-Überwachung.
+* **Persistence:** Alle kritischen Zugangsdaten sind sicher in der `vault_passwords.yml` dokumentiert.
+
+---
