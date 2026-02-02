@@ -1055,3 +1055,47 @@ Die Wirksamkeit der Regeln wurde mit einem simulierten Angriff geprüft.
 * **Persistence:** Alle kritischen Zugangsdaten sind sicher in der `vault_passwords.yml` dokumentiert.
 
 ---
+
+# 📂 Phase 19: Web-Vulnerability Management & Server-Härtung
+
+## 🎯 Zielsetzung
+Identifizierung von Schwachstellen auf dem Webserver (`10.0.20.50`) mittels automatisierter Scans und Durchführung gezielter Härtungsmaßnahmen zur Reduzierung der Angriffsfläche.
+
+---
+
+## 🔍 1. Vulnerability Scanning (Reconnaissance)
+Ein technisches Audit mit `nmap --script vuln` deckte kritische Fehlkonfigurationen in der Web-Infrastruktur auf.
+
+* **Zielsystem:** `10.0.20.50` (Debian Webserver)
+* **Status:** Kritische Sicherheitsmängel identifiziert.
+* **Befund A:** Fehlende `HttpOnly` und `Secure` Flags bei Session-Cookies (PHPSESSID) auf den Ports 80, 443 und 8080.
+* **Befund B:** Directory Enumeration ermöglichte das Auffinden der sensiblen Datei `/log.php`.
+
+---
+
+## 🛠️ 2. Remediation (Durchgeführte Härtung)
+Um die gefundenen Lücken zu schließen, wurden Konfigurationsänderungen auf Applikations- und Serverebene vorgenommen.
+
+* **Cookie-Sicherheit (PHP):** In der `/etc/php/8.4/apache2/php.ini` wurden `session.cookie_httponly = On` und `session.cookie_secure = On` aktiviert.
+* **Zugriffsschutz (Apache):** Implementierung eines `<Files>`-Blocks in der `apache2.conf`, um den direkten Zugriff auf `/log.php` global zu verweigern.
+* **SSH-Hygiene:** Validierung der SSH-Konfiguration; der Dienst war bereits korrekt mit `PermitRootLogin no` gegen direkten Root-Zugriff abgesichert.
+
+---
+
+## 🧪 3. Validierung (Der Wirksamkeitsnachweis)
+Nach dem Neustart der Dienste wurden die Maßnahmen vom Management-PC aus verifiziert.
+
+* **Cookie-Check:** `curl -I` bestätigt, dass Session-Cookies nun sicher mit `; secure; HttpOnly` übertragen werden.
+* **Zugriffs-Check:** Ein Aufruf der Datei `/log.php` resultiert nun unmittelbar in einem **403 Forbidden**.
+* **Erfolg:** Die von Nmap gemeldeten Schwachstellen wurden effektiv eliminiert.
+
+![Erfolgreicher Härtungs-Nachweis](./img/forbidden.png)
+
+---
+
+## 🧹 4. Dokumentation & Persistence
+* **Standardisierung:** Alle Web-Sicherheitseinstellungen wurden in die globalen Konfigurationsdateien des Servers übernommen.
+* **Asset-Management:** Die Zugangsdaten für den Webserver und die Pfade zur Verschlüsselung sind sicher in der `vault_passwords.yml` hinter
+
+
+
