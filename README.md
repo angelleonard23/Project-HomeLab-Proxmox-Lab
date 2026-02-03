@@ -1130,7 +1130,7 @@ Der Erfolg der zentralen Protokollierung wurde durch den Abgleich von Webserver-
 * **Log Viewer:** Erfolgreiche Sichtung der Apache-Fehlermeldungen (`authz_core:error`) direkt in der pfSense-Weboberfläche.
 * **Filter-Check:** Verifikation der Sichtbarkeit mittels Hostnamen-Filter (`webserver`), wodurch relevante Angriffsversuche sofort isoliert werden können.
 
-![Zentraler Log-Eingang der Webserver-Fehler](./img/logviewer.png)
+![Zentraler Log-Eingang der Webserver-Fehler](./img/Logviewer.png)
 
 ---
 
