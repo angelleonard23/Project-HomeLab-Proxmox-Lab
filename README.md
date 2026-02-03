@@ -1098,4 +1098,43 @@ Nach dem Neustart der Dienste wurden die Maßnahmen vom Management-PC aus verifi
 * **Asset-Management:** Die Zugangsdaten für den Webserver und die Pfade zur Verschlüsselung sind sicher in der `vault_passwords.yml` hinter
 
 
+# 📂 Phase 20: Zentralisiertes Logging & SIEM-Vorbereitung
 
+## 🎯 Zielsetzung
+Etablierung eines zentralen Log-Managements auf der pfSense, um Sicherheitsereignisse (wie die in Phase 19 provozierten 403-Fehler) vom Webserver in Echtzeit zu erfassen, zu korrelieren und für automatisierte Sperrmechanismen (IPS) nutzbar zu machen.
+
+---
+
+## 📡 1. Log-Infrastruktur (Empfänger & Sender)
+Um eine saubere Trennung vom restlichen Firewall-Traffic zu gewährleisten, wurde ein dedizierter Log-Pfad über einen alternativen Port eingerichtet.
+
+* **Empfänger (pfSense):** Konfiguration des `syslog-ng` Pakets auf Port `5140/UDP`.
+* **Sender (Webserver):** Installation und Konfiguration von `syslog-ng` auf `10.0.20.50`, um lokale Apache-Fehler-Logs an die Firewall (`10.0.20.1`) weiterzuleiten.
+* **Firewall-Regel:** Freischaltung von Port `5140` auf dem Interface **WEBSERVER**, um den eingehenden Log-Stream zu autorisieren.
+
+---
+
+## 🛠️ 2. Konfiguration (Advanced Mapping)
+Da die Standard-Objekte der pfSense geschützt sind, wurde eine manuelle Log-Kette innerhalb von `syslog-ng` implementiert, um Fehlerquellen (wie doppelte Datei-Zugriffe) zu vermeiden.
+
+* **Custom Source:** Erstellung des Objekts `s_webserver_remote`, das explizit auf Netzwerk-Pakete an Port 5140 lauscht.
+* **Log Logic:** Verknüpfung der Remote-Quelle mit dem Ziel-Pfad `/var/syslog-ng/default.log` über das Log-Objekt `l_webserver_connect`.
+* **Dienst-Validierung:** Sicherstellung des Dienststatus über `Status > Services`, nachdem Syntax-Fehler in der `syslog-ng.conf` behoben wurden.
+
+---
+
+## 🧪 3. Validierung (Live-Monitoring)
+Der Erfolg der zentralen Protokollierung wurde durch den Abgleich von Webserver-Events und Firewall-Anzeige nachgewiesen.
+
+* **Event-Trigger:** Manuelle Auslösung der in Phase 19 gehärteten Zugriffsbeschränkung auf `log.php`.
+* **Log Viewer:** Erfolgreiche Sichtung der Apache-Fehlermeldungen (`authz_core:error`) direkt in der pfSense-Weboberfläche.
+* **Filter-Check:** Verifikation der Sichtbarkeit mittels Hostnamen-Filter (`webserver`), wodurch relevante Angriffsversuche sofort isoliert werden können.
+
+![Zentraler Log-Eingang der Webserver-Fehler](./img/logviewer.png)
+
+---
+
+## 🧹 4. Dokumentation & Persistence
+* **Fehlerbehebung:** Dokumentation der Syntax-Korrekturen (Vermeidung von `conflicting persist-names`) zur zukünftigen Wartung des Log-Dienstes.
+* **Vault-Integration:** Hinterlegung der für die API-Anbindung notwendigen Credentials in der Datei `vault_passwords.yml`.
+* **Ausblick:** Die nun fließenden Logdaten dienen als Trigger für Phase 21 (Automatisiertes Blocking mittels pfBlockerNG).
