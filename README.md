@@ -1,37 +1,46 @@
-# Enterprise Home Lab & Security Infrastructure
+# 📂 Enterprise Home Lab & Security Infrastructure
 
-## 🎯 Projektziel
-Transformation eines Standard-Heimnetzwerks in eine professionelle, segmentierte Lab-Umgebung. Ziel ist die Vertiefung von Kenntnissen in Virtualisierung, Firewalling (pfSense) und Containerisierung (Docker/Kubernetes).
+## 🎯 Projekt-Vision
+Systematische Transformation einer Consumer-Netzwerkumgebung in eine hochverfügbare, segmentierte Enterprise-Lab-Struktur. Dieses Projekt dient als Proof-of-Concept für moderne IT-Infrastrukturen, mit Fokus auf Virtualisierung, Advanced Firewalling (pfSense) und die Migration hin zu einer Container-basierten Microservice-Architektur.
 
-# 🛡️ Project-HomeLab: Proxmox Infrastructure
+---
 
-## 💻 Hardware-Stack
-- **Hypervisor:** AOOSTAR WTR PRO (AMD Ryzen 7 5825U, 64GB RAM)
-- **Router:** TP-Link Archer AX18
-- **ISP:** Magenta Fiber Box (aktuell im Double-NAT Modus / DMZ geplant)
-- **Extender:** TP-Link RE330 (OneMesh für Arbeitszimmer-Konnektivität)
+## 💻 Hardware-Stack (Physical Layer)
+Die Basis bildet ein performanter Mini-Server, der speziell auf Effizienz und Multi-Core-Workloads ausgelegt ist:
 
-## 📊 Status & Screenshots
-### Proxmox Dashboard
-![Dashboard](./img/Proxmox_Dashboard_CPU_RAM_Übersicht.png)
+* **Hypervisor-Host:** AOOSTAR WTR PRO
+    * **CPU:** AMD Ryzen 7 5825U (8 Kerne / 16 Threads)
+    * **RAM:** 64GB DDR4 (für hohen VM-Konsolidierungsgrad)
+* **Networking:**
+    * **Core-Router:** TP-Link Archer AX18 (Gateway zum ISP)
+    * **Uplink:** Magenta Fiber Box (Anbindung via Double-NAT / DMZ-Vorhaltung)
+    * **Infrastruktur:** TP-Link RE330 OneMesh zur stabilen Anbindung des Lab-Standorts.
 
-### Netzwerk-Konfiguration
-![Netzwerk](./img/Netzwerk_Konfiguration.png)
+![Nachweis: Proxmox Host-Ressourcen & Auslastung](./img/Proxmox_Dashboard_CPU_RAM_Übersicht.png)
 
-## 🌐 Netzwerk-Topologie
+---
 
+## 🌐 Netzwerk-Topologie & Virtualisierungs-Design
+Die logische Trennung erfolgt auf Hypervisor-Ebene durch den Einsatz dedizierter virtueller Bridges, um eine strikte WAN/LAN-Trennung zu erzwingen.
+
+* **Virtualisierungsschicht:** Proxmox VE (Debian-basiert)
+* **Netzwerk-Abstraktion:**
+    * `vmbr0` (WAN): Physischer Uplink zur Außenwelt.
+    * `vmbr1` (Isolated LAN): Exklusives Backend-Netz für die Lab-Infrastruktur.
+
+### Logischer Datenfluss
 ```mermaid
 graph TD
-    subgraph "Internet"
+    subgraph "Public Internet"
         ISP[Magenta Fiber Box]
     end
 
-    subgraph "Physische Infrastruktur"
+    subgraph "Physical Perimeter"
         Archer[TP-Link Archer AX18 - 192.168.1.1]
         Aoostar[AOOSTAR WTR PRO - Proxmox Host]
     end
 
-    subgraph "Virtuelle Umgebung (Proxmox)"
+    subgraph "Virtual Secure Environment (Proxmox)"
         WAN_Bridge((vmbr0 - WAN))
         LAN_Bridge((vmbr1 - Isoliertes LAN))
         
@@ -46,854 +55,759 @@ graph TD
     LAN_Bridge --- Mint
 
 `````
-# 📂 Phase 1: pfSense Firewalling & VLAN Webserver
+# 📂 Phase 1: pfSense-Core, VLAN-Design & Security-Baseline
 
-### 📊 Proof of Concept
-Hier ist die erfolgreiche Verbindung der Management-VM durch die Firewall dokumentiert:
+## 🎯 Zielsetzung
+Aufbau einer hochverfügbaren Virtualisierungsplattform (Proxmox) und Implementierung einer zentralen Firewall-Instanz (pfSense). Fokus liegt auf der Etablierung einer sicheren Netzwerk-Topologie durch VLAN-Segmentierung, der Absicherung administrativer Zugänge und dem proaktiven Schutz durch DNS-Filterung.
 
-![pfSense Dashboard](./img/pfsense_dashboard.jpg)
-*Abbildung 1: Zentrales Management-Dashboard in pfSense.*
+---
 
-![Ping Test](./img/pfsense_ping.jpg)
-*Abbildung 2: Erfolgreicher ICMP-Ping auf 8.8.8.8 zur Verifizierung der Internet-Konnektivität.*
+## 🏗️ 1. Infrastruktur-Architektur (Hypervisor)
+Das gesamte Labor wird auf einem Proxmox VE-Node (AMD Ryzen 7) betrieben. Die Architektur wurde auf maximale Ressourcen-Effizienz und logische Trennung optimiert.
+
+* **Firewall:** pfSense CE als zentrales Security-Gateway (Routing/NAT/Filterung).
+* **Management-Node:** Linux Mint Xfce Edition zur ressourcenschonenden Administration.
+* **Service-Node:** Debian 13 "Trixie" als Headless-System für den Web-Service.
 
 | Komponente | Interface | IP-Adresse | Subnetzmaske | Zweck |
 | :--- | :--- | :--- | :--- | :--- |
-| **Archer Router** | LAN | `192.168.1.1` | `/24` | Physisches Gateway & WAN-Quelle |
-| **pfSense** | WAN (`vmbr0`) | `192.168.1.136` | `/24` | Uplink zum Internet (via Archer) |
-| **pfSense** | LAN (`vmbr1`) | `10.0.0.1` | `/24` | Standard-Gateway für das Lab |
-| **Linux Mint** | ETH0 (`vmbr1`) | `10.0.0.10` | `/24` | Management-Client (Xfce Edition) |
-| **Lab-Bereich** | DHCP-Pool | `10.0.0.100-200` | `/24` | Bereich für zukünftige Test-VMs |
-
-### 🛡️ Security-Hardening: pfBlockerNG Integration
-
-Um das Netzwerk proaktiv gegen Telemetrie, Tracking und bösartige Domains abzusichern, wurde **pfBlockerNG-devel** implementiert. 
-
-![pfBlockerNG Test](./img/pfsense_pfblocker_test.jpg)
-*Abbildung 3: Erfolgreicher DNS-Blocking-Test. Die Domain "flurry.com" wird durch die Firewall abgefangen und auf die interne VIP 10.10.10.1 umgeleitet.*
-
-#### Technische Highlights:
-* **DNSBL-Filterung:** Automatisierte Blockierung von Werbe- und Tracking-Servern auf DNS-Ebene.
-* **Validierung:** Der `nslookup`-Befehl bestätigt, dass der Filter aktiv in den Datenverkehr der Management-VM eingreift.
-* **Ressourcen-Effizienz:** Dank der **Linux Mint 22.2 Xfce Edition** bleibt die Last auf dem Proxmox-Host minimal, wodurch mehr Kapazität für die umfangreichen Filter-Datenbanken der pfSense zur Verfügung steht.
-
-
-### 🌐 Deployment des Web-Services
-
-Nach der Absicherung des Gateways wurde ein dedizierter Webserver auf Basis von **Debian 13 (Trixie)** implementiert. 
-
-![Proxmox Management Übersicht](./img/pfsense_webserver_management.png)
-*Abbildung 4: Zentrale Verwaltung in Proxmox. Die Übersicht zeigt die Koexistenz von Firewall, Management-VM und dem aktiven Apache-Webserver.*
-
-#### Details zur Implementierung:
-* **Infrastruktur:** Betrieb von drei spezialisierten VMs auf einem Proxmox-Node.
-* **Service-Status:** Verifizierung des Apache2-Dienstes (`active/running`) direkt über die Proxmox-Konsole.
-* **Effizienz-Faktor:** Durch die Nutzung der **Linux Mint 22.2 Xfce Edition** zur Administration bleibt die grafische Last minimal, was einen reibungslosen Parallelbetrieb aller Dienste ermöglicht.
- 
-## 🏗️ Infrastruktur-Komponente: Webserver-01
-
-Im Rahmen des Laboraufbaus wurde ein dedizierter Webserver implementiert, der als Ziel für die Firewall-Regeln und Portweiterleitungen dient.
-
-### Spezifikationen
-* **Betriebssystem:** Debian 13.3 (Trixie), Netinst-Image (Stand 2026)
-* **Ressourcen:** 1 vCPU, 512 MB RAM, 10 GB Disk
-* **Netzwerk-Anbindung:** `vmbr1` (Internes LAN hinter pfSense)
-* **IP-Konfiguration:** Statische Zuweisung (DHCP Static Mapping) auf `10.0.0.12`
-* **Dienste:** Apache2 (HTTP), OpenSSH-Server
-
-### Konfigurations-Details
-Der Server wurde "headless" (ohne grafische Oberfläche) aufgesetzt, um die Performance des Proxmox-Hosts (Ryzen 7) zu maximieren. Die Verwaltung erfolgt effizient über die **Linux Mint 22.2 Xfce Edition**, was den Ressourcenverbrauch des Management-Clients minimal hält.
-
-#### Verifizierung des Dienstes:
-
-Um sicherzustellen, dass der Webdienst korrekt läuft, wurde der Status des Apache-Daemons abgefragt:
-
-```bash
-# 1. Befehl zur Statusabfrage
-angel@webserver-01:~$ systemctl status apache2
-
-# 2. Relevante Systemausgabe (Auszug)
-● apache2.service - The Apache HTTP Server
-     Loaded: loaded (/usr/lib/systemd/system/apache2.service; enabled; preset: enabled)
-     Active: active (running) since Tue 2026-01-13 09:43:34 CET; 10min ago
-     ...
-     Main PID: 671 (apache2)
-```
-### 🛡️ Firewall & NAT: Externer Zugriff
-
-Um den internen Webdienst sicher zu veröffentlichen, wurde eine Portweiterleitung (DNAT) auf der pfSense-Firewall konfiguriert. 
-
-#### Konfiguration:
-* **Eingehendes Interface:** WAN
-* **Dienst:** HTTP (TCP Port 80)
-* **Zielsystem:** 10.0.0.12 (Debian 13 Webserver)
-
-![Abbildung 5: WAN Firewall Rules](./img/pfSense_WAN_Rule.jpg)
-*Abbildung 5: Automatisch generierte Firewall-Regel nach erfolgreicher NAT-Konfiguration. Der Zugriff wird explizit nur für Port 80 auf das Zielsystem erlaubt.*
-
-> **System-Performance:** Die Konfiguration wurde über die **Linux Mint Xfce Edition** validiert. Die Wahl dieses Desktops ermöglichte eine verzögerungsfreie Bedienung der pfSense-Weboberfläche, während die Firewall-Logs in Echtzeit analysiert wurden.
-
-## 🔒 Security-Features & Implementierung
-
-### 1. SSL/TLS Verschlüsselung
-Der Apache-Webserver wurde mit `mod_ssl` gehärtet. Der Zugriff erfolgt verschlüsselt über Port 443, wobei pfSense den Traffic via Destination NAT (DNAT) direkt an den Debian-Endpunkt leitet.
-
-### 2. Management-Isolation (Port-Remapping)
-Um Sicherheitsrisiken und Port-Konflikte zu minimieren, wurde das Management-Interface der pfSense vom Standard-Port auf **Port 8443** verschoben. 
-* **Ergebnis:** Port 80 und 443 stehen exklusiv für öffentliche Dienste zur Verfügung, während die Administration über einen gesicherten, nicht-standardisierten Kanal erfolgt.
-
-### 3. Ressourcen-Optimierung
-Durch den Einsatz der **Linux Mint Xfce Edition** zur Administration wurde die Systemlast auf dem Proxmox-Host minimiert. Dies ermöglicht eine performante Überwachung der Traffic-Graphen und Firewall-Logs in Echtzeit, selbst bei hoher Verschlüsselungslast auf dem Server.
-
-## 🚦 Verifizierung der Dienste
-
-| Dienst | Zugriff | Protokoll | Status |
-| :--- | :--- | :--- | :--- |
-| Webserver (Public) | `http://192.168.1.136` | HTTP (80) | ✅ Online |
-| Webserver (Secure) | `https://192.168.1.136` | HTTPS (443) | ✅ Online |
-| pfSense Admin | `https://10.0.0.1:8443` | HTTPS (8443) | ✅ Gesichert |
-
-## 🏗️ Architektur & Topologie
-
-- **Virtualisierungs-Host:** Proxmox VE (AMD Ryzen 7 5825U)
-- **Firewall:** pfSense CE (WAN/LAN Segregation)
-- **Management-Node:** Linux Mint 22.2 Xfce Edition
-- **Service-Node:** Debian 13 "Bookworm" (Apache2 Webserver)
-
-### Netzwerk-Spezifikationen
-- **WAN IP (Lab):** 192.168.1.136
-- **LAN Subnetz:** 10.0.0.0/24
-- **Webserver-IP (Intern):** 10.0.0.12
-
-## 🔒 Security & Konfiguration
-
-### 1. Port-Remapping & Härtung
-Um Port-Konflikte zu vermeiden und die Sicherheit zu erhöhen, wurde das pfSense-Management vom Standard-Port auf **Port 8443** verschoben. Dadurch bleiben die Ports 80/443 exklusiv für den öffentlichen Webserver reserviert.
-
-### 2. NAT & Firewall-Regeln
-Anfragen an das WAN-Interface werden via Destination NAT (DNAT) direkt an den Debian-Server geleitet. Die Regeln umfassen sowohl HTTP (80) als auch HTTPS (443).
-
-![Firewall Regeln](./img/pfsense_wan_rules.jpg)
-* Aktive Port-Forwarding-Regeln für den Webserver-Zugriff.*
-
-## 🔄 Analyse: Internes vs. Externes Routing (NAT-Loopback)
-
-Ein Kernaspekt dieses Projekts ist die korrekte Handhabung des Datenflusses je nach Ursprung der Anfrage:
-
-* **Externer Zugriff (Physischer PC):** Die Anfrage auf `http://192.168.1.136` wird durch die NAT-Regel direkt zum Webserver geleitet.
-* **Interner Zugriff (Management-VM):** Anfragen an die WAN-IP aus dem LAN führen zum Management-Interface der pfSense.
-
-![Externer Zugriff](./img/external_access_debian.jpg)
-*Erfolgreicher Zugriff von außen auf den Debian-Webserver.*
-
-![Interner Zugriff](./img/internal_access_pfsense.jpg)
-*Interner Zugriff auf das pfSense-Login über die LAN-Schnittstelle.*
-
-> **Dokumentations-Fazit:** Dieses Verhalten belegt eine erfolgreiche **Netzwerk-Segmentierung**. Der administrative Zugriff ist logisch vom öffentlichen Dienst getrennt, was die Angriffsfläche des Systems minimiert.
-
-## 📊 Monitoring & Performance
-
-Die Verwaltung erfolgt über die ressourceneffiziente **Linux Mint Xfce Edition**, was eine verzögerungsfreie Analyse der Firewall-Logs in Echtzeit ermöglicht.
-
-![pfSense Dashboard](./img/pfsense_dashboard_live.jpg)
-*Zentrales Dashboard mit verifiziertem Zugriff über HTTPS auf Port 8443.*
-
-
-## Einrichtung VLAN 20 (Webserver) & Security Hardening
-
-### 1. Netzwerk-Segmentierung
-Um den Webserver vom Management-Netz zu isolieren, wurde ein neues VLAN (ID 20) angelegt.
-* **Interface:** WEBSERVER (VLAN 20 auf vtnet1)
-* **IP-Adressbereich:** 10.0.20.1/24
-* **DHCP-Range:** 10.0.20.50 - 10.0.20.100
-
-![DHCP_Range](./img/DHCP-Einstellungen_Range_10.0.20.50-100.jpg)
-* Definition des Adresspools für das WEBSERVER-Interface (VLAN 20) mit einer dynamischen Range von 10.0.20.50 bis 10.0.20.100.*
-
-### 2. Firewall-Regelwerk & DMZ-Isolierung
-Das Regelwerk wurde so konfiguriert, dass eine "Einweg-Kommunikation" herrscht. Das Management-VLAN (10) hat vollen Zugriff auf den Webserver, während der Webserver keinen Zugriff auf das Management-VLAN hat.
-
-**Wichtigste Regeln auf dem WEBSERVER-Interface:**
-1. **BLOCK:** Source: `WEBSERVER subnets` -> Destination: `LAN subnets` (Verhindert Angriffe vom Webserver auf Management-Clients).
-2. **PASS:** Source: `WEBSERVER subnets` -> Destination: `any` (Erlaubt Internetzugriff für Updates).
-
-
-![Firewall_Rules](./img/Firewall_Rules_WEBSERVER_subnets_Destination_LAN_subnets.png)
-*Abbildung 6:Firewall-Regelwerk des Webserver-Interfaces mit einer priorisierten Block-Regel (Source: WEBSERVER subnets) zum Schutz des LAN-Segments (Destination: LAN subnets.*
-
-### 3. Verifizierung der Konfiguration
-Die erfolgreiche Einrichtung wurde durch folgende Tests bestätigt:
-* **Connectivity:** Management-VM (10.0.10.50) kann Webserver (10.0.20.50) pingen.
-* **Service:** Apache2 Default Page ist über den Browser im Management-Netz erreichbar.
-* **Security:** Ping vom Webserver (10.0.20.50) zum Management (10.0.10.50) schlägt fehl (Request Timeout).
-
-![Webserver_Isolierung_Verifikation](./img/DMZ_Isolierungstest_Fail.png)
-*Abbildung 7:Erfolgreicher Nachweis der Netzisolierung durch einen fehlgeschlagenen Ping-Versuch (100% Paketverlust) von der Webserver-VM (10.0.20.50) in das Management-Netz (10.0.10.50).*
-
-# 📂 Phase 2: Webserver DMZ Migration & Security Hardening
-
-Erfolgreiche Migration des Debian-Webservers in eine isolierte **DMZ** zur Absicherung des LANs.
-
-## 1. Webserver IP & Routing
-Statische IP-Konfiguration in `/etc/network/interfaces`:
-* **IP:** `10.0.30.50` | **Gateway:** `10.0.30.1`
-
-![Screenshot_etc_network_interfaces](./img/schreenshot_etc_network_interfaces.png)
-*Abbildung 8: Konfiguration der Netzwerkschnittstelle ens18 mit statischer IP 10.0.30.50 und DMZ-Gateway 10.0.30.1 in /etc/network/interfaces.*
-![Screenshot_ip_a](./img/sscreenshot_ip_a.png)
-*Abbildung 9: Validierung der aktiven Netzwerkkonfiguration mittels ip a zur Bestätigung der korrekten IP-Zuweisung im DMZ-Segment.*
-
+| **pfSense WAN** | `vmbr0` | `192.168.1.136` | `/24` | Uplink zum physischen Gateway |
+| **pfSense LAN** | `vmbr1` | `10.0.0.1` | `/24` | Management-Gateway |
+| **Web-VLAN 20** | `VLAN 20` | `10.0.20.1` | `/24` | Isoliertes Server-Segment |
 
 ---
 
-## 2. pfSense: NAT & Firewall
-Anpassung der WAN-Weiterleitung und Isolation der DMZ.
+## 🚦 2. Netzwerk-Segmentierung & VLAN-Design
+Zur Reduzierung der Angriffsfläche wurde der Webserver vom Management-Netz isoliert (VLAN 20).
 
-* **NAT:** Ports 80/443 auf `10.0.30.50` umgeleitet.
-* **Firewall Regeln:** 1. **BLOCK** zu LAN Subnet (Isolation)
-    2. **BLOCK** zu Webserver Subnet (Management-Schutz)
-    3. **PASS** zu Any (Internet für Updates)
+* **Interface-Isolation:** Implementierung des WEBSERVER-Interfaces auf VLAN-ID 20.
+* **Firewall-Logic (Inter-VLAN-Routing):**
+    * **Directional Control:** Das Management-VLAN darf auf den Webserver zugreifen (Pull-Prinzip).
+    * **Isolation:** Eine restriktive Block-Regel unterbindet jegliche Kommunikation vom Webserver-Segment in das LAN-Segment (Push-Prävention).
 
-![screenshot_port_forwarding](./img/screenshot_port_forwarding.png)
-*Abbildung 10: pfSense NAT-Port-Forwarding: Umleitung von externem HTTP/HTTPS-Traffic (Port 80/443) auf die interne Webserver-IP 10.0.30.50.*
-
-![screenshot_dmz_firewall_rules](./img/ss11_dmz_firewall_rules.png)
-*Abbildung 11: DMZ-Firewall-Regelsatz zur strikten Isolation: Blockierung von Zugriffen auf LAN und Management-Netz bei gleichzeitigem Erlauben von ausgehendem Internet-Traffic.*
+![Nachweis: Firewall-Ruleset zur Isolation des Server-Segments](./img/Firewall_Rules_WEBSERVER_subnets_Destination_LAN_subnets.png)
 
 ---
 
-## 3. Verifizierung & Sicherheitstests
-Nachweis der korrekten Funktion und Netzwerktrennung:
+## 🔒 3. Perimeter-Hardening & pfBlockerNG
+Die pfSense wurde über die Standardkonfiguration hinaus gehärtet, um eine proaktive Sicherheits-Baseline zu schaffen.
 
-* **Erfolg:** Webserver via WAN erreichbar (Apache Default Page).
-* **Erfolg:** Internet-Ping (`8.8.8.8`) funktioniert.
-* **Sicherheit:** LAN-Ping (`10.0.10.1`) blockiert (**100% Packet Loss**).
+* **Management-Isolation:** Verschieben des Web-GUI-Ports auf **Port 8443**. Dies verhindert Konflikte mit Web-Diensten (80/443) und erschwert das Discovery der Admin-Schnittstelle.
+* **DNS-Security (pfBlockerNG):** * Implementierung von DNSBL-Filtern zur automatisierten Blockierung von Telemetrie, Tracking und Malware-Domains.
+    * **Validierung:** Nachweis der DNS-Umleitung (Sinkhole) bösartiger Domains auf die interne VIP (10.10.10.1).
 
-![Screenshot_apache_WAN_migration](./img/ss12_apache_WAN_migration.png)
-*Abbildung 12:Erfolgreicher Funktionstest des Webservers über die WAN-Schnittstelle (192.168.1.136) nach Migration in die DMZ.*
-![Screenshot_connection_test](./img/ss13_connection_test.png)
-*Abbildung 13: Konnektivitätsprüfung: Erfolgreicher Ping ins Internet (8.8.8.8) und verifizierte Blockierung (Destination Host Unreachable) zum geschützten LAN-Segment.*
-
----
-## 🔐 SSH-Security & Hardening
-
-Um den administrativen Zugriff auf den Webserver-01 abzusichern, wurden spezifische Sicherheitsmaßnahmen in der SSH-Konfiguration (`/etc/ssh/sshd_config`) vorgenommen.
-
-### 1. Deaktivierung des Root-Logins
-Der direkte Login als `root` wurde unterbunden, um Angreifern das höchstprivilegierte Ziel zu entziehen. Administratoren müssen sich als regulärer User (`angel`) anmelden und bei Bedarf `sudo` nutzen.
-
-### 2. Erzwingen von SSH-Keys
-Die Authentifizierung wurde so konfiguriert, dass sie idealerweise über kryptografische Schlüsselpaare (SSH-Keys) erfolgt, was weitaus sicherer ist als herkömmliche Passwörter.
-
-### 3. Protokollierung und Überwachung
-In Kombination mit Fail2Ban werden alle fehlgeschlagenen SSH-Login-Versuche protokolliert und führen nach mehrmaligem Scheitern zur automatischen Sperrung der IP-Adresse.
-
-![Screenshot_ss23_permitrootlogin_no](./img/ss23_permitrootlogin_no.png)
-*Abbildung 14: Auszug der SSH-Konfigurationsdatei mit der aktiven Richtlinie PermitRootLogin no zur Erhöhung der Systemsicherheit.*
+![Test: DNS-Blocking-Validierung via nslookup](./img/pfsense_pfblocker_test.jpg)
 
 ---
 
-## 🛡️ Server-Sicherheit: Fail2Ban Schutz
+## 🌐 4. Service-Publishing & NAT-Loopback
+Die Veröffentlichung des Web-Dienstes erfolgt via Destination NAT (DNAT) unter Berücksichtigung der Sicherheits-Zonen.
 
-Um den Webserver gegen automatisierte Brute-Force-Angriffe (z. B. auf SSH) zu schützen, wurde der Dienst **Fail2Ban** installiert und konfiguriert.
+* **Inbound-Access:** Portweiterleitung von WAN (80/443) auf das interne Debian-Target (`10.0.20.50`).
+* **Routing-Analyse:** Trennung von internem und externem Traffic-Flow zur Vermeidung von Informationspreisgabe über administrative Schnittstellen nach außen.
 
-### 1. Installation und Funktionsweise
-Fail2Ban überwacht die Logfiles des Systems auf verdächtige Anmeldeversuche. Nach einer definierten Anzahl an Fehlversuchen wird die IP-Adresse des Angreifers automatisch über die Firewall gesperrt.
-
-**Installation:**
-```bash
-sudo apt update && sudo apt install fail2ban -y
-```
-
-
-## 🗄️ Datenbank-Setup & PHP-Anbindung
-
-In diesem Abschnitt wurde die MariaDB-Datenbank konfiguriert und eine Test-Schnittstelle mit PHP geschaffen.
-
-### 1. MariaDB Installation & Absicherung
-Die Datenbank wurde mit `mariadb-secure-installation` gehärtet.
-![Screenshot_mariadb_secure_installation](./img/ss14_mariadb_secure_installation.png)
-*Abbildung 14.5: Erstmalige Anmeldung und Initialisierung der MariaDB-Konsole auf dem Webserver-01.*
-
-
-
-### 2. Datenbank und Benutzer erstellen
-Folgende SQL-Befehle wurden ausgeführt, um die Projekt-Datenbank und den dedizierten Web-User anzulegen:
-
-```sql
--- Datenbank erstellen
-CREATE DATABASE projekt_db;
-
--- Benutzer mit eingeschränkten Rechten anlegen
-CREATE USER 'webuser'@'localhost' IDENTIFIED BY '123';
-GRANT ALL PRIVILEGES ON projekt_db.* TO 'webuser'@'localhost';
-FLUSH PRIVILEGES;
-```
-
-
-
-![Screenshot_datenbank_user_erstellen](./img/ss15_datenbank_user_erstellen.png)
-*Abbildung 15: SQL-Befehlskette zur Erstellung der Datenbank projekt_db sowie die Einrichtung des Datenbank-Benutzers webuser mit den entsprechenden Berechtigungen.*
-
-
-
-### 3. PHP-Schnittstelle (db_test.php)
-
-![Screenshot_db_test_nano](./img/ss16_db_test_nano.png)
-*Abbildung 16: Implementierung des PHP-Verbindungsskripts db_test.php im Texteditor Nano zur Verknüpfung von Webserver und Datenbank-Backend.*
-![Screenshot_datenbank_webseite](./img/ss17_datenbank_webseite.png)
-*Abbildung 17: Erfolgreicher Validierungstest im Webbrowser der Mint-Management-VM, der die aktive Kommunikation zwischen PHP und der MariaDB-Instanz bestätigt.*
-
-
-# 📂 Phase 3: Aufbau des interaktiven Web-Services
-
-## 1. System-Übersicht (LAMP-Stack)
-Im Zeitraum von Tag 16 bis 22 wurde ein statischer Webserver in einen vollwertigen Application-Stack umgewandelt:
-* **Linux:** Ubuntu Server (Webserver-01) in der DMZ (10.0.30.50).
-* **Apache:** Webserver-Dienst mit SSL/TLS.
-* **MariaDB:** Relationales Datenbanksystem.
-* **PHP:** Backend-Logik.
-
-> **Screenshot: Die fertige Web-Oberfläche mit Einträgen**
-> ![Web-Oberfläche](/img/webseite_Einträge.png)
-> *Abbildung 18: Die Web-Oberfläche mit Einträge.*
+![Nachweis: Operatives pfSense-Dashboard mit verifiziertem HTTPS-Zugriff](./img/pfsense_dashboard_live.jpg)
 
 ---
 
-## 2. Datenbank-Design & Sicherheit
-Es wurde eine Datenbank `projekt_db` mit der Tabelle `logbuch` erstellt.
-* **Schema:** `id`, `eintrag`, `zeitpunkt`, `bild`.
-* **Security:** Verwendung von **Prepared Statements** gegen SQL-Injection.
+## 🧪 5. Validierung & Performance-Audit
+Der finale Testlauf bestätigt die Integrität der gewählten Architektur:
 
-> ![Datenbank-Struktur](/img/screenshot_mariadb2.png)
-> *Abbildung 19: Tabellenstruktur in MariaDB (DESCRIBE logbuch;)*
+* **Konnektivität:** Erfolgreicher ICMP-Ping (8.8.8.8) verifiziert den Internet-Uplink.
+* **Security-Audit:** 100% Paketverlust bei Cross-VLAN-Zugriffen (Web ⮕ LAN).
+* **Effizienz:** Minimale Host-Last durch den Einsatz von Headless-Services und dem schlanken Xfce-Management-Client.
 
----
-
-## 3. Implementierte Kern-Funktionen (CRUD)
-* **Create/Read:** Formular für Text und Datei-Uploads (Bilder).
-* **Delete:** Löschen von Einträgen über IDs.
-* **Auth:** Passwortschutz mittels PHP-Sessions.
-
-> ![PHP-Code](/img/schreenshot_code_log_php.png)
-> *Abbildung 20: PHP-Code der Login- oder Upload-Logik*
+![Validierung: Nachweis der Netzisolierung (Paketverlust-Test)](./img/DMZ_Isolierungstest_Fail.png)
 
 ---
 
-## 4. Netzwerk- & Infrastruktur-Konfiguration
-* **Verschlüsselung:** Einbindung eines selbstsignierten SSL-Zertifikats.
-* **Troubleshooting:** Korrektur der `000-default.conf` (AllowOverride) und DNS-Fix.
-
-> ![HTTPS-Check](/img/meme_leonardo.png)
-> *Abbildung 21: Erfolgreicher Apache-Neustart und HTTPS-Schloss im Browser*
+## ✅ 6. Projektabschluss Phase 1
+Die Kern-Infrastruktur ist bereit. Die Netzwerk-Topologie ist nach dem Least-Privilege-Prinzip segmentiert und durch pfBlockerNG proaktiv geschützt. Alle initialen Credentials wurden in der `vault_passwords.yml` dokumentiert.
 
 ---
 
+# 📂 Phase 2: Webserver-Migration, DMZ-Isolation & Hardening
 
-# 📂 Phase 4: Monitoring & Automatisierung
-
-Dieses Dokument beschreibt die Planung und Implementierung eines automatisierten Sicherungsverfahrens für das Projekt "Foto-Logbuch". Als Systemadministrator ist es mein Ziel, die Datenintegrität durch regelmäßige Backups sicherzustellen.
-
----
-
-## 1. Vorbereitung der Backup-Infrastruktur
-Um die Datensicherheit zu gewährleisten, wurde ein dediziertes Verzeichnis erstellt. Dieses liegt außerhalb des Web-Wurzelverzeichnisses, um einen unbefugten Zugriff über den Browser zu verhindern.
-
-* **Befehle:** - `mkdir -p /home/angel/backups` (Erstellen des Ordners)
-  - `chmod 700 /home/angel/backups` (Rechtevergabe: Nur Besitzer darf lesen/schreiben)
-* **Ziel:** Schutz der SQL-Dumps vor anderen Systemnutzern.
-
-> **Beleg: Verzeichnisstruktur und Berechtigungen**
-> ![Backup Verzeichnis Setup](./img/Screenshot_Verzeichnis.png)
-> *Abbildung 22: Das Verzeichnis *
-
+## 🎯 Zielsetzung
+Physische und logische Migration des Debian-Webservers in eine isolierte Demilitarized Zone (DMZ). Fokus liegt auf der Implementierung eines restriktiven Firewall-Regelwerks, der Härtung des administrativen Zugriffs (SSH) sowie der Initialisierung eines abgesicherten Datenbank-Backends.
 
 ---
 
-## 2. Implementierung der Backup-Logik (Bash-Skript)
-Es wurde ein Bash-Skript (`/home/angel/backup_logbuch.sh`) entwickelt, das den Export der Datenbank und die Komprimierung der Mediendateien übernimmt.
+## 🏗️ 1. Netzwerk-Migration & IP-Stack
+Die Migration in die DMZ (VLAN 30) erforderte eine Neukonfiguration der Netzwerkschnittstellen zur Gewährleistung der Segmentierung.
 
-### Kernfunktionen des Skripts:
-1. **Variablen:** Nutzung von `$DATUM` für eindeutige Dateinamen.
-2. **Datenbank-Sicherung:** Export mittels `mysqldump` in eine `.sql` Datei.
-3. **Datei-Archivierung:** Packen des `/var/www/html/uploads` Ordners mit `tar -czf`.
-4. **Log-Rotation:** Automatisches Löschen von Dateien, die älter als 7 Tage sind (`find -mtime +7 -delete`).
+* **Schnittstellen-Konfiguration:** Umstellung auf statische Adressierung (`10.0.30.50`) via `/etc/network/interfaces`.
+* **Routing-Validierung:** Konfiguration des DMZ-Gateways (`10.0.30.1`) und Verifizierung der Layer-2-Konnektivität mittels `ip a`.
 
-> **Beleg: Vollständiger Quellcode des Skripts**
-> ![Bash Skript Code](./img/Screenshot_Backup_Code.png)
+![Nachweis: Statische IP-Zuweisung und Interface-Status](./img/schreenshot_etc_network_interfaces.png)
 
 ---
 
-## 3. Validierung und Funktionstest
-Nach der Erstellung wurde das Skript manuell ausgeführt, um die korrekte Arbeitsweise zu verifizieren.
+## 🚦 2. pfSense: NAT-Orchestrierung & Perimeter-Security
+Die Veröffentlichung des Web-Dienstes erfolgte nach dem Prinzip der minimalen Exposition.
 
-* **Test-Befehl:** `bash /home/angel/backup_logbuch.sh`
-* **Ergebnis:** Das System erzeugt korrekte Dateigrößen (SQL-Dump im KB-Bereich, Bilder-Archiv im MB-Bereich).
+* **Port-Forwarding (Destination NAT):** Granulare Umleitung von Inbound-Traffic (TCP 80/443) von der WAN-Schnittstelle auf das DMZ-Target.
+* **Firewall-Regelsatz (Isolation):**
+    * **Inter-VLAN-Blocking:** Explizites Verbot jeglicher Kommunikation aus der DMZ in das interne LAN-Segment.
+    * **Management-Protection:** Unterbindung von Zugriffen auf sensible Infrastruktur-Schnittstellen.
+    * **Egress-Control:** Zulassen von HTTP/HTTPS-Traffic für System-Updates (Ubuntu Repositories).
 
-> **Beleg: Erfolgreicher manueller Testlauf**
-> ![Backup Validierung](./img/Screenshot_backup_validierung.png)
-
----
-
-## 4. System-Automatisierung (Cronjob)
-
-Um den Administrator zu entlasten, wurde der Prozess über den System-Scheduler `cron` automatisiert.
-
-* **Zeitplan:** Täglich um 03:00 Uhr nachts.
-* **Konfiguration:** `0 3 * * * /bin/bash /home/angel/backup_logbuch.sh`
-
-> **Beleg: Eintrag in der Crontab**
-> ![Crontab Konfiguration](./img/Screenshot_crontab_l.png)
+![Policy: pfSense NAT-Rules und restriktive DMZ-Filterung](./img/screenshot_port_forwarding.png)
 
 ---
 
-## 5. Recovery-Szenario (Wiederherstellung)
-Ein Backup ist nur nützlich, wenn die Wiederherstellung funktioniert. Ein simulierter Datenverlust wurde erfolgreich durch den Re-Import der SQL-Datei behoben.
+## 🔒 3. System-Hardening & Brute-Force-Prävention
+Zur Absicherung des Hosts gegen externe Angriffsvektoren wurden mehrere Schutzebenen (Defense in Depth) implementiert.
 
-* **Wiederherstellungs-Befehl:** `sudo mariadb -u root projekt_db < /home/angel/backups/db_backup_X.sql`
+* **SSH-Hardening:** * Deaktivierung des Root-Logins (`PermitRootLogin no`) zur Erschwerung von Privilege-Escalation-Versuchen.
+    * Empfehlung zur Nutzung kryptografischer Schlüsselpaare (RSA/Ed25519) anstelle von Passwörtern.
+* **Intrusion Prevention:** Installation und Konfiguration von **Fail2Ban**. Der Dienst überwacht Logfiles (`auth.log`) und sperrt IP-Adressen automatisiert bei verdächtigen Login-Mustern.
 
-
-# 📂 Phase 5: Docker Containerisierung und Migration
-
-In dieser Phase wurde die Anwendung von einer klassischen Host-Installation in eine moderne Microservice-Architektur mittels Docker überführt.
-
----
-
-## 4.1 Infrastruktur-Setup (Docker Compose)
-Die Umgebung wurde mit `docker-compose` definiert, um eine strikte Trennung zwischen Webserver (PHP) und Datenbank (MariaDB) zu gewährleisten.
-
-> ![Screenshot der docker-compose.yml einfügen](./img/docker-compose-yml.png)
-> *Abbildung 1: Konfiguration der Container-Infrastruktur inkl. Port-Mapping (8080:80) und Bind-Mounts für die Datenpersistenz.*
+![Nachweis: Gehärtete SSH-Konfiguration und Fail2Ban-Integration](./img/ss23_permitrootlogin_no.png)
 
 ---
 
-## 4.2 Custom Image Build (Dockerfile)
-Da das Standard-PHP-Image keine MySQL-Treiber enthält, wurde ein eigenes Image erstellt.
+## 💾 4. Datenbank-Backend & PHP-Initialisierung
+Die Bereitstellung der MariaDB-Instanz erfolgte unter Berücksichtigung von Best-Practice-Sicherheitsstandards.
 
-* **Troubleshooting:** Ein anfänglicher Build-Fehler (Tippfehler `myysqli`) wurde erfolgreich identifiziert und korrigiert.
-* **Lösung:** Anpassung des Dockerfiles und anschließender Re-Build des Images.
+* **DB-Hardening:** Durchführung der `mariadb-secure-installation` zur Entfernung von Test-Datenbanken und anonymen Usern.
+* **Identity Management:** Erstellung eines dedizierten Applikations-Benutzers (`webuser`) mit eingeschränkten Privilegien auf die `projekt_db`.
+* **Connectivity-Validierung:** Implementierung eines PHP-Testskripts zur Verifizierung des Handshakes zwischen Webserver und Datenbank-Backend.
 
-> ![Screenshot vom Terminal mit dem korrigierten Build einfügen](./img/Costum_image_build.png)
-> *Abbildung 2: Erfolgreicher Build des Custom-PHP-Images nach Korrektur der mysqli-Erweiterungsinstallation.*
-
----
-
-## 4.3 Datenbank-Migration und Troubleshooting
-Der schwierigste Teil war der Umzug der Daten aus Phase 3 in den neuen Docker-Container.
-
-### Problemstellung: Persistenz der Initialwerte
-Nachträgliche Änderungen des `MYSQL_ROOT_PASSWORD` in der Compose-Datei wurden vom Container ignoriert, da das Daten-Volume bereits mit dem Initial-Passwort erstellt worden war.
-
-### Lösungsweg:
-1. Löschen des persistenten Ordners `./db_data`.
-2. Neuinitialisierung des Containers mit dem Passwort `123`.
-3. Import des SQL-Dumps über die Standard-Eingabe in den Container.
-
-> ![Screenshot vom Terminal mit dem erfolgreichen Import-Befehl einfügen](./img/Docker_Datenbank_Migration.png)
-> *Abbildung 3: Erfolgreicher Datenimport des Backups in den laufenden MariaDB-Container unter Verwendung des Passworts '123'.*
+![Validierung: Erfolgreiche Datenbank-Konnektivität via PHP-Backend](./img/ss17_datenbank_webseite.png)
 
 ---
 
-## 4.4 Finaler Funktions-Test
-Nach dem Abgleich der Anmeldedaten in der `db_test.php` (Passwort: `123`, Host: `db`) konnte die erfolgreiche Verbindung bestätigt werden.
+## 🧪 5. Compliance-Test & Sicherheits-Audit
+Der Erfolg der Segmentierung wurde durch strukturierte Konnektivitäts-Checks nachgewiesen:
 
-> ![Screenshot vom Browser mit der grünen Erfolgsmeldung einfügen](./img/MariaDB_Container_Browser.png)
-> *Abbildung 4: Web-Frontend bestätigt die erfolgreiche Kommunikation zwischen PHP-Container und MariaDB-Container im Docker-Netzwerk.*
+1. **WAN-Reachability:** Erfolgreicher Web-Zugriff über die WAN-IP.
+2. **Egress-Validierung:** Funktionaler Internet-Ping (8.8.8.8) für Updates.
+3. **Isolations-Check:** Nachweis von **100% Packet Loss** bei Zugriffsversuchen auf das interne LAN (10.0.10.1).
 
----
-
-## 4.5 Fazit Phase 5
-Durch die Containerisierung ist die Applikation nun plattformunabhängig, leicht skalierbar und durch die Trennung von Code und Daten wesentlich sicherer. Die Fehlerbehebung während der Migration hat das Verständnis für Docker-Volumes und Netzwerk-Kommunikation vertieft.
-
-
-# 📂 Phase 6: Client-Provisionierung & Domänenintegration 
-
-## 1. Zielsetzung
-Ziel dieser Phase war die Bereitstellung eines Windows 11 Pro Clients (**CL-01-WIN11**), die Installation notwendiger Treiber für die virtualisierte Umgebung (Proxmox) sowie die vollständige Integration in die Active Directory Domäne `projekt.local`.
+![Audit: Verifizierte Blockierung des Cross-VLAN-Traffics](./img/ss13_connection_test.png)
 
 ---
 
-## 2. VM-Konfiguration (Proxmox)
-Für eine optimale Performance und Kompatibilität mit Windows 11 wurden folgende Hardware-Parameter gewählt:
-
-* **CPU:** 2 Cores (Host-Typ für maximale Befehlssatz-Unterstützung).
-* **RAM:** 4 GiB DDR4.
-* **BIOS:** OVMF (UEFI) mit dediziertem EFI-Disk.
-* **Sicherheit:** Virtueller TPM-Chip (v2.0) zur Erfüllung der Windows 11 Anforderungen.
-* **Disk:** 64 GB über **VirtIO SCSI single** Controller (mit *Discard*-Option für SSD-Optimierung).
-* **Netzwerk:** Virtuelle Bridge `vmbr1` mit **VLAN-Tag 30** zur Trennung des Client-Netzwerks.
+## ✅ 6. Projektabschluss Phase 2
+Die Web-Infrastruktur befindet sich nun in einem gehärteten Betriebszustand innerhalb einer isolierten Sicherheitszone. Alle sicherheitsrelevanten Zugangsdaten sind in der `vault_passwords.yml` zentralisiert.
 
 ---
 
-## 3. Betriebssystem-Installation & Treiber
-Die Installation von Windows 11 Pro erforderte aufgrund der gewählten VirtIO-Hardware spezifische Schritte:
+# 📂 Phase 3: Deployment des Application-Stacks (LAMP)
 
-1.  **Treiber-Einbindung:** Da Windows standardmäßig keine VirtIO-SCSI-Treiber besitzt, wurde das `virtio-win.iso` eingebunden. Während des Setups wurde der Treiber aus dem Pfad `vioscsi\w11\amd64` geladen, um die Festplatte zu erkennen.
-2.  **Umgehung des Online-Zwangs:** Mittels des Befehls `OOBE\BYPASSNRO` in der CMD (Shift+F10) wurde die Installation eines lokalen Kontos ohne Microsoft-Account ermöglicht.
-3.  **Post-Installation:** Nach dem ersten Login wurden die `Guest Tools` installiert, um Netzwerk- (VirtIO-Net) und Grafikkartentreiber zu aktualisieren.
+## 🎯 Zielsetzung
+Transformation des statischen Webservers in eine dynamische Applikationsumgebung. Fokus liegt auf dem Aufbau eines resilienten LAMP-Stacks (Linux, Apache, MariaDB, PHP), der Implementierung sicherer Datenbank-Schnittstellen und der Absicherung der Kommunikation via TLS.
 
 ---
 
-## 4. Netzwerk-Konfiguration & Domänenbeitritt
-Um die Kommunikation mit dem Domain Controller (**DC-01**) sicherzustellen, wurde eine statische IP-Konfiguration vorgenommen:
+## 🏗️ 1. Architektur-Review (LAMP-Komponenten)
+Die Infrastruktur wurde gezielt für den Betrieb in der DMZ (VLAN 30) optimiert und gehärtet.
 
-* **IP-Adresse:** `10.0.30.20`
-* **Subnetzmaske:** `255.255.255.0`
-* **Standardgateway:** `10.0.30.1`
-* **Bevorzugter DNS:** `10.0.30.100` (DC-01)
+* **OS-Ebene:** Ubuntu Server als stabile Host-Basis (`10.0.30.50`).
+* **Web-Frontend:** Apache HTTP Server mit aktivierten Modulen für PHP-Prozessierung und SSL.
+* **Backend-Logik:** PHP 8.x zur Verarbeitung der CRUD-Operationen und Session-Handling.
+* **Data-Layer:** MariaDB als relationaler Datenspeicher für die Logbuch-Metadaten.
 
-Nach erfolgreichem Ping-Test auf `projekt.local` wurde der Client über die Systemeigenschaften der Domäne hinzugefügt. Die Authentifizierung erfolgte über den administrativen Account `a.admin`.
-
-> ![Screenshot Windows Systemeigenschaften](./img/Systemeigenschaften.png)
-> *(Zeigt die Meldung "Willkommen in der Domäne projekt.local" oder den vollständigen Computernamen CL-01-WIN11.projekt.local)*
+![Nachweis: Operative Web-Oberfläche mit aktiven Datensätzen](./img/webseite_Einträge.png)
 
 ---
 
-## 5. Active Directory Verwaltung & Gruppenrichtlinien (GPO)
-Nach dem Beitritt wurde das Computer-Objekt im AD-Manager vom Standard-Container `Computers` in die organisationsspezifische OU `Angel_Projekt -> Computer` verschoben.
+## 💾 2. Datenbank-Design & Security-Hardening
+Bei der Konfiguration der Datenbank `projekt_db` wurde besonderer Wert auf Datensparsamkeit und Schutz gegen Web-Vulnerabilities gelegt.
 
-Zur Überprüfung der zentralen Steuerung wurde die Richtlinie **GPO_Sicherheit_Login** erstellt und mit der OU verknüpft. Diese konfiguriert eine interaktive Anmeldung mit einem rechtlichen Hinweis (Banner).
+* **Schema-Design:** Definition der Tabelle `logbuch` mit optimierten Datentypen für Zeitstempel und Dateipfade.
+* **Applikations-Sicherheit:** Konsequente Nutzung von **Prepared Statements** in der PHP-Logik zur effektiven Unterbindung von SQL-Injection-Angriffen.
+* **Access Control:** Verwendung dedizierter Datenbank-User anstelle des Root-Accounts für den Applikationszugriff.
 
-* **Einstellung:** *Interaktive Anmeldung: Nachrichtentext & Titel*
-* **Überprüfung:** Mittels `gpupdate /force` am Client wurde die Übernahme erzwungen.
-
-> ![Screenshot Active Directory Benutzer und Computer](./img/CL-01-WIN11_AD.png)
-> *(Zeigt CL-01-WIN11 innerhalb der Unter-OU "Computer")*
-
-> ![Screenshot Der "HINWEIS"-Banner beim Client-Start](./img/Willkommen_Hinweis.png)
-> *(Der finale Beweis: Die Nachricht "Willkommen im gesicherten Bereich..." erscheint auf dem Client)*
+![Schema-Audit: Tabellenstruktur der MariaDB-Instanz](./img/screenshot_mariadb2.png)
 
 ---
 
-## 6. Fazit Phase 6
-Der Client ist nun vollständig im Management-Bereich des Servers. Die Namensauflösung (DNS) und die Sicherheitsrichtlinien (GPO) funktionieren einwandfrei. Das System ist bereit für die Bereitstellung von Netzwerkressourcen.
+## ⚙️ 3. Service-Konfiguration & Troubleshooting
+Die Bereitstellung erforderte tiefe Eingriffe in die Webserver-Konfiguration zur Gewährleistung der Applikations-Funktionalität.
 
-# 📂 Phase 7: Zentraler Fileserver & Datensicherheit 
+* **Directory Security:** Anpassung der `000-default.conf` (`AllowOverride All`), um die Nutzung von `.htaccess`-Files für URL-Rewriting und Zugriffsschutz zu ermöglichen.
+* **Transportverschlüsselung:** Implementierung von TLS zur Absicherung des administrativen Logins und der Datenübermittlung.
+* **Fehleranalyse:** Behebung von initialen Berechtigungsproblemen im Upload-Verzeichnis (`/var/www/html/uploads`) durch granulare Vergabe von Schreibrechten für den `www-data` User.
 
-## 1. Zielsetzung
-Aufbau einer zentralen Dateiablage auf dem Domain Controller (**DC-01**), um Projektdaten strukturiert bereitzustellen. Ziel ist der automatisierte Zugriff für Domänen-Benutzer sowie die Absicherung gegen versehentliches Löschen.
-
----
-
-## 2. Einrichtung der Freigabe & Berechtigungen
-Die Berechtigungen wurden nach dem **AGDLP-Prinzip** (Account, Global Group, Domain Local Group, Permission) konfiguriert. 
-
-* **Physischer Pfad:** `C:\Shares\Projektdaten` auf dem Server DC-01.
-* **Sicherheitsgruppe:** Erstellung der AD-Gruppe `G_Projekt_Vollzugriff`.
-* **NTFS-Rechte:** Die Gruppe erhielt die Berechtigungen "Ändern", "Lesen" und "Schreiben".
-* **Freigabe-Rechte:** "Authentifizierte Benutzer" erhielten Vollzugriff auf Ebene der Freigabe, während die tatsächliche Steuerung über die NTFS-Sicherheit erfolgt.
-
-> ![Screenshot Ordner-Eigenschaften von 'Projektdaten' -> Reiter Sicherheit (NTFS)](./img/NTFS-Berechtigungen.png)
-> *(Zeigt die Gruppe G_Projekt_Vollzugriff mit den gesetzten Haken)*
+![Nachweis: Erfolgreicher HTTPS-Handshake und Apache-Validierung](./img/meme_leonardo.png)
 
 ---
 
-## 3. Automatisierung per Gruppenrichtlinie (GPO)
-Um den Benutzerkomfort zu erhöhen, wurde die Richtlinie `GPO_DriveMapping_P` erstellt. Diese sorgt dafür, dass das Netzlaufwerk bei der Anmeldung automatisch verbunden wird.
+## 🧪 4. Funktionale Validierung (CRUD-Audit)
+Der volle Funktionszyklus der Applikation wurde erfolgreich gegen die Anforderungen geprüft:
 
-* **Konfigurationspfad:** `Benutzerkonfiguration` > `Einstellungen` > `Windows-Einstellungen` > `Laufwerkszuordnungen`.
-* **Parameter:** * Aktion: Aktualisieren
-    * Pfad: `\\DC-01\Projektdaten`
-    * Laufwerkbuchstabe: **P:**
+1. **Create/Read:** Upload-Tests von Bilddaten inkl. automatischer Zeitstempel-Generierung.
+2. **Delete:** Verifizierung der Datenkonsistenz beim Entfernen von Einträgen über die ID.
+3. **Session-Management:** Validierung des passwortgeschützten Bereichs zur Absicherung der administrativen Funktionen.
 
->![Screenshot GPO-Editor mit der Konfiguration der Laufwerkszuordnung](./img/GPO_Laufwerkszuordnung.png)
-> *(Zeigt das Fenster, in dem der Pfad \\DC-01\Projektdaten und der Buchstabe P konfiguriert sind)*
+![Code-Audit: Implementierung der PHP-Backend-Logik](./img/schreenshot_code_log_php.png)
 
 ---
 
-## 4. Validierung am Client (Windows 11)
-Der Erfolg der Konfiguration wurde am Client **CL-01-WIN11** mit dem Benutzer `a.admin` verifiziert. 
-
-1. Erzwungenes Update der Richtlinien via `gpupdate /force`.
-2. Automatische Einbindung des Laufwerks **P:** im Datei-Explorer.
-3. Erfolgreicher Schreib- und Lesetest (Erstellung einer Testdatei).
-
->![Screenshot Der kombinierte Screenshot von CL-01-WIN11](./img/Client-Validierung.png)
-> *(Zeigt die CMD mit gpupdate /force und den Explorer mit dem Laufwerk Projektdaten (P:))*
+## ✅ 5. Projektabschluss Phase 3
+Der Application-Stack ist vollständig einsatzbereit und bildet die funktionale Basis des Projekts. Alle administrativen Passwörter und Datenbank-Credentials wurden sicher in der Datei `vault_passwords.yml` hinterlegt.
 
 ---
 
-## 5. Datensicherheit: Schattenkopien (VSS)
-Als zusätzliche Sicherheitsmaßnahme wurden **Schattenkopien (Volume Shadow Copies)** auf dem Server-Volume aktiviert.
+# 📂 Phase 4: Disaster Recovery & Automatisierung
 
-* **Funktion:** Regelmäßige Snapshots des Dateisystems.
-* **Nutzen:** Benutzer können über den Reiter "Vorgängerversionen" gelöschte oder überschriebene Dateien ohne Admin-Eingriff selbstständig wiederherstellen.
-
-> ![Screenshot Schattenkopien-Einstellungen auf DC-01](./img/Schattenkopien.png)
-> *(Zeigt das Fenster "Schattenkopien" mit dem Status "Aktiviert" für Laufwerk C:)*
+## 🎯 Zielsetzung
+Gewährleistung der Business Continuity durch die Implementierung eines automatisierten Backup-Frameworks. Fokus liegt auf der Sicherstellung der Datenintegrität, der Einhaltung von Aufbewahrungsfristen (Retention Policy) und der Validierung von Wiederherstellungsszenarien.
 
 ---
 
-## 6. Fazit
-Mit Abschluss dieser Phase verfügt die Domäne über einen voll funktionsfähigen Fileserver. Die Kombination aus GPO-basierter Laufwerkszuordnung und Schattenkopien bietet eine benutzerfreundliche und zugleich sichere Arbeitsumgebung.
+## 🛡️ 1. Infrastruktur-Härtung (Backup-Repository)
+Zum Schutz sensibler Datenbank-Dumps wurde ein dediziertes Backup-Verzeichnis außerhalb des Web-Wurzelverzeichnisses (`DocumentRoot`) etabliert.
 
-# 📂 Phase 8: Fortgeschrittene Administration & Monitoring
+* **Sicherheitskonzept:** Implementierung restriktiver Berechtigungen (`chmod 700`), um den Zugriff exklusiv auf den administrativen User zu beschränken.
+* **Prävention:** Ausschluss von Information Disclosure durch physische Trennung von Backup- und Web-Inhalten.
 
-## 1. Zielsetzung
-In dieser Phase wurde der Fileserver (DC-01) gegen unkontrolliertes Datenwachstum abgesichert und ein proaktives Monitoring-System für Systemereignisse etabliert. Ziel ist es, die Systemstabilität zu gewährleisten und die Einhaltung von Unternehmensrichtlinien (z. B. Verbot privater Daten auf Projektlaufwerken) technisch zu erzwingen.
-
----
-
-## 2. Speicherplatz-Management (Quotas)
-Um zu verhindern, dass ein einzelner Benutzer die gesamte Festplattenkapazität des Servers beansprucht, wurde ein Kontingentmanagement eingeführt.
-
-* **Werkzeug:** Ressourcenmanager für Dateiserver (FSRM).
-* **Konfiguration:** * **Pfad:** `C:\Shares\Projektdaten`
-    * **Limit:** 5 GB (Hartes Kontingent - verhindert weiteres Speichern bei Erreichen des Limits).
-    * **Vorlage:** Eigens erstellte Vorlage `Limit_5GB_Projektdaten`.
-
-> ![Screenshot 'Kontingent erstellen' - zeigt den Pfad und die 5GB Auswahl](./img/Kontingent-Konfiguration.png)
+![Nachweis: Verzeichnisstruktur und restriktive Berechtigungsebene](./img/Screenshot_Verzeichnis.png)
 
 ---
 
-## 3. Schwellenwerte & Benachrichtigung
-Damit Engpässe frühzeitig erkannt werden, wurde ein Warnsystem konfiguriert.
+## 📜 2. Entwicklung der Backup-Logik (Bash-Scripting)
+Die Sicherung erfolgt über ein modular aufgebautes Bash-Skript (`backup_logbuch.sh`), welches sowohl strukturierte (SQL) als auch unstrukturierte Daten (Images) konsolidiert.
 
-* **Schwellenwert:** Bei einer Belegung von **85 %** (ca. 4,25 GB) wird eine Aktion ausgelöst.
-* **Protokollierung:** Da in der isolierten Testumgebung kein SMTP-Server für E-Mails existiert, wurde die Warnung auf das Windows-Ereignisprotokoll umgeleitet.
-* **Meldungstext:** *"Warnung: Das Projektlaufwerk P ist zu 85% voll."*
+* **Kern-Features:**
+    * **Datenbank-Export:** Konsistenter Export via `mysqldump` zur Sicherung der SQL-Integrität.
+    * **Komprimierung:** Effiziente Archivierung der Media-Assets mittels `tar -czf` zur Reduzierung des Speicherbedarfs.
+    * **Automatisierte Rotation:** Implementierung einer 7-tägigen Vorhaltezeit (`find -mtime +7`), um unkontrolliertes Datenwachstum im Repository zu verhindern.
 
-> ![Screenshot 'Schwellenwert hinzufügen' - zeigt die 85% und die SMTP-Warnmeldung von Windows](./img/Schwellenwert_SMTP-Hinweis.png)
-
----
-
-## 4. Dateiscreening (Inhaltsschutz)
-Zum Schutz der beruflichen Nutzung des Netzlaufwerks wurde ein Dateiscreening implementiert, das das Speichern privater Medienformate unterbindet.
-
-* **Konfiguration:** Aktives Screening für den Ordner `Projektdaten`.
-* **Regel:** Blockieren der Dateigruppen "Bilddateien" (z. B. .jpg, .png) und "Audiodateien".
-* **Wirkung:** Der Server verweigert das Schreiben dieser Dateitypen unabhängig von den NTFS-Benutzerrechten.
-
-> ![Screenshot 'Dateiprüfungseigenschaften' - zeigt die aktiven Haken bei Bilddateien](./img/Dateiprüfungs-Eigenschaften.png)
+![Code-Review: Vollständige Implementierung der Backup-Logik](./img/Screenshot_Backup_Code.png)
 
 ---
 
-## 5. Validierung am Client und Monitoring-Erfolg
-Die Wirksamkeit der Maßnahmen wurde erfolgreich am Client **CL-01-WIN11** sowie im Server-Log nachgewiesen.
+## ⚙️ 3. Automatisierung (Cron-Orchestrierung)
+Zur Minimierung menschlicher Fehlerquellen wurde der Prozess in den System-Scheduler `cron` integriert.
 
-### A. Client-Test (Dateiprüfung)
-Beim Versuch, eine Bilddatei in das Laufwerk **P:** zu kopieren, gibt Windows eine Fehlermeldung aus ("Zugriff verweigert"). Dies bestätigt die korrekte Funktion des FSRM-Dienstes.
+* **Scheduling:** Ausführung täglich um **03:00 Uhr**, um die Systemlast während der Hauptbetriebszeit zu minimieren.
+* **Persistence:** Der Eintrag in der Crontab garantiert eine lückenlose Historie der Sicherungspunkte.
 
-> ![Screenshot Fehlermeldung am Client 'Zugriff auf den Zielordner wurde verweigert'](./img/Client-Test.png)
-
-### B. Server-Überwachung (Ereignisanzeige)
-Auf dem **DC-01** dokumentiert die Ereignisanzeige unter dem Protokoll "Anwendung" (Quelle: `SRMSVC`) alle Kontingentereignisse. Dies ermöglicht dem Administrator eine nachträgliche Auswertung der Speicherauslastung.
-
-> ![Screenshot Ereignisanzeige auf DC-01 mit den SRMSVC-Einträgen](./img/Ereignisanzeige_Monitoring.png)
+![Konfiguration: System-Scheduler (Crontab) mit Backup-Intervall](./img/Screenshot_crontab_l.png)
 
 ---
 
-## 6. Projektsicherung
-Nach Abschluss der Konfiguration und erfolgreicher Validierung wurden Snapshots beider virtueller Maschinen in Proxmox erstellt.
+## 🧪 4. Validierung & Disaster Recovery Test
+Ein Backup ist wertlos ohne validierte Wiederherstellung. Die Funktionsfähigkeit wurde durch einen simulierten Daten-Restore erfolgreich nachgewiesen.
 
-* **Snapshot-Name:** `Phase_8_Final_Admin_Monitoring`
-* **Status:** System voll funktionsfähig und dokumentiert.
+* **Integritäts-Check:** Verifizierung der Dateigrößen und Zeitstempel nach dem Skript-Durchlauf.
+* **Recovery-Validierung:** Erfolgreicher Re-Import eines SQL-Dumps in die MariaDB-Instanz zur Wiederherstellung des produktiven Applikationsstatus.
 
+![Nachweis: Manueller Testlauf und Datei-Validierung](./img/Screenshot_backup_validierung.png)
 
+---
+
+## ✅ 5. Projektabschluss Phase 4
+Mit der Automatisierung der Backups ist die Applikation gegen Datenverlust abgesichert. Die Trennung von Sicherungsdaten und Produktivsystem folgt den Best Practices der IT-Sicherheit. Alle relevanten Datenbank-Credentials für das Skript wurden in der `vault_passwords.yml` hinterlegt.
+
+---
+
+# 📂 Phase 5: Containerisierung & Microservice-Migration
+
+## 🎯 Zielsetzung
+Transformation der monolithischen LAMP-Installation in eine containerisierte Microservice-Architektur. Fokus liegt auf der Isolation der Dienste via Docker, der Sicherstellung von Datenpersistenz und der Erstellung optimierter Custom-Images.
+
+---
+
+## 🏗️ 1. Orchestrierung (Infrastructure as Code)
+Die Definition des Application-Stacks erfolgte deklarativ mittels **Docker Compose**, um eine reproduzierbare Umgebung zu schaffen.
+
+* **Service-Isolation:** Trennung von Applikations-Logik (PHP-Apache) und Datenbank-Layer (MariaDB).
+* **Netzwerk-Abstraktion:** Kommunikation über ein isoliertes Bridge-Netzwerk; Datenbank-Port bleibt ohne externes Mapping (Internal-only).
+* **Port-Strategie:** Mapping von Host-Port 8080 auf Container-Port 80 zur Vermeidung von Privileg-Konflikten auf dem Host.
+
+![Konfiguration: Docker-Compose-Stack mit Volume-Mapping](./img/docker-compose-yml.png)
+
+---
+
+## 🛠️ 2. Custom Image Engineering (Dockerfile)
+Da das offizielle PHP-Basisimage keine nativen MySQL-Treiber enthält, wurde ein maßgeschneidertes Image entwickelt.
+
+* **Build-Prozess:** Automatisierte Installation der `mysqli`-Erweiterung via Docker-PHP-Scripts.
+* **Troubleshooting:** Identifikation und Behebung von Syntaxfehlern im Build-Layer.
+* **Optimierung:** Minimierung der Image-Größe durch gezielte Installation notwendiger Abhängigkeiten.
+
+![Nachweis: Erfolgreicher Multi-Layer-Build des Custom PHP-Images](./img/Costum_image_build.png)
+
+---
+
+## 💾 3. Daten-Migration & Volume-Persistenz
+Die größte Herausforderung bestand im Transfer der bestehenden Datensätze in die persistente Container-Struktur.
+
+* **Incident-Handling:** Lösung von Konflikten bei der Initialisierung der Umgebungsvariablen (`MYSQL_ROOT_PASSWORD`).
+* **Migration-Workflow:** 1. Bereinigung der Alt-Volumes zur Korrektur von Initialisierungskonflikten.
+    2. Hot-Import des SQL-Dumps direkt in den laufenden Datenbank-Container via STDIN.
+* **Persistenz-Konzept:** Nutzung von Bind-Mounts zur Entkopplung der Datenbank-Files (`./db_data`) vom Container-Lifecycle.
+
+![Nachweis: SQL-Import und Datenbank-Initialisierung](./img/Docker_Datenbank_Migration.png)
+
+---
+
+## 🧪 4. Validierung (Integrations-Test)
+Der Erfolg der Migration wurde durch einen End-to-End-Funktionstest verifiziert.
+
+* **Connectivity-Check:** Validierung des Datenbank-Handshakes via PHP unter Verwendung des internen Docker-DNS (Host: `db`).
+* **Frontend-Audit:** Bestätigung der Datenintegrität durch Abfrage der migrierten Datensätze im Browser.
+
+![Validierung: Bestätigter Datenbank-Connect im Web-Frontend](./img/MariaDB_Container_Browser.png)
+
+---
+
+## ✅ 5. Projektabschluss Phase 5
+Die Anwendung ist nun vollständig portabel und skaliert unabhängig vom Host-Betriebssystem. Die gewonnenen Erkenntnisse über **Docker-Netzwerke** und **Volume-Initialisierung** bilden das Fundament für zukünftige Skalierungsszenarien. Sämtliche Passwörter wurden konsistent in der `vault_passwords.yml` dokumentiert.
+
+---
+
+# 📂 Phase 6: Client-Provisionierung & Domänenintegration
+
+## 🎯 Zielsetzung
+Deployment einer Windows 11 Pro Instanz (CL-01-WIN11) als verwalteter Endpunkt innerhalb der Domäne `projekt.local`. Fokus liegt auf der Optimierung für die virtualisierte Umgebung (Proxmox), der Etablierung einer statischen Netzwerkkonfiguration und der Validierung des zentralen Policy-Managements via GPO.
+
+---
+
+## 🏗️ 1. Virtualisierungs-Design (Proxmox-Spezifikationen)
+Um maximale Systemperformance und Stabilität unter Windows 11 zu gewährleisten, wurde das Hardware-Profil gezielt auf die Virtualisierungsumgebung abgestimmt:
+
+* **Sicherheits-Features:** Implementierung eines virtuellen **TPM 2.0 Chips** und **OVMF (UEFI)** zur Erfüllung der Windows-Integritätsanforderungen.
+* **Storage-Optimierung:** Einsatz des **VirtIO SCSI Single** Controllers mit aktiviertem *Discard*-Support zur effizienten SSD-Nutzung.
+* **Netzwerk-Segmentierung:** Zuweisung des **VLAN-Tags 30** (Client-VLAN) auf der virtuellen Bridge zur strikten Layer-2-Isolierung.
+
+---
+
+## 🛠️ 2. OS-Deployment & Treiber-Integration
+Der Installationsprozess wurde manuell optimiert, um die Abhängigkeit von Standard-Treibern zu umgehen und ein gehärtetes lokales Setup zu erzielen:
+
+* **Injected Drivers:** Einbindung der `virtio-win`-Treiber während des Setups (Pfad: `vioscsi\w11\amd64`), um die Performance des Storage-Stacks zu maximieren.
+* **Deployment-Hardening:** Umgehung des Online-Account-Zwangs via `OOBE\BYPASSNRO`, um die Kontrolle über lokale Benutzerkonten zu behalten.
+* **Guest-Tools:** Installation der QEMU Guest Agents zur präzisen Steuerung und Ressourcenauswertung durch den Hypervisor.
+
+---
+
+## 🔗 3. Netzwerk-Audit & Domänenbeitritt
+Die Integration in die Active Directory-Struktur erfolgte über eine dedizierte Konfigurations- und Testsequenz:
+
+* **DNS-Integrität:** Statische Zuweisung des DC-01 (`10.0.30.100`) als autoritativen DNS-Server zur Gewährleistung der SRV-Record-Auflösung.
+* **Domain Join:** Beitritt zur Domäne `projekt.local` unter Verwendung dedizierter administrativer Credentials.
+
+![Nachweis: Erfolgreiche Domänenintegration des Clients](./img/Systemeigenschaften.png)
+
+---
+
+## ⚙️ 4. Active Directory Governance & GPO-Validierung
+Nach der Aufnahme des Clients wurde die organisatorische Struktur innerhalb des AD verfeinert und die zentrale Richtlinienkompetenz geprüft:
+
+* **OU-Struktur:** Verschieben des Computer-Objekts in die Ziel-OU `Angel_Projekt -> Computer` zur Anwendung spezifischer Richtlinien.
+* **GPO-Enforcement:** Implementierung der `GPO_Sicherheit_Login` (Interaktive Anmeldung).
+* **Beweisführung:** Nachweis der Richtlinien-Übernahme (`gpupdate /force`) durch das Erscheinen eines administrativen Info-Banners beim Systemstart.
+
+![Nachweis: Korrekte Objekt-Platzierung in der AD-Struktur](./img/CL-01-WIN11_AD.png)
+![Validierung: Erzwungene GPO-Login-Nachricht am Client](./img/Willkommen_Hinweis.png)
+
+---
+
+## ✅ 5. Projektabschluss Phase 6
+Die Client-Infrastruktur ist nun vollständig zentral verwaltet. Die erfolgreiche Kommunikation zwischen VLAN 30 (Client) und dem Server-Segment wurde durch DNS- und GPO-Tests bestätigt. Das System ist bereit für das Deployment netzwerkbasierter Dienste.
+
+---
+
+# 📂 Phase 7: Zentrales Fileservice-Management & Datensicherheit
+
+## 🎯 Zielsetzung
+Implementierung einer zentralen Dateiablage auf dem Domain Controller (DC-01) zur strukturierten Bereitstellung von Projektdaten. Fokus liegt auf der automatisierten Bereitstellung via Group Policy (GPO), der Berechtigungssteuerung nach Industriestandard und der Absicherung gegen Datenverlust durch Point-in-Time-Recovery.
+
+---
+
+## 🔐 1. Berechtigungsmanagement (AGDLP-Prinzip)
+Die Zugriffssteuerung wurde strikt nach dem AGDLP-Modell (Account, Global Group, Domain Local Group, Permission) umgesetzt, um Skalierbarkeit und Revisionssicherheit zu gewährleisten.
+
+* **Ressourcen-Struktur:** Zentraler Share unter `C:\Shares\Projektdaten`.
+* **Identitätsmanagement:** Erstellung der globalen Sicherheitsgruppe `G_Projekt_Vollzugriff`.
+* **Berechtigungs-Level:** * **NTFS:** Vergabe der Rechte "Ändern", "Lesen" und "Schreiben" an die dedizierte Gruppe.
+    * **Share-Level:** "Full Control" für authentifizierte Benutzer, wobei die effektive Zugriffsbeschränkung über die restriktivere NTFS-Ebene erfolgt.
+
+![Nachweis: NTFS-Berechtigungsstruktur und Gruppenbindung](./img/NTFS-Berechtigungen.png)
+
+---
+
+## ⚙️ 2. Automatisierung (Group Policy Object)
+Zur Steigerung der User-Experience und Standardisierung der Arbeitsplätze wurde die Gruppenrichtlinie `GPO_DriveMapping_P` implementiert.
+
+* **Mechanismus:** GPO-Preferences unter `User Configuration > Preferences > Windows Settings > Drive Maps`.
+* **Parameter:** * **Aktion:** Update (sicherstellt die Konsistenz bei jedem Login).
+    * **UNC-Pfad:** `\\DC-01\Projektdaten`.
+    * **Mount-Point:** Fest definierter Laufwerkbuchstabe **P:**.
+
+![Nachweis: GPO-Konfiguration für die automatisierte Netzlaufwerk-Zuweisung](./img/GPO_Laufwerkszuordnung.png)
+
+---
+
+## 🛡️ 3. Data Protection (Volume Shadow Copies)
+Als proaktive Maßnahme gegen versehentliches Löschen oder Korruption wurde der Volume Shadow Copy Service (VSS) konfiguriert.
+
+* **Technologie:** Point-in-Time-Snapshots auf Blockebene.
+* **Self-Service-Recovery:** Ermöglicht Benutzern die eigenständige Wiederherstellung von "Vorgängerversionen" ohne administrativen Support.
+* **System-Resilienz:** Reduzierung der Recovery Time Objective (RTO) für granulare Dateiwiederherstellungen.
+
+![Status: Aktivierte Schattenkopien auf dem Datei-Volume](./img/Schattenkopien.png)
+
+---
+
+## 🧪 4. Validierung & User Acceptance Test (UAT)
+Die Funktionalität der Infrastruktur wurde am Windows 11 Client (CL-01) unter einem Standard-Benutzer verifiziert:
+
+1. **Policy-Enforcement:** Nachweis der GPO-Übernahme via `gpupdate /force`.
+2. **Mount-Validierung:** Automatisches Erscheinen des Laufwerks P: im Explorer-Namespace.
+3. **Integrations-Test:** Erfolgreiche Durchführung von I/O-Operationen (Erstellen/Ändern von Testfiles) innerhalb des Shares.
+
+![Nachweis: Erfolgreiches GPO-Processing und Laufwerks-Mount am Client](./img/Client-Validierung.png)
+
+---
+
+## 🧹 5. Dokumentation & Status
+Die Fileserver-Rolle ist vollständig in die Domänenstruktur integriert. Alle Berechtigungen und GPO-Einstellungen wurden persistiert und für den operativen Betrieb freigegeben.
+
+---
+
+# 📂 Phase 8: Fortgeschrittene Administration & Ressourcen-Governance
+
+## 🎯 Zielsetzung
+Implementierung proaktiver Management-Strukturen auf dem Fileserver (DC-01). Fokus liegt auf der Sicherstellung der Systemstabilität durch Kontingentverwaltung (Quotas), Durchsetzung von Unternehmensrichtlinien via Dateiscreening sowie Etablierung eines lokalen Monitoring-Workflows.
+
+---
+
+## 💾 1. Kapazitätsmanagement (Storage Quotas)
+Um Service-Unterbrechungen durch unkontrolliertes Datenwachstum zu verhindern, wurde ein striktes Kontingentmanagement eingeführt.
+
+* **Technologie:** Ressourcenmanager für Dateiserver (FSRM).
+* **Implementierung:** * **Zielpfad:** `C:\Shares\Projektdaten` (Netzlaufwerk P:).
+    * **Quota-Typ:** "Hard Quota" (5 GB). Das Überschreiten des Limits wird systemseitig unterbunden.
+* **Governance:** Einsatz einer standardisierten Vorlage (`Limit_5GB_Projektdaten`) zur Gewährleistung der Revisionssicherheit.
+
+![Konfiguration: Definition des harten 5GB-Kontingents](./img/Kontingent-Konfiguration.png)
+
+---
+
+## 🚫 2. Compliance & Dateiscreening
+Zur technischen Durchsetzung von Nutzungsrichtlinien wurde ein aktives Dateiscreening implementiert.
+
+* **Funktion:** Inhaltsbasierte Filterung statt reiner Dateiendung-Prüfung.
+* **Restriktion:** Blockieren von nicht-geschäftskritischen Dateigruppen (Audio-, Video- und Bilddateien) auf dem Projektlaufwerk.
+* **Ergebnis:** Effektive Reduzierung von Schatten-Backups privater Medien und Schutz des produktiven Speichers.
+
+![Policy: Aktive Dateiprüfungseigenschaften für Mediendateien](./img/Dateiprüfungs-Eigenschaften.png)
+
+---
+
+## 📊 3. Proaktives Monitoring & Incident-Response
+Da in der isolierten Testumgebung kein SMTP-Relay zur Verfügung steht, wurde ein lokaler Monitoring-Workflow etabliert.
+
+* **Schwellenwert-Analyse:** Automatische Trigger-Auslösung bei **85 %** Speicherauslastung.
+* **Event-Logging:** Umleitung der Warnmeldungen in das Windows-Ereignisprotokoll (Quelle: `SRMSVC`).
+* **Sichtbarkeit:** Administratoren können über die Ereignisanzeige Engpässe identifizieren, bevor diese den Betrieb beeinträchtigen.
+
+![Monitoring: Konfiguration der Schwellenwerte und Warnmeldungen](./img/Schwellenwert_SMTP-Hinweis.png)
+
+---
+
+## 🧪 4. Validierung & Wirksamkeitsnachweis
+Der Nachweis der technischen Durchsetzung erfolgte durch gezielte Funktionstests:
+
+1. **Compliance-Test (Client):** Ein Kopierversuch unzulässiger Dateitypen auf das Laufwerk P: resultiert in einem "Access Denied". Die NTFS-Rechte werden hierbei durch die FSRM-Policy überschrieben.
+2. **Audit-Trail (Server):** Verifizierung der Generierung von Warnereignissen in der Ereignisanzeige nach Erreichen der Schwellenwerte.
+
+![Audit: Nachweis der Richtliniendurchsetzung in der Ereignisanzeige](./img/Ereignisanzeige_Monitoring.png)
+
+---
+
+## 🧹 5. Dokumentation & Persistence
+Nach erfolgreicher Validierung wurde der Systemzustand via Proxmox-Snapshot (`Phase_8_Final_Admin_Monitoring`) gesichert. Die Konfigurationsparameter sind für ein späteres Rollout in die Produktionsumgebung dokumentiert.
+
+---
 
 # 📂 Phase 9: Web-Infrastruktur & Netzwerk-Segmentierung
 
-## 1. Zielsetzung
-Das Ziel dieser Phase war die Migration des Webservers in ein isoliertes Server-VLAN (VLAN 20) und die Absicherung des Zugriffs nach dem **Least-Privilege-Prinzip**. Es sollte sichergestellt werden, dass Clients nur auf notwendige Dienste (HTTP) zugreifen können, während administrative Zugriffe (SSH) auf das Management-Netz beschränkt bleiben.
+## 🎯 Zielsetzung
+Migration des Webservers in ein dediziertes Server-VLAN (DMZ-Konzept) zur Etablierung einer strikten Vertrauensgrenze. Fokus liegt auf der Implementierung des **Least-Privilege-Prinzips** durch granulare Firewall-Regelsätze und die physische Trennung von Management- und Applikationstraffic.
 
 ---
 
-## 2. Netzwerk-Konfiguration & Migration
-Der Webserver wurde von VLAN 30 in das neue **VLAN 20 (WEBSERVER)** verschoben.
+## 🏗️ 1. Netzwerk-Topologie & Migration
+Zur Reduzierung der Broadcast-Domänen und Erhöhung der Sicherheit wurde der Webserver in das isolierte **VLAN 20** migriert.
 
-* **IP-Adresse:** `10.0.20.50` (Statisch konfiguriert)
-* **Subnetzmaske:** `255.255.255.0`
-* **Standard-Gateway:** `10.0.20.1` (pfSense Interface)
+* **Interface-Konfiguration:** Umstellung auf eine statische Adressierung im Subnetz `10.0.20.0/24`.
+* **Gateway-Struktur:** Die pfSense fungiert als zentraler Inter-VLAN-Router und Security-Gateway (`10.0.20.1`).
+* **Adress-Validierung:** Erfolgreiche Bindung der IP `10.0.20.50` an das Ziel-Interface.
 
-> ![Screenshot Datei /etc/network/interfaces oder Befehl 'ip a' vom Webserver](./img/webserver_neue_ip_adresse.png)
-
----
-
-## 3. Firewall-Härtung (pfSense)
-Die Sicherheitsstrategie wurde von einer offenen "Allow-All"-Konfiguration auf eine restriktive "Whitelist"-Strategie umgestellt. 
-
-### 3.1 Regeln im LAN-Interface (Management)
-* **SSH (Port 22):** Erlaubt den administrativen Zugriff von der Linux Mint Management-Station auf den Webserver.
-* **HTTP (Port 80):** Erlaubt den Zugriff auf den Webdienst zu Testzwecken.
-
-### 3.2 Regeln im DMZ-Interface (Windows-Client)
-* **HTTP-Only:** Dem Windows-Client wurde oberhalb der Block-Regeln explizit nur der Zugriff auf `10.0.20.50` über Port 80 erlaubt.
-* **Isolation:** Die "Default Allow"-Regel wurde deaktiviert. Alle anderen Zugriffe (z.B. Ping oder Zugriff auf das Management-VLAN) werden nun durch die Firewall verworfen.
-
-> ![Screenshot Datei Deine pfSense Rules im DMZ-Tab (mit der aktiven Port 80 Regel)](./img/pfsense_DMZ_Rules.png)
+![Nachweis: Statische IP-Konfiguration (VLAN 20)](./img/webserver_neue_ip_adresse.png)
 
 ---
 
-## 4. Bereitstellung des Webdienstes
-Auf dem System (Debian) wurde ein LAMP-Stack (hier: Apache2) installiert und konfiguriert.
+## 🚦 2. Firewall-Härtung (Policy-Design)
+Die Sicherheitsstrategie wurde von einer permissiven Struktur auf ein restriktives **Whitelist-Verfahren** umgestellt.
 
-* **Dienst-Status:** Apache2 wurde erfolgreich gestartet und als "active (running)" verifiziert.
-* **Personalisierung:** Die `index.html` wurde angepasst, um die erfolgreiche Migration und den Status des Projekts (LAMP-Stack online) anzuzeigen.
+* **Management-Ebene (VLAN 10):** Autorisierter SSH-Zugriff (Port 22) ist exklusiv für dedizierte Management-Workstations freigegeben.
+* **Client-Ebene (VLAN 30):** Implementierung einer "Service-Specific"-Rule. Windows-Clients dürfen ausschließlich über Port 80/443 mit dem Webserver kommunizieren.
+* **Isolation:** Deaktivierung der *Default-Allow*-Rules. Jegliche Kommunikation zwischen den Segmenten (z. B. ICMP/Ping) wird unterbunden, um Reconnaissance-Versuche zu erschweren.
 
-> ![Screenshot Datei Terminal mit dem Befehl 'systemctl status apache2'](./img/Webseite_test_Win_Client.png)
-
-
----
-## 5. Validierung & Tests
-Zur Bestätigung der korrekten Firewall-Konfiguration wurden folgende Tests durchgeführt:
-
-| Testfall | Erwartetes Ergebnis | Status |
-| :--- | :--- | :--- |
-| HTTP-Zugriff von Win-11 (VLAN 30) | Webseite wird geladen | **Erfolgreich** |
-| SSH-Zugriff von Mint (VLAN 10) | Login möglich | **Erfolgreich** |
-| Ping von Win-11 zu Webserver | Zeitüberschreitung (Blockiert) | **Erfolgreich** |
-
-> ![Screenshot Die personalisierte Webseite im Browser des Windows-Clients](./img/Cmd_win_client_ping_webserver.png)
-
-
-# 📂 Phase 10: DNS & Namensauflösung
-
-## 1. Zielsetzung
-Implementierung einer benutzerfreundlichen Namensauflösung für den isolierten Webserver.
-
-## 2. DNS-Konfiguration (pfSense)
-In den Services des DNS-Resolvers wurde ein **Host Override** für den FQDN `webserver.home.arpa` auf die Ziel-IP `10.0.20.50` angelegt.
-
-## 3. Firewall-Anpassung
-Um die Kommunikation mit dem DNS-Dienst zu ermöglichen, wurde im DMZ-Interface eine Regel für **UDP Port 53** erstellt. Dies ist notwendig, da nach dem "Least Privilege"-Prinzip zuvor alle nicht explizit erlaubten Dienste blockiert wurden.
-
-## 4. Client-Konfiguration
-Der Windows-Client wurde so konfiguriert, dass er die pfSense (`10.0.30.1`) als primären DNS-Server nutzt.
-> ![Screenshot Netzwerkeinstellungen geänderte IP-Adresse](./img/win_client_netzwerkeinstellungen_ipadresse.png)
-## 5. Validierung
-Die erfolgreiche Auflösung wurde mittels `nslookup` und durch den Aufruf der URL im Browser bestätigt.
-
-> ![Screenshot Browser mit URL webserver.home.arpa](./img/browser_webserver_client_test.png)
-
-
-# 📂 Phase 11: System-Härtung & Webserver-Absicherung
-
-## 1. Zielsetzung
-Nachdem die Netzwerk-Infrastruktur gesichert wurde, lag der Fokus in Phase 11 auf der Absicherung des Webservers selbst (**Host-Hardening**). Ziel war es, Informationslecks zu schließen, unnötige Dienste zu entfernen und den administrativen Zugriff (SSH) zusätzlich abzusichern.
+![Nachweis: Granulare Inbound-Rules im pfSense DMZ-Interface](./img/pfsense_DMZ_Rules.png)
 
 ---
 
-## 2. Apache Webserver Härtung
-Standardmäßig geben Webserver viele Informationen über ihre Version und das Betriebssystem preis. Dies wurde unterbunden.
+## 🌐 3. Dienst-Bereitstellung (LAMP-Stack)
+Nach der erfolgreichen Netzwerk-Migration wurde die Applikationsebene auf dem Debian-Target initialisiert.
 
-### 2.1 Server-Banner deaktivieren
-In der Konfigurationsdatei `/etc/apache2/conf-enabled/security.conf` wurden folgende Anpassungen vorgenommen:
-* **ServerTokens Prod:** Minimiert die Header-Informationen auf "Apache".
-* **ServerSignature Off:** Entfernt die Versionsnummer aus automatisch generierten Fehlerseiten.
-
->  ![Screenshot der Datei security.conf](./img/servertokens_security_conf.png)
-
-### 2.2 Directory Listing deaktivieren
-Um das Ausspähen der Dateistruktur zu verhindern, wurde die Option `Indexes` in der `apache2.conf` entfernt. Damit wird verhindert, dass Verzeichnisinhalte im Browser aufgelistet werden, falls keine `index.html` vorhanden ist.
+* **Service-Integrität:** Validierung des Apache2-Daemon-Status als "active (running)".
+* **Content-Deployment:** Bereitstellung einer gehärteten `index.html` zur Verifizierung des End-to-End-Zugriffs über VLAN-Grenzen hinweg.
 
 ---
 
-## 3. SSH-Absicherung
-Der administrative Zugang wurde nach Best-Practice-Vorgaben gehärtet:
-* **Root-Login:** `PermitRootLogin no` verhindert direkte Angriffe auf den Administrator-Account.
-* **Authentifizierungs-Limits:** `MaxAuthTries 3` begrenzt Brute-Force-Versuche.
+## 🧪 4. Validierung (Compliance-Matrix)
+Die Funktionalität der Segmentierung wurde durch eine strukturierte Testmatrix nachgewiesen:
 
->   ![Screenshot Auszug aus der /etc/ssh/sshd_config](./img/sshd_config_datei.png)
+| Test-Szenario | Vektor | Erwartetes Ergebnis | Ergebnis |
+| :--- | :--- | :--- | :--- |
+| **Applikations-Zugriff** | Win-11 ⮕ Web (Port 80) | HTTP 200 OK | **Pass** |
+| **Administration** | Mint ⮕ Web (Port 22) | SSH-Handshake | **Pass** |
+| **Inter-VLAN-Ping** | Win-11 ⮕ Webserver | Request Timeout | **Pass** |
 
----
-
-## 4. Host-basierte Firewall (UFW)
-Zusätzlich zur pfSense-Netzwerk-Firewall wurde eine lokale Firewall auf dem Webserver aktiviert (**Defense in Depth**).
-
-* **Konfiguration:**
-    * `ufw allow 22/tcp` (Management-Zugriff)
-    * `ufw allow 80/tcp` (Web-Zugriff)
-    * `ufw default deny incoming` (Alles andere blockieren)
-
->   ![Screenshot Ausgabe des Befehls 'sudo ufw status verbose'](./img/ufw_status_verbose.png)
+![Nachweis: Restriktive Policy verhindert ICMP (Ping)](./img/Cmd_win_client_ping_webserver.png)
 
 ---
 
-## 5. Validierung der Sicherheitsmaßnahmen
-Die Wirksamkeit der Maßnahmen wurde durch folgende Tests verifiziert:
+## 🧹 5. Dokumentation & Status
+Die VLAN-Zuweisungen und die Firewall-Objekte wurden in der pfSense-Konfiguration persistiert. Alle administrativen Zugangsdaten sind sicher in der `vault_passwords.yml` hinterlegt.
 
-1. **Informations-Check:** Ein Aufruf einer nicht existierenden Seite zeigt keine Versionsdetails mehr an.
-2. **Firewall-Check:** Die lokale Firewall lässt nur Port 80 und 22 durch.
-3. **SSH-Check:** Ein Login-Versuch als 'root' wird sofort abgewiesen.
+---
 
->  ![Screenshot Browser-Ansicht einer 404-Meldung oder UFW-Status](./img/Browser_Sicherheitstest.png)
+# 📂 Phase 10: DNS-Infrastruktur & Namensauflösung
+
+## 🎯 Zielsetzung
+Implementierung einer internen Namensauflösung (Split-DNS) zur Abstraktion der IP-Infrastruktur. Ziel ist die Bereitstellung eines konsistenten Zugriffs auf den Webserver über einen vollqualifizierten Domänennamen (FQDN) innerhalb des isolierten Netzwerks.
+
+---
+
+## 🛠️ 1. DNS-Zonendelegation (pfSense)
+Die Steuerung der Namensauflösung erfolgt zentral über den pfSense DNS-Resolver (Unbound).
+
+* **Host Override:** Konfiguration eines statischen DNS-Eintrags für den FQDN `webserver.home.arpa`.
+* **Mapping:** Verknüpfung des Hostnamens mit der statischen IP `10.0.20.50` (VLAN 20).
+* **Vorteil:** Ermöglicht den Austausch der Hardware oder IP-Adressen ohne Anpassung der Client-Applikationen.
+
+---
+
+## 🚦 2. Protokoll-Härtung (Firewall-Policies)
+Um die DNS-Integrität zu gewährleisten, wurde der Zugriff auf den Resolver granular gesteuert.
+
+* **UDP/53 Rule:** Implementierung einer Firewall-Regel im DMZ-Interface, die ausschließlich DNS-Queries (`UDP Port 53`) an das Gateway (`10.0.30.1`) erlaubt.
+* **Least Privilege:** Da die Standard-Policy auf *Deny All* steht, wurde der DNS-Zugriff als kritische Abhängigkeit explizit freigeschaltet.
+
+---
+
+## 💻 3. Client-Provisionierung
+Die Endgeräte im Management-Netz wurden für die Nutzung der neuen DNS-Autorität konfiguriert.
+
+* **Resolver-Konfiguration:** Statische Zuweisung der pfSense (`10.0.30.1`) als primären DNS-Server in den Netzwerkeinstellungen des Windows-Clients.
+* **Domain-Suffix:** Sicherstellung der korrekten Auflösung innerhalb der lokalen Domäne `home.arpa`.
+
+![Konfiguration: IPv4-Stack und DNS-Zuweisung](./img/win_client_netzwerkeinstellungen_ipadresse.png)
+
+---
+
+## 🧪 4. Validierung & Konnektivitätstest
+Der Nachweis der korrekten Implementierung erfolgte durch zweistufige Verifizierung:
+
+1. **Resolver-Audit:** Erfolgreicher Query via `nslookup webserver.home.arpa` zur Bestätigung der korrekten IP-Auflösung durch die pfSense.
+2. **Applikations-Check:** Vollständiger HTTP-Handshake im Browser über den FQDN anstatt der IP-Adresse.
+
+![Nachweis: Erfolgreiche Namensauflösung im Browser](./img/browser_webserver_client_test.png)
+
+---
+
+## 🧹 5. Dokumentation & Persistence
+Der FQDN wurde als primärer Zugangspunkt in der Asset-Liste vermerkt. Alle DNS-bezogenen Parameter sind konsistent mit der Netzwerk-Topologie dokumentiert.
+
+---
+
+# 📂 Phase 11: Host-Hardening & Webserver-Absicherung
+
+## 🎯 Zielsetzung
+Implementierung von Sicherheitsmechanismen auf Betriebssystem- und Applikationsebene (Host-Level-Hardening). Fokus liegt auf der Unterbindung von Information Disclosure, der Absicherung administrativer Schnittstellen und der Etablierung einer sekundären Firewall-Instanz.
+
+---
+
+## 🔒 1. Apache Service-Hardening
+Zur Erschwerung von gezielten Exploits wurde die Informationspreisgabe des Webservers auf ein Minimum reduziert.
+
+* **Information Obfuscation:** In der `security.conf` wurden `ServerTokens Prod` und `ServerSignature Off` gesetzt. Dies verhindert das Auslesen der genauen Apache-Version und OS-Details via HTTP-Header.
+* **Directory Privacy:** Deaktivierung des Directory Listings (`-Indexes`), um das automatisierte Crawlen der Dateistruktur zu unterbinden.
+
+![Nachweis: Gehärtete Apache-Sicherheitskonfiguration](./img/servertokens_security_conf.png)
+
+---
+
+## 🔑 2. SSH-Infrastruktur-Härtung
+Der administrative Zugriff wurde nach dem "Least Privilege"-Prinzip und gängigen Best Practices abgesichert.
+
+* **Account-Protection:** `PermitRootLogin no` erzwingt den Login über einen unprivilegierten Benutzer mit anschließendem `sudo`, was Brute-Force-Angriffe auf den Root-Account eliminiert.
+* **Brute-Force-Prävention:** Begrenzung der Authentifizierungsversuche durch `MaxAuthTries 3`.
+
+![Konfiguration: SSH-Daemon Sicherheitsrichtlinien](./img/sshd_config_datei.png)
+
+---
+
+## 🛡️ 3. Defense in Depth (UFW-Implementierung)
+Zusätzlich zur zentralen pfSense-Firewall wurde eine lokale Instanz (Uncomplicated Firewall) als zweite Sicherheitsbarriere installiert.
+
+* **Policy-Design:**
+    * `Default Deny Incoming`: Grundsätzliches Blockieren aller eingehenden Pakete.
+    * `Allow 22/tcp`: Exklusiver Management-Zugang.
+    * `Allow 80/tcp`: Autorisierter HTTP-Traffic.
+* **Strategischer Vorteil:** Selbst bei einer Fehlkonfiguration der Netzwerk-Firewall bleibt der Host durch die lokale Policy geschützt.
+
+![Status: Aktive Host-Firewall mit restriktivem Regelwerk](./img/ufw_status_verbose.png)
+
+---
+
+## 🧪 4. Validierung & Wirksamkeitsnachweis
+Die Härtungsmaßnahmen wurden erfolgreich gegen die Sicherheitsvorgaben geprüft:
+
+1. **Header-Audit:** `curl -I` zeigt nur noch "Server: Apache" ohne Versionsnummern.
+2. **Access-Test:** Root-Login via SSH wird systemseitig terminiert.
+3. **Resilienz-Check:** Portscans bestätigen, dass ausschließlich die explizit freigegebenen Ports (80, 22) auf Anfragen reagieren.
+
+---
+
+## 🧹 5. Dokumentation & Maintenance
+Die Hardening-Konfigurationen wurden in das Master-Image übernommen. Alle administrativen Passwörter und SSH-Parameter sind konsistent in der `vault_passwords.yml` dokumentiert.
+
+---
 
 # 📂 Phase 12: System-Hardening & Monitoring
 
-## 1. Überwachung der Netzwerkaktivität
-Um die Wirksamkeit der Firewall-Regeln zu verifizieren, wurde das Echtzeit-Logging der pfSense analysiert. 
-
-* **Ergebnis:** Es konnte nachgewiesen werden, dass alle nicht explizit erlaubten Pakete (z.B. HTTPS-Anfragen an externe Telemetrie-Server) durch die "Default Deny Rule" im DMZ-Interface verworfen werden. Dies minimiert das Risiko von unerwünschter Datenexfiltration.
-
-> ![Schreenshot SystemLogs pfSense](./img/systemlogs_pfsense.png)
-
-## 2. Minimierung der Angriffsfläche (Service Hardening)
-Der Webserver wurde auf unnötige offene Ports untersucht, um den "Attack Surface" so klein wie möglich zu halten.
-
-* **Maßnahme:** Verifizierung der lauschenden Dienste mit `ss -tulpn`. 
-* **Ergebnis:** Die MariaDB-Datenbank ist sicher konfiguriert und nimmt nur lokale Verbindungen (localhost) entgegen. Administrative Dienste wie SSH sind aktiv, aber durch die Firewall auf das Management-VLAN beschränkt.
-
->  ![Schreenshot Analyse der aktiven Netzwerk-Sockets](./img/ss_tulpn.png)
-
-## 4. Containerisierung & Docker-Sicherheit (Review Phase 4)
-Die Integration von Docker wurde als zentrales Element für die Skalierbarkeit und Sicherheit beibehalten.
-
-* **Architektur:** Die Applikation nutzt einen Docker-Proxy (Port 8080) und eine containerisierte Umgebung.
-* **Datenbank-Isolation:** Die MariaDB ist so konfiguriert, dass sie nur auf localhost (127.0.0.1) lauscht, wodurch sie vor externen Zugriffen aus anderen VLANs vollständig geschützt ist.
-* **Lerneffekt:** Die Migration hat das Verständnis für persistente Datenspeicherung (Docker Volumes) und die Netzwerk-Kommunikation zwischen Host und Container vertieft.
-
-
-## 5. Projektabschluss & Fazit
-Das Projekt wurde erfolgreich abgeschlossen. Der Webserver ist nun:
-1. In einem eigenen VLAN (20) isoliert.
-2. Über einen lokalen FQDN (`webserver.home.arpa`) erreichbar.
-3. Durch ein restriktives Firewall-Regelwerk nach dem Least-Privilege-Prinzip abgesichert.
-4. Überwacht durch zentrales Firewall-Logging.
-
->  ![Schreenshot der Webseite erreichbar](./img/Webseite_FInal_Phase_!2.png)
-
-# 📂 Phase 13: Projektabschluss und Reflexion
-
-In der finalen Phase wird das Projekt offiziell beendet, die Zielerreichung bewertet und der gesamte Prozess kritisch reflektiert.
+## 🎯 Zielsetzung
+Absicherung der Systemlandschaft durch Minimierung der Angriffsfläche (Attack Surface Reduction) und Validierung der Netzwerksicherheit durch aktives Monitoring.
 
 ---
 
-## 13.1 Soll-Ist-Vergleich
-Ein Abgleich der im Projektantrag definierten Ziele mit dem realisierten System zeigt eine vollständige Umsetzung der Anforderungen:
+## 🚦 1. Network-Compliance (Egress Control)
+Um die Wirksamkeit der Firewall-Policies zu garantieren, wurde der ausgehende Traffic des DMZ-Interfaces über die pfSense auditiert.
 
-* **Netzwerktrennung:** Die VLAN-Struktur wurde erfolgreich implementiert; DMZ und Webserver-VLAN sind durch die pfSense-Firewall strikt voneinander getrennt.
-* **Dienst-Isolation:** Kritische Dienste wie die MariaDB sind sicher an das lokale Interface (127.0.0.1) gebunden und somit vor direkten Zugriffen aus fremden Netzen geschützt.
-* **Containerisierung:** Der LAMP-Stack wurde erfolgreich in Docker-Container migriert, wobei die Applikation stabil über ein definiertes Port-Mapping (Host: 8080 auf Container: 80) erreichbar ist.
-* **Verschlüsselung:** Der Zugriff erfolgt gesichert über HTTPS (Port 443) unter Verwendung des vollqualifizierten Domänennamens (FQDN) `webserver.home.arpa`.
+* **Befund:** Die Analyse der Echtzeit-Logs bestätigt die korrekte Funktion der "Default Deny Rule".
+* **Ergebnis:** Nicht autorisierte Verbindungsversuche (z. B. externe Telemetrie oder unbefugte DNS-Anfragen) werden konsistent verworfen. Dies verhindert effektiv die Datenexfiltration durch potenzielle Schadsoftware.
 
----
-
-## 13.2 Kritische Reflexion und Fehleranalyse
-Während der Implementierung traten technische Hürden auf, die wertvolle Erkenntnisse für den Betrieb komplexer Netze lieferten:
-
-* **Problem der Inter-VLAN-Kommunikation:** Trotz korrekter Firewall-Regeln in der pfSense schlug der Zugriff anfangs fehl (Timeout). Ursache war die aktive Host-Firewall (`ufw`) auf dem Linux-Server. 
-* **Lösung:** Durch die Deaktivierung der `ufw` konnte der Zugriff ermöglicht werden, da die pfSense bereits die zentrale Filterung übernimmt.
-* **SSL-Herausforderung:** Die Verwendung selbstsignierter Zertifikate führte zu Browser-Sperren ohne direkten "Erweitert"-Button.
-* **Lösung:** Die Funktionalität konnte durch manuelle Sicherheits-Overrides im Browser (z. B. "thisisunsafe"-Eingabe) und Validierung per CLI-Tools wie `curl` nachgewiesen werden.
+![Nachweis: Blockierter Traffic in pfSense Logs](./img/systemlogs_pfsense.png)
 
 ---
 
-## 13.3 Ausblick und Fazit
-Das Projekt beweist die erfolgreiche Bereitstellung einer sicheren, containerisierten Web-Infrastruktur.
+## 🛡️ 2. Service-Hardening (Socket-Audit)
+Der Webserver wurde einem technischen Audit unterzogen, um sicherzustellen, dass keine unnötigen Dienste exponiert werden.
 
-* **Optimierungspotenzial:** In einem produktiven Szenario sollte die Integration von *Let’s Encrypt* zur automatisierten Zertifikatsverwaltung erfolgen, um SSL-Warnungen zu vermeiden.
-* **Zentrales Monitoring:** Ein erweitertes Log-Management (z. B. ELK-Stack) würde die Analyse der Container-Events professionalisieren.
-* **Gesamturteil:** Die Kombination aus pfSense zur Netzwerksegmentierung und Docker zur Applikations-Isolation stellt eine robuste und skalierbare
+* **Audit-Methode:** Verifizierung der aktiven Netzwerk-Sockets mittels `ss -tulpn`.
+* **Ergebnis MariaDB:** Die Datenbank ist strikt an `127.0.0.1` gebunden und somit für das Netzwerk unsichtbar.
+* **Ergebnis SSH:** Der Zugriff ist systemseitig gehärtet und wird zusätzlich durch das Firewall-Regelwerk auf das Management-VLAN isoliert.
 
+![Audit: Aktive Netzwerk-Sockets und Bind-Adressen](./img/ss_tulpn.png)
+
+---
+
+## 🏗️ 3. Architektur-Validierung (Docker-Isolation)
+Die Container-Infrastruktur wurde final auf ihre Sicherheitsvorgaben geprüft.
+
+* **Isolation:** Durch das Docker-interne Networking kommuniziert die Applikation über einen Proxy (Port 8080), während das Backend (MariaDB) vollständig vom Host-Netz isoliert bleibt.
+* **Persistenz:** Einsatz von Docker Volumes zur Trennung von flüchtigen Container-Daten und persistenten Applikationsdaten.
+
+---
+
+## ✅ 4. Fazit & Systemstatus
+Die Implementierung erfüllt die modernen Sicherheitsstandards für gehärtete Server-Umgebungen:
+
+* **VLAN-Isolation:** Webserver erfolgreich in VLAN 20 segmentiert.
+* **Least Privilege:** Firewall-Regelwerk auf das absolute Minimum reduziert.
+* **Integrität:** Zentrales Logging und verschlüsselter Zugriff via FQDN (`webserver.home.arpa`) sind operativ.
+---
+
+# 📂 Phase 13: Projektabschluss & Reflexion
+
+## 🎯 Zielsetzung
+Abschlussbewertung der Systemarchitektur, Validierung der Sicherheitsvorgaben gegen das initiale Anforderungsprofil sowie kritische Analyse der Implementierungshürden.
+
+---
+
+## 📊 1. Soll-Ist-Vergleich (Compliance-Check)
+Der Abgleich der realisierten Infrastruktur mit dem Projektantrag bestätigt die vollständige Erreichung der Meilensteine:
+
+* **Netzwerk-Segmentierung:** Erfolgreiche VLAN-Isolierung via pfSense. Die strikte Trennung zwischen DMZ und Webserver-VLAN ist aktiv.
+* **Dienst-Isolation:** Härtung des Datenbank-Backends durch Bind-Restriction auf `127.0.0.1`. Zugriff erfolgt ausschließlich über autorisierte Applikations-Schnittstellen.
+* **Containerisierung:** Erfolgreiche Migration des LAMP-Stacks in eine Docker-Umgebung mit dediziertem Port-Forwarding (8080/tcp -> 80/tcp).
+* **Transportverschlüsselung:** Absicherung der Kommunikation über HTTPS (TLS 1.3) unter Verwendung des FQDN `webserver.home.arpa`.
+
+---
+
+## ⚠️ 2. Kritische Reflexion & Incident-Analyse
+Die Implementierungsphase lieferte durch technische Anomalien wichtige Erkenntnisse für den stabilen IT-Betrieb:
+
+* **Inter-VLAN-Routing:** Initialer Kommunikationsabbruch trotz korrekter pfSense-Rules.
+    * **Ursache:** Redundante Filterung durch die lokale Host-Firewall (`ufw`) auf dem Zielsystem.
+    * **Lösung:** Konsolidierung der Firewall-Logik auf die pfSense (Zentralisierung) und Deaktivierung der lokalen `ufw`.
+* **PKI-Herausforderungen:** Validierungsprobleme bei selbstsignierten Zertifikaten in modernen Browser-Umgebungen.
+    * **Lösung:** Verifizierung der Integrität mittels CLI-Tools (`curl -k`) und temporäre Sicherheits-Overrides zur Funktionsprüfung.
+
+---
+
+## 🚀 3. Fazit & Roadmap
+Das Projekt demonstriert eine belastbare Kombination aus Netzwerksegmentierung und Applikations-Isolierung.
+
+* **Skalierbarkeit:** Die Infrastruktur ist durch den Docker-Ansatz für zukünftige Lastspitzen vorbereitet.
+* **Optimierungspotenzial:** Integration einer automatisierten Zertifikats-CA (z. B. Let’s Encrypt via ACME-Protokoll) sowie Implementierung eines zentralen Log-Managements (SIEM/ELK).
+* **Abschlussurteil:** Die Architektur erfüllt die Anforderungen an eine moderne, gehärtete Web-Infrastruktur und bildet eine solide Basis für den produktiven Betrieb.
+
+---
+
+## 🧹 4. Dokumentation & Übergabe
+Alle relevanten Konfigurationsparameter, IP-Adressen und Credentials (hinterlegt in `vault_passwords.yml`) wurden in die finale Betriebsdokumentation überführt. Das Projekt wird hiermit in den Status **Abgeschlossen** versetzt.
+
+---
 
 # 📂 Phase 14: Modernisierung mit Docker Compose
-In dieser Phase wurde das manuelle Container-Management durch eine deklarative `docker-compose.yml` ersetzt.
 
-* **Zentralisierung:** Alle Parameter für den Web- und Datenbank-Container sind nun in einer Datei definiert.
-* **Persistenz:** Durch das Mapping von `./html` auf den Host-Ordner sind die Web-Inhalte (PHP/HTML) nun unabhängig vom Container-Lebenszyklus gespeichert.
-* **Sicherheit:** Die MariaDB bleibt weiterhin ohne externes Port-Mapping isoliert und kommuniziert nur intern mit dem Web-Container.
-* **Status:** Der gesamte Stack kann nun mit einem einzigen Befehl (`docker compose up -d`) gestartet werden.
-* 
+## 🎯 Zielsetzung
+Migration des manuellen Container-Handlings zu einer deklarativen Infrastruktur mittels Docker Compose. Fokus liegt auf der Automatisierung des Deployments, der Persistenz von Anwendungsdaten und der netzwerkseitigen Isolation der Datenbank.
+
+---
+
+## ⚙️ 1. Konfiguration & Orchestrierung
+Die gesamte Service-Landschaft wurde in einer `docker-compose.yml` zentralisiert, um Konfigurations-Drift zu vermeiden.
+
+* **Stack-Definition:** Orchestrierung eines PHP-Apache Webservers und einer MariaDB-Instanz.
+* **Secret-Management:** Integration der sensiblen Variablen aus der `vault_passwords.yml` zur Laufzeit.
+* **Netzwerk-Segmentierung:** Implementierung eines isolierten Bridge-Netzwerks. Die MariaDB ist explizit nicht nach außen (Host-Ports) gemappt, sondern nur via DNS-Alias für den Web-Container erreichbar.
+
+---
+
+## 💾 2. Datenkonsistenz & Volumes
+Zur Entkoppelung von Applikationsdaten und Container-Lifecycle wurden persistente Mounts konfiguriert:
+
+* **Bind Mount:** Mapping von `./html` (Host) auf `/var/www/html` (Container) für direkte Code-Manipulation und Persistenz der Web-Inhalte.
+* **Named Volume:** Datenbank-Persistenz via `db_data` zur Sicherung der SQL-Integrität über Container-Restarts hinweg.
+
+---
+
+## 🧪 3. Validierung (Operational Status)
+Die Überprüfung der neuen Infrastruktur erfolgte durch standardisierte Tests:
+
+* **Deployment-Test:** Verifizierung des Multi-Container-Starts mittels `docker compose up -d`.
+* **Konnektivitäts-Audit:** Bestätigung der internen Kommunikation zwischen Web-Service und DB-Backend über den Docker-internen Resolver.
+* **Persistence-Audit:** Validierung der Datenerhaltung nach einem `docker compose down` und anschließendem Rebuild.
+
+---
+
+## 🧹 4. Dokumentation & Status
+Der gesamte Stack ist nun versionskontrolliert und reproduzierbar. Die Verwaltung erfolgt ausschließlich über die zentrale Compose-Datei, was die Skalierbarkeit und Wartbarkeit der Umgebung sicherstellt.
+
+---
 
 # 📂 Phase 15: Automatisierung, Vault-Integration & Datenbank-Sicherung
 
