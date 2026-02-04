@@ -5,17 +5,6 @@
 
 ---
 
-## 👤 Über mich
-
-- 💼 IT Support (2 Jahre Erfahrung)
-- 🎯 Ziel: Systemadministrator / SOC / Junior Security Engineer
-- 📍 Wien, Österreich
-- 📚 Aktuelle Vorbereitung auf CompTIA Security+
-- 🧠 Hands-on Learning mit TryHackMe
-- 🧪 Lernen durch reale Infrastruktur statt reiner Theorie
-
----
-
 ## 🎯 Projektziel
 
 Aufbau eines realistischen Enterprise-HomeLabs zur praktischen Umsetzung von:
