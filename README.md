@@ -3,11 +3,6 @@
 ## 🎯 Projekt-Vision
 Systematische Transformation einer Consumer-Netzwerkumgebung in eine hochverfügbare, segmentierte Enterprise-Lab-Struktur. Dieses Projekt dient als Proof-of-Concept für moderne IT-Infrastrukturen, mit Fokus auf Virtualisierung, Advanced Firewalling (pfSense) und die Migration hin zu einer Container-basierten Microservice-Architektur.
 
-# 📂 Enterprise Home Lab & Security Infrastructure
-
-## 🎯 Projekt-Vision
-Systematische Transformation einer Consumer-Netzwerkumgebung in eine hochverfügbare, segmentierte Enterprise-Lab-Struktur...
-
 ---
 
 ## 📍 Inhaltsverzeichnis
