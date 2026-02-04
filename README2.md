@@ -11,7 +11,7 @@
 - 🎯 Ziel: Systemadministrator / SOC / Junior Security Engineer
 - 📍 Wien, Österreich
 - 📚 Aktuelle Vorbereitung auf CompTIA Security+
-- 🧠 Hands-on Learning mit TryHackMe Premium
+- 🧠 Hands-on Learning mit TryHackMe
 - 🧪 Lernen durch reale Infrastruktur statt reiner Theorie
 
 ---
@@ -40,7 +40,7 @@ Das HomeLab bildet eine klassische Unternehmensarchitektur ab:
 - Defense-in-Depth-Ansatz
 
 Screenshot:
-- screenshots/network_architecture.png
+- ![](./img/network_architecture.png)
 
 ---
 
@@ -66,8 +66,8 @@ Screenshot:
 - Snapshot- & Backup-Strategie
 
 Screenshots:
-- screenshots/proxmox_dashboard.png
-- screenshots/proxmox_network.png
+-![](./img/proxmox_dashboard.png)
+-![](./img/proxmox_network.png)
 
 ---
 
@@ -81,9 +81,9 @@ Screenshots:
 - Zentrales Logging
 
 Screenshots:
-- screenshots/pfsense_dashboard.png
-- screenshots/pfsense_rules.png
-- screenshots/pfsense_logs.png
+- ![](./img/pfsense_dashboard.png)
+- ![](./img/pfsense_rules.png)
+- ![](./img/pfsense_logs.png)
 
 ---
 
@@ -100,7 +100,7 @@ Security-Prinzip:
 - Server & Clients dürfen nicht ins Management-Netz
 
 Screenshot:
-- screenshots/firewall_vlan_rules.png
+- ![](./img/firewall_vlan_rules.png)
 
 ---
 
@@ -115,8 +115,8 @@ Screenshot:
 - Log-Analyse (/var/log/auth.log)
 
 Screenshots:
-- screenshots/ufw_status.png
-- screenshots/sshd_config.png
+- ![](./img//ufw_status.png)
+- ![](./img/sshd_config.png)
 
 ---
 
@@ -129,7 +129,7 @@ Screenshots:
 - Minimal installierte Services
 
 Screenshot:
-- screenshots/apache_security_config.png
+- ![](./img/apache_security_config.png)
 
 ---
 
@@ -142,8 +142,8 @@ Screenshot:
 - Keine Datenbank-Ports nach außen
 
 Screenshots:
-- screenshots/docker_ps.png
-- screenshots/docker_compose.png
+- ![](./img/docker_ps.png)
+- ![](./img/docker_compose.png)
 
 ---
 
@@ -157,8 +157,8 @@ Screenshots:
 - Login-Banner & Drive-Mapping
 
 Screenshots:
-- screenshots/ad_users.png
-- screenshots/gpo_banner.png
+- ![](./img/ad_users.png)
+- ![](./img/gpo_banner.png)
 
 ---
 
@@ -173,8 +173,8 @@ Screenshots:
   - File Screening
 
 Screenshots:
-- screenshots/ntfs_permissions.png
-- screenshots/shadow_copies.png
+- ![](./img/ntfs_permissions.png)
+- ![](./img/shadow_copies.png)
 
 ---
 
@@ -187,7 +187,7 @@ Screenshots:
 - Regelmäßige Restore-Tests
 
 Screenshot:
-- screenshots/backup_script.png
+- ![](./img/backup_script.png)
 
 ---
 
@@ -200,7 +200,7 @@ Screenshot:
 - Analyse von blockiertem Traffic
 
 Screenshot:
-- screenshots/log_analysis.png
+- ![](./img/log_analysis.png)
 
 ---
 
@@ -247,4 +247,3 @@ Dieses HomeLab bildet eine realistische Enterprise-IT-Umgebung ab und demonstrie
 - saubere Dokumentation
 - praxisnahe System- & Netzwerksicherheit
 
-Geeignet als GitHub-Portfolio, Interview-Referenz und Vorbereitung auf Security-nahe Rollen.
