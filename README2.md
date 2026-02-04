@@ -28,8 +28,6 @@ Das HomeLab bildet eine klassische Unternehmensarchitektur ab:
 - VLAN-basierte Segmentierung
 - Defense-in-Depth-Ansatz
 
-Screenshot:
-- ![Abbildung 1](./img/network_architecture.png)
 
 ---
 
@@ -54,10 +52,6 @@ Screenshot:
 - Isolierte Netzwerke pro Sicherheitszone
 - Snapshot- & Backup-Strategie
 
-Screenshots:
--![](./img/proxmox_dashboard.png)
--![](./img/proxmox_network.png)
-
 ---
 
 ## 🔥 Firewall & Perimeter Security (pfSense)
@@ -68,11 +62,6 @@ Screenshots:
 - DNS Resolver
 - pfBlockerNG (DNS & IP Blocking)
 - Zentrales Logging
-
-Screenshots:
-- ![](./img/pfsense_dashboard.png)
-- ![](./img/pfsense_rules.png)
-- ![](./img/pfsense_logs.png)
 
 ---
 
@@ -88,8 +77,6 @@ Security-Prinzip:
 - Management darf alle Netze erreichen
 - Server & Clients dürfen nicht ins Management-Netz
 
-Screenshot:
-- ![](./img/firewall_vlan_rules.png)
 
 ---
 
@@ -103,9 +90,6 @@ Screenshot:
 - systemd Services
 - Log-Analyse (/var/log/auth.log)
 
-Screenshots:
-- ![](./img//ufw_status.png)
-- ![](./img/sshd_config.png)
 
 ---
 
@@ -117,9 +101,6 @@ Screenshots:
 - Begrenzte Auth-Versuche
 - Minimal installierte Services
 
-Screenshot:
-- ![](./img/apache_security_config.png)
-
 ---
 
 ## 📦 Containerisierung (Docker)
@@ -130,9 +111,6 @@ Screenshot:
 - Persistente Volumes
 - Keine Datenbank-Ports nach außen
 
-Screenshots:
-- ![](./img/docker_ps.png)
-- ![](./img/docker_compose.png)
 
 ---
 
@@ -145,9 +123,6 @@ Screenshots:
 - Gruppenrichtlinien (GPOs)
 - Login-Banner & Drive-Mapping
 
-Screenshots:
-- ![](./img/ad_users.png)
-- ![](./img/gpo_banner.png)
 
 ---
 
@@ -161,10 +136,6 @@ Screenshots:
   - Quotas
   - File Screening
 
-Screenshots:
-- ![](./img/ntfs_permissions.png)
-- ![](./img/shadow_copies.png)
-
 ---
 
 ## ⚙️ Automatisierung & Backups
@@ -175,8 +146,6 @@ Screenshots:
 - Datei-Backups
 - Regelmäßige Restore-Tests
 
-Screenshot:
-- ![](./img/backup_script.png)
 
 ---
 
@@ -187,9 +156,6 @@ Screenshot:
 - Windows Event Logs
 - Fail2Ban Logs
 - Analyse von blockiertem Traffic
-
-Screenshot:
-- ![](./img/log_analysis.png)
 
 ---
 
