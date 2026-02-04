@@ -3,6 +3,40 @@
 ## 🎯 Projekt-Vision
 Systematische Transformation einer Consumer-Netzwerkumgebung in eine hochverfügbare, segmentierte Enterprise-Lab-Struktur. Dieses Projekt dient als Proof-of-Concept für moderne IT-Infrastrukturen, mit Fokus auf Virtualisierung, Advanced Firewalling (pfSense) und die Migration hin zu einer Container-basierten Microservice-Architektur.
 
+# 📂 Enterprise Home Lab & Security Infrastructure
+
+## 🎯 Projekt-Vision
+Systematische Transformation einer Consumer-Netzwerkumgebung in eine hochverfügbare, segmentierte Enterprise-Lab-Struktur...
+
+---
+
+## 📍 Inhaltsverzeichnis
+* [💻 Hardware-Stack](#-hardware-stack-physical-layer)
+* [🌐 Netzwerk-Topologie](#-netzwerk-topologie--virtualisierungs-design)
+* [🚀 Projekt-Phasen](#-projekt-phasen)
+    * [Phase 1: pfSense-Core & VLAN-Design](#-phase-1-pfsense-core-vlan-design--security-baseline)
+    * [Phase 2: Webserver-Migration & Hardening](#-phase-2-webserver-migration-dmz-isolation--hardening)
+    * [Phase 3: LAMP-Stack Deployment](#-phase-3-deployment-des-application-stacks-lamp)
+    * [Phase 4: Disaster Recovery (Backup)](#-phase-4-disaster-recovery--automatisierung)
+    * [Phase 5: Containerisierung (Docker)](#-phase-5-containerisierung--microservice-migration)
+    * [Phase 6: Windows 11 & AD-Integration](#-phase-6-client-provisionierung--domänenintegration)
+    * [Phase 7: Fileserver & AGDLP-Prinzip](#-phase-7-zentrales-fileservice-management--datensicherheit)
+    * [Phase 8: Quotas & Ressourcen-Governance](#-phase-8-fortgeschrittene-administration--ressourcen-governance)
+    * [Phase 9: DMZ-Konzept & Segmentierung](#-phase-9-web-infrastruktur--netzwerk-segmentierung)
+    * [Phase 10: DNS-Infrastruktur](#-phase-10-dns-infrastruktur--namensauflösung)
+    * [Phase 11: Host-Hardening & UFW](#-phase-11-host-hardening--webserver-absicherung)
+    * [Phase 12: Egress Control & Socket-Audit](#-phase-12-system-hardening--monitoring)
+    * [Phase 13: Projektabschluss & Reflexion](#-phase-13-projektabschluss--reflexion)
+    * [Phase 14: Docker Compose Orchestrierung](#-phase-14-modernisierung-mit-docker-compose)
+    * [Phase 15: Ansible & Vault-Automatisierung](#-phase-15-automatisierung-vault-integration--datenbank-sicherung)
+    * [Phase 16: Compliance Auditing (Lynis)](#-phase-16-security-auditing--automated-hardening)
+    * [Phase 17: IDS & Kernel-Hardening](#-phase-17-advanced-hardening-detection--incident-response)
+    * [Phase 18: IPS (Suricata) Scharfschaltung](#-phase-18-ips-scharfschaltung--management-härtung)
+    * [Phase 19: Vulnerability Management (Nmap)](#-phase-19-web-vulnerability-management--server-härtung)
+    * [Phase 20: SIEM & Zentrales Logging](#-phase-20-zentralisiertes-logging--siem-vorbereitung)
+
+---
+
 ---
 
 ## 💻 Hardware-Stack (Physical Layer)
