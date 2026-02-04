@@ -182,17 +182,6 @@ Abgedeckte Themen:
 
 ---
 
-## 📂 Repository-Struktur
-
-Project-HomeLab-Proxmox-Lab/
-├── screenshots/
-├── diagrams/
-├── scripts/
-├── docs/
-└── README.md
-
----
-
 ## 🏁 Fazit
 
 Dieses HomeLab bildet eine realistische Enterprise-IT-Umgebung ab und demonstriert:
