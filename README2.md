@@ -29,7 +29,7 @@ Das HomeLab bildet eine klassische Unternehmensarchitektur ab:
 - Defense-in-Depth-Ansatz
 
 Screenshot:
-- ![](./img/network_architecture.png)
+- ![Abbildung 1](./img/network_architecture.png)
 
 ---
 
