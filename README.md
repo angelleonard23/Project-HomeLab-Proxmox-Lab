@@ -1081,3 +1081,46 @@ Der Erfolg der zentralen Protokollierung wurde durch den Abgleich von Webserver-
 * **Fehlerbehebung:** Dokumentation der Syntax-Korrekturen (Vermeidung von `conflicting persist-names`) zur zukünftigen Wartung des Log-Dienstes.
 * **Vault-Integration:** Hinterlegung der für die API-Anbindung notwendigen Credentials in der Datei `vault_passwords.yml`.
 * **Ausblick:** Die nun fließenden Logdaten dienen als Trigger für Phase 21 (Automatisiertes Blocking mittels pfBlockerNG).
+  
+---
+
+# 📂 Phase 21: Intrusion Prevention System (IPS) via Log-Parsing
+
+## 🎯 Zielsetzung
+Implementierung eines automatisierten Sperrmechanismus auf der pfSense, der in Echtzeit auf die in Phase 20 zentralisierten Webserver-Fehler reagiert. Ziel ist es, Angreifer (HTTP 403) nach Erkennung sofort auf Firewall-Ebene zu blockieren, um die Serverlast zu minimieren.
+
+---
+
+## 🛡️ 1. Firewall-Vorbereitung (Die Block-Liste)
+Bevor die Logik implementiert wurde, musste die "Haftzelle" innerhalb der pfSense-Filterengine geschaffen werden.
+
+* **Alias-Erstellung:** Anlage eines dynamischen Alias-Table namens `Web_Blocklist` (Typ: Host).
+* **Regelwerk:** Platzierung einer Block-Regel an oberster Position auf den Interfaces **WAN** und **WEBSERVER**. Diese Regel verwirft jeglichen Traffic, dessen Quell-IP in der `Web_Blocklist` gelistet ist.
+* **Wartung:** Einrichtung eines Cron-Jobs, der täglich um 03:00 Uhr das Kommando `/sbin/pfctl -t Web_Blocklist -T flush` ausführt, um die Liste zu bereinigen.
+
+---
+
+## 💻 2. Logik-Implementierung (PHP-Wächter)
+Da Python-Abhängigkeiten in der pfSense-Umgebung eingeschränkt waren, wurde ein performantes PHP-Skript (`/root/ips_webserver.php`) als permanenter Hintergrunddienst entwickelt.
+
+* **Echtzeit-Analyse:** Das Skript öffnet den Log-Stream `/var/syslog-ng/default.log` und überwacht diesen in einer Endlosschleife (`while(true)`).
+* **Regex-Filtering:** Mittels `preg_match` wird die Client-IP aus Zeilen mit dem Muster `authz_core:error` extrahiert.
+* **Active Response:** Bei jedem Treffer wird die IP über den Systembefehl `pfctl -t Web_Blocklist -T add` direkt in den Kernel-Speicher der Firewall geschrieben.
+
+---
+
+## 🧪 3. Validierung & Wirksamkeitsnachweis
+Der Erfolg des IPS wurde durch einen simulierten Brute-Force-Angriff auf die geschützte Ressource `log.php` verifiziert.
+
+* **Event-Detektion:** Der Hintergrundprozess identifizierte die IP `10.0.10.52` nach mehreren Fehlversuchen im Log-Stream.
+* **System-Reaktion:** Die automatische Eintragung in die Firewall-Tabelle wurde unter `Diagnostics > Tables` erfolgreich nachgewiesen.
+* **Persistenz:** Verifikation des automatischen Dienststarts nach einem System-Reboot mittels des Pakets `shellcmd`.
+
+![Nachweis der automatischen IP-Sperre in der pfSense-Tabelle](./img/IPS_Table_Success.png)
+
+---
+
+## 🧹 4. Dokumentation & Persistence
+* **Fehlerbehebung:** Umstellung von einmaligem Dateiscan auf kontinuierliches Monitoring mit `usleep`, um die CPU-Last unter 0.1% zu halten.
+* **Vault-Integration:** Dokumentation der Datei-Pfade und Alias-Namen in der Datei `vault_passwords.yml` für zukünftige Automatisierungen.
+* **Ausblick:** Die erfolgreiche Echtzeit-Sperre bildet die Basis für Phase 22 (Monitoring & Alerting via Telegram/Grafana).
