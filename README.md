@@ -29,6 +29,8 @@ Systematische Transformation einer Consumer-Netzwerkumgebung in eine hochverfüg
     * [Phase 18: IPS (Suricata) Scharfschaltung](#-phase-18-ips-scharfschaltung--management-härtung)
     * [Phase 19: Vulnerability Management (Nmap)](#-phase-19-web-vulnerability-management--server-härtung)
     * [Phase 20: SIEM & Zentrales Logging](#-phase-20-zentralisiertes-logging--siem-vorbereitung)
+    * [Phase 21: Intrusion Prevention System (IPS) via Log-Parsing](#-phase-21-intrusion-prevention-system-ips-via-log-parsing)
+
 
 ---
 
